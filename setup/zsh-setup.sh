@@ -102,7 +102,7 @@ if [ "$DO_FONT" = 1 ]; then
   for f in "MesloLGS NF Regular.ttf" "MesloLGS NF Bold.ttf" "MesloLGS NF Italic.ttf" "MesloLGS NF Bold Italic.ttf"; do
     [ -f "$FONTS/$f" ] || curl -fsSL -o "$FONTS/$f" "$base/${f// /%20}"
   done
-  has fc-cache && fc-cache -f "$FONTS" >/dev/null 2>&1 || true
+  if has fc-cache; then fc-cache -f "$FONTS" >/dev/null 2>&1 || true; fi
   say "Font MesloLGS NF installed — select it in your terminal settings"
 fi
 
