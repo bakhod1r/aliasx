@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cloud — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,26 +44,50 @@
 <h2>AWS</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>awswho</code></td><td><code>aws sts get-caller-identity</code></td><td>current AWS identity</td><td class="muted">needs aws</td></tr>
-<tr><td><code>awsprofiles</code></td><td><code>aws configure list-profiles</code></td><td>AWS profiles</td><td class="muted">needs aws</td></tr>
+<tr id="n-awswho"><td><code>awswho</code></td><td><code>aws sts get-caller-identity</code></td><td>current AWS identity</td><td class="muted">needs aws</td></tr>
+<tr id="n-awsprofiles"><td><code>awsprofiles</code></td><td><code>aws configure list-profiles</code></td><td>AWS profiles</td><td class="muted">needs aws</td></tr>
 </table>
 <h2>Azure</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>azwho</code></td><td><code>az account show</code></td><td>current Azure account</td><td class="muted">needs az</td></tr>
-<tr><td><code>azaccounts</code></td><td><code>az account list --output table</code></td><td>Azure subscriptions</td><td class="muted">needs az</td></tr>
+<tr id="n-azwho"><td><code>azwho</code></td><td><code>az account show</code></td><td>current Azure account</td><td class="muted">needs az</td></tr>
+<tr id="n-azaccounts"><td><code>azaccounts</code></td><td><code>az account list --output table</code></td><td>Azure subscriptions</td><td class="muted">needs az</td></tr>
 </table>
 <h2>Google Cloud</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>gcwho</code></td><td><code>gcloud auth list</code></td><td>gcloud accounts</td><td class="muted">needs gcloud</td></tr>
-<tr><td><code>gcproject</code></td><td><code>gcloud config get-value project</code></td><td>current GCP project</td><td class="muted">needs gcloud</td></tr>
-<tr><td><code>gcprojects</code></td><td><code>gcloud projects list</code></td><td>GCP projects</td><td class="muted">needs gcloud</td></tr>
+<tr id="n-gcwho"><td><code>gcwho</code></td><td><code>gcloud auth list</code></td><td>gcloud accounts</td><td class="muted">needs gcloud</td></tr>
+<tr id="n-gcproject"><td><code>gcproject</code></td><td><code>gcloud config get-value project</code></td><td>current GCP project</td><td class="muted">needs gcloud</td></tr>
+<tr id="n-gcprojects"><td><code>gcprojects</code></td><td><code>gcloud projects list</code></td><td>GCP projects</td><td class="muted">needs gcloud</td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

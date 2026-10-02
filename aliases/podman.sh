@@ -18,7 +18,7 @@ alias pddf='podman system df'  # podman disk usage
 # pdsh CONTAINER [CMD] — shell into container (bash, else sh)
 #   $ pdsh api
 #   root@4f2a9c1b:/app#
-pdsh() {
+function pdsh {
   [ "$#" -ge 1 ] || { echo "Usage: pdsh <container> [command]" >&2; return 2; }
   _c="$1"; shift
   if [ "$#" -gt 0 ]; then podman exec -it "$_c" "$@"
@@ -30,7 +30,7 @@ pdsh() {
 # pdrun IMAGE [CMD] — run throwaway interactive container
 #   $ pdrun alpine
 #   / #
-pdrun() {
+function pdrun {
   [ "$#" -ge 1 ] || { echo "Usage: pdrun <image> [command]" >&2; return 2; }
   podman run --rm -it "$@"
 }
@@ -41,7 +41,7 @@ pdrun() {
 #   Images   9      1.1GB (40%)
 #   Prune unused Podman data? [y/N] n
 #   Cancelled.
-pdprune() {
+function pdprune {
   podman system df
   printf 'Prune unused Podman data? [y/N] '; read -r _a
   case "$_a" in y|Y|yes) podman system prune ;; *) echo "Cancelled." ;; esac # allow-destructive

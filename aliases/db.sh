@@ -15,7 +15,7 @@ if has psql; then
   #   -------
   #     1520
   #   (1 row)
-  pgq() {
+  function pgq {
     [ "$#" -eq 2 ] || { echo "Usage: pgq <database> <sql>" >&2; return 2; }
     psql -d "$1" -c "$2"
   }
@@ -23,7 +23,7 @@ if has psql; then
   # pgdump DB — dump to DB-YYYYmmdd-HHMMSS.dump (custom format)
   #   $ pgdump shop
   #   shop-20261002-103512.dump
-  pgdump() {
+  function pgdump {
     [ "$#" -eq 1 ] || { echo "Usage: pgdump <database>" >&2; return 2; }
     _f="$1-$(date +%Y%m%d-%H%M%S).dump"
     pg_dump -Fc -f "$_f" "$1" && echo "$_f"
@@ -33,7 +33,7 @@ if has psql; then
   # pgrestore FILE DB — restore a .dump into DB (no drop, no owners)
   #   $ pgrestore shop-20261002-103512.dump shop_copy
   #   (no output on success)
-  pgrestore() {
+  function pgrestore {
     [ "$#" -eq 2 ] || { echo "Usage: pgrestore <file.dump> <database>" >&2; return 2; }
     pg_restore --no-owner -d "$2" "$1"
   }
@@ -53,7 +53,7 @@ if has mysql; then
   #   +----------+
   #   |     1520 |
   #   +----------+
-  myq() {
+  function myq {
     [ "$#" -eq 2 ] || { echo "Usage: myq <database> <sql>" >&2; return 2; }
     mysql -D "$1" -e "$2"
   }
@@ -61,7 +61,7 @@ if has mysql; then
   # mydump DB — dump to DB-YYYYmmdd-HHMMSS.sql
   #   $ mydump shop
   #   shop-20261002-103512.sql
-  mydump() {
+  function mydump {
     [ "$#" -eq 1 ] || { echo "Usage: mydump <database>" >&2; return 2; }
     _f="$1-$(date +%Y%m%d-%H%M%S).sql"
     mysqldump --single-transaction "$1" > "$_f" && echo "$_f"
@@ -84,7 +84,7 @@ if has redis-cli; then
   #   $ rkeys 'session:*'
   #   session:9f2c
   #   session:a71b
-  rkeys() { redis-cli --scan --pattern "${1:-*}"; }
+  function rkeys { redis-cli --scan --pattern "${1:-*}"; }
 fi
 
 has mongosh && alias mongol='mongosh mongodb://127.0.0.1:27017'  # mongosh to localhost

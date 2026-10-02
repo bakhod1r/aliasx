@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Files — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html" class="on">Files</a>
   <a href="git.html">Git</a>
@@ -41,19 +44,19 @@
 <h2>Safe operations</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>cpi</code></td><td><code>cp -i</code></td><td>copy, ask before overwriting</td><td class="muted"></td></tr>
-<tr><td><code>mvi</code></td><td><code>mv -i</code></td><td>move, ask before overwriting</td><td class="muted"></td></tr>
-<tr><td><code>rmi</code></td><td><code>rm -i</code></td><td>remove, ask for each file</td><td class="muted"></td></tr>
-<tr><td><code>lni</code></td><td><code>ln -i</code></td><td>link, ask before overwriting</td><td class="muted"></td></tr>
-<tr><td><code>md</code></td><td><code>mkdir -p</code></td><td>make directory with parents</td><td class="muted"></td></tr>
-<tr><td><code>rd</code></td><td><code>rmdir</code></td><td>remove empty directory</td><td class="muted"></td></tr>
-<template id="fn7">backup() {
+<tr id="n-cpi"><td><code>cpi</code></td><td><code>cp -i</code></td><td>copy, ask before overwriting</td><td class="muted"></td></tr>
+<tr id="n-mvi"><td><code>mvi</code></td><td><code>mv -i</code></td><td>move, ask before overwriting</td><td class="muted"></td></tr>
+<tr id="n-rmi"><td><code>rmi</code></td><td><code>rm -i</code></td><td>remove, ask for each file</td><td class="muted"></td></tr>
+<tr id="n-lni"><td><code>lni</code></td><td><code>ln -i</code></td><td>link, ask before overwriting</td><td class="muted"></td></tr>
+<tr id="n-md"><td><code>md</code></td><td><code>mkdir -p</code></td><td>make directory with parents</td><td class="muted"></td></tr>
+<tr id="n-rd"><td><code>rd</code></td><td><code>rmdir</code></td><td>remove empty directory</td><td class="muted"></td></tr>
+<template id="fn7">function backup {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: backup &lt;file&gt;&quot; &gt;&amp;2; return 2; }
   cp -p -- &quot;$1&quot; &quot;$1.bak.$(date +%Y%m%d-%H%M%S)&quot; &amp;&amp; echo &quot;$1.bak created&quot;
 }</template>
-<tr><td><code>backup FILE</code></td><td><button class="fn" data-src="fn7" data-name="backup">show code</button></td><td>copy to FILE.bak.YYYYmmdd-HHMMSS<details class="ex" open><summary>example</summary><pre><span class="cmd">$ backup nginx.conf</span>
+<tr id="n-backup"><td><code>backup FILE</code></td><td><button class="fn" data-src="fn7" data-name="backup">show code</button></td><td>copy to FILE.bak.YYYYmmdd-HHMMSS<details class="ex" open><summary>example</summary><pre><span class="cmd">$ backup nginx.conf</span>
 nginx.conf.bak created</pre></details></td><td class="muted"></td></tr>
-<template id="fn8">extract() {
+<template id="fn8">function extract {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: extract &lt;archive&gt;&quot; &gt;&amp;2; return 2; }
   [ -f &quot;$1&quot; ] || { echo &quot;extract: &#x27;$1&#x27; not a file&quot; &gt;&amp;2; return 1; }
   case &quot;$1&quot; in
@@ -71,54 +74,54 @@ nginx.conf.bak created</pre></details></td><td class="muted"></td></tr>
     *) echo &quot;extract: unknown format &#x27;$1&#x27;&quot; &gt;&amp;2; return 1 ;;
   esac
 }</template>
-<tr><td><code>extract ARCHIVE</code></td><td><button class="fn" data-src="fn8" data-name="extract">show code</button></td><td>unpack by extension<details class="ex" open><summary>example</summary><pre><span class="cmd">$ extract release.tar.gz</span>
+<tr id="n-extract"><td><code>extract ARCHIVE</code></td><td><button class="fn" data-src="fn8" data-name="extract">show code</button></td><td>unpack by extension<details class="ex" open><summary>example</summary><pre><span class="cmd">$ extract release.tar.gz</span>
 (files unpacked into current folder)</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Everyday</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>cx</code></td><td><code>chmod +x</code></td><td>make executable</td><td class="muted"></td></tr>
-<tr><td><code>tailf</code></td><td><code>tail -f</code></td><td>follow a file</td><td class="muted"></td></tr>
-<template id="fn11">cl() { cd -- &quot;${1:-$HOME}&quot; &amp;&amp; ls; }</template>
-<tr><td><code>cl DIR</code></td><td><button class="fn" data-src="fn11" data-name="cl">show code</button></td><td>cd into DIR and list it<details class="ex" open><summary>example</summary><pre><span class="cmd">$ cl src</span>
+<tr id="n-cx"><td><code>cx</code></td><td><code>chmod +x</code></td><td>make executable</td><td class="muted"></td></tr>
+<tr id="n-tailf"><td><code>tailf</code></td><td><code>tail -f</code></td><td>follow a file</td><td class="muted"></td></tr>
+<template id="fn11">function cl { cd -- &quot;${1:-$HOME}&quot; &amp;&amp; ls; }</template>
+<tr id="n-cl"><td><code>cl DIR</code></td><td><button class="fn" data-src="fn11" data-name="cl">show code</button></td><td>cd into DIR and list it<details class="ex" open><summary>example</summary><pre><span class="cmd">$ cl src</span>
 api/  web/  main.go  go.mod</pre></details></td><td class="muted"></td></tr>
-<template id="fn12">tmpd() { _d=&quot;$(mktemp -d)&quot; &amp;&amp; cd -- &quot;$_d&quot; &amp;&amp; pwd; unset _d; }</template>
-<tr><td><code>tmpd</code></td><td><button class="fn" data-src="fn12" data-name="tmpd">show code</button></td><td>create a temp directory and enter it<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tmpd</span>
+<template id="fn12">function tmpd { _d=&quot;$(mktemp -d)&quot; &amp;&amp; cd -- &quot;$_d&quot; &amp;&amp; pwd; unset _d; }</template>
+<tr id="n-tmpd"><td><code>tmpd</code></td><td><button class="fn" data-src="fn12" data-name="tmpd">show code</button></td><td>create a temp directory and enter it<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tmpd</span>
 /tmp/tmp.Xk3p9QzL</pre></details></td><td class="muted"></td></tr>
-<template id="fn13">newest() { ls -t | head -n &quot;${1:-10}&quot;; }</template>
-<tr><td><code>newest [N]</code></td><td><button class="fn" data-src="fn13" data-name="newest">show code</button></td><td>N most recently modified entries (default 10)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ newest 3</span>
+<template id="fn13">function newest { ls -t | head -n &quot;${1:-10}&quot;; }</template>
+<tr id="n-newest"><td><code>newest [N]</code></td><td><button class="fn" data-src="fn13" data-name="newest">show code</button></td><td>N most recently modified entries (default 10)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ newest 3</span>
 notes.md
 main.go
 go.mod</pre></details></td><td class="muted"></td></tr>
-<template id="fn14">perms() {
+<template id="fn14">function perms {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: perms &lt;file&gt;...&quot; &gt;&amp;2; return 2; }
   if stat -c &#x27;%a %n&#x27; -- &quot;$1&quot; &gt;/dev/null 2&gt;&amp;1; then stat -c &#x27;%a %n&#x27; -- &quot;$@&quot;; else stat -f &#x27;%Lp %N&#x27; -- &quot;$@&quot;; fi
 }</template>
-<tr><td><code>perms FILE</code></td><td><button class="fn" data-src="fn14" data-name="perms">show code</button></td><td>octal permissions<details class="ex" open><summary>example</summary><pre><span class="cmd">$ perms .env</span>
+<tr id="n-perms"><td><code>perms FILE</code></td><td><button class="fn" data-src="fn14" data-name="perms">show code</button></td><td>octal permissions<details class="ex" open><summary>example</summary><pre><span class="cmd">$ perms .env</span>
 600 .env</pre></details></td><td class="muted"></td></tr>
-<template id="fn15">dl() {
+<template id="fn15">function dl {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: dl &lt;url&gt;&quot; &gt;&amp;2; return 2; }
   if has curl; then curl -fL -O -- &quot;$1&quot;; else wget -- &quot;$1&quot;; fi
 }</template>
-<tr><td><code>dl URL</code></td><td><button class="fn" data-src="fn15" data-name="dl">show code</button></td><td>download into current directory (keeps remote name)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dl https://example.com/tool.tar.gz</span>
+<tr id="n-dl"><td><code>dl URL</code></td><td><button class="fn" data-src="fn15" data-name="dl">show code</button></td><td>download into current directory (keeps remote name)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dl https://example.com/tool.tar.gz</span>
   % Total    % Received ...  100  4.1M</pre></details></td><td class="muted"></td></tr>
-<template id="fn16">tgz() {
+<template id="fn16">function tgz {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: tgz &lt;dir&gt;&quot; &gt;&amp;2; return 2; }
   _n=&quot;${1%/}&quot;; tar -czf &quot;$_n.tar.gz&quot; -- &quot;$_n&quot; &amp;&amp; echo &quot;$_n.tar.gz&quot;; unset _n
 }</template>
-<tr><td><code>tgz DIR</code></td><td><button class="fn" data-src="fn16" data-name="tgz">show code</button></td><td>pack DIR into DIR.tar.gz<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tgz project</span>
+<tr id="n-tgz"><td><code>tgz DIR</code></td><td><button class="fn" data-src="fn16" data-name="tgz">show code</button></td><td>pack DIR into DIR.tar.gz<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tgz project</span>
 project.tar.gz</pre></details></td><td class="muted"></td></tr>
-<template id="fn17">zipd() {
+<template id="fn17">function zipd {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: zipd &lt;dir&gt;&quot; &gt;&amp;2; return 2; }
   _n=&quot;${1%/}&quot;; zip -qr &quot;$_n.zip&quot; &quot;$_n&quot; &amp;&amp; echo &quot;$_n.zip&quot;; unset _n
 }</template>
-<tr><td><code>zipd DIR</code></td><td><button class="fn" data-src="fn17" data-name="zipd">show code</button></td><td>pack DIR into DIR.zip<details class="ex" open><summary>example</summary><pre><span class="cmd">$ zipd project</span>
+<tr id="n-zipd"><td><code>zipd DIR</code></td><td><button class="fn" data-src="fn17" data-name="zipd">show code</button></td><td>pack DIR into DIR.zip<details class="ex" open><summary>example</summary><pre><span class="cmd">$ zipd project</span>
 project.zip</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Edit text</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn18">prepend() {
+<template id="fn18">function prepend {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: prepend &lt;file&gt; [text]&quot; &gt;&amp;2; return 2; }
   [ -f &quot;$1&quot; ] || { echo &quot;prepend: &#x27;$1&#x27; not a file&quot; &gt;&amp;2; return 1; }
   _t=&quot;$(mktemp)&quot; || return 1
@@ -126,78 +129,78 @@ project.zip</pre></details></td><td class="muted"></td></tr>
     cat -- &quot;$_t&quot; &gt; &quot;$1&quot;
   command rm -f -- &quot;$_t&quot;; unset _t
 }</template>
-<tr><td><code>prepend FILE [TEXT]</code></td><td><button class="fn" data-src="fn18" data-name="prepend">show code</button></td><td>add TEXT (or stdin) as first line(s) of FILE<details class="ex" open><summary>example</summary><pre><span class="cmd">$ prepend run.sh &#x27;#!/bin/sh&#x27;</span>
+<tr id="n-prepend"><td><code>prepend FILE [TEXT]</code></td><td><button class="fn" data-src="fn18" data-name="prepend">show code</button></td><td>add TEXT (or stdin) as first line(s) of FILE<details class="ex" open><summary>example</summary><pre><span class="cmd">$ prepend run.sh &#x27;#!/bin/sh&#x27;</span>
 (first line of run.sh is now #!/bin/sh)</pre></details></td><td class="muted"></td></tr>
-<template id="fn19">append() {
+<template id="fn19">function append {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: append &lt;file&gt; [text]&quot; &gt;&amp;2; return 2; }
   [ -s &quot;$1&quot; ] &amp;&amp; [ &quot;$(tail -c 1 -- &quot;$1&quot;)&quot; != &quot;&quot; ] &amp;&amp; printf &#x27;\n&#x27; &gt;&gt; &quot;$1&quot;
   if [ &quot;$#&quot; -ge 2 ]; then printf &#x27;%s\n&#x27; &quot;$2&quot; &gt;&gt; &quot;$1&quot;; else cat &gt;&gt; &quot;$1&quot;; fi
 }</template>
-<tr><td><code>append FILE [TEXT]</code></td><td><button class="fn" data-src="fn19" data-name="append">show code</button></td><td>add TEXT (or stdin) as last line(s) of FILE<details class="ex" open><summary>example</summary><pre><span class="cmd">$ append .gitignore node_modules</span>
+<tr id="n-append"><td><code>append FILE [TEXT]</code></td><td><button class="fn" data-src="fn19" data-name="append">show code</button></td><td>add TEXT (or stdin) as last line(s) of FILE<details class="ex" open><summary>example</summary><pre><span class="cmd">$ append .gitignore node_modules</span>
 (last line of .gitignore is now node_modules)</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Search</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>grep</code></td><td><code>grep --color=auto</code></td><td>grep with colors</td><td class="muted"></td></tr>
-<tr><td><code>egrep</code></td><td><code>grep -E --color=auto</code></td><td>extended regex grep</td><td class="muted"></td></tr>
-<tr><td><code>fgrep</code></td><td><code>grep -F --color=auto</code></td><td>fixed-string grep</td><td class="muted"></td></tr>
-<tr><td><code>countfiles</code></td><td><code>find . -type f | wc -l</code></td><td>count files below here</td><td class="muted"></td></tr>
-<tr><td><code>countdirs</code></td><td><code>find . -type d | wc -l</code></td><td>count folders below here</td><td class="muted"></td></tr>
-<tr><td><code>emptydirs</code></td><td><code>find . -type d -empty</code></td><td>find empty folders</td><td class="muted"></td></tr>
-<tr><td><code>emptyfiles</code></td><td><code>find . -type f -empty</code></td><td>find empty files</td><td class="muted"></td></tr>
-<template id="fn27">ff() {
+<tr id="n-grep"><td><code>grep</code></td><td><code>grep --color=auto</code></td><td>grep with colors</td><td class="muted"></td></tr>
+<tr id="n-egrep"><td><code>egrep</code></td><td><code>grep -E --color=auto</code></td><td>extended regex grep</td><td class="muted"></td></tr>
+<tr id="n-fgrep"><td><code>fgrep</code></td><td><code>grep -F --color=auto</code></td><td>fixed-string grep</td><td class="muted"></td></tr>
+<tr id="n-countfiles"><td><code>countfiles</code></td><td><code>find . -type f | wc -l</code></td><td>count files below here</td><td class="muted"></td></tr>
+<tr id="n-countdirs"><td><code>countdirs</code></td><td><code>find . -type d | wc -l</code></td><td>count folders below here</td><td class="muted"></td></tr>
+<tr id="n-emptydirs"><td><code>emptydirs</code></td><td><code>find . -type d -empty</code></td><td>find empty folders</td><td class="muted"></td></tr>
+<tr id="n-emptyfiles"><td><code>emptyfiles</code></td><td><code>find . -type f -empty</code></td><td>find empty files</td><td class="muted"></td></tr>
+<template id="fn27">function ff {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: ff &lt;pattern&gt;&quot; &gt;&amp;2; return 2; }
   find . -type f -iname &quot;*$1*&quot;
 }</template>
-<tr><td><code>ff PATTERN</code></td><td><button class="fn" data-src="fn27" data-name="ff">show code</button></td><td>find files whose name contains PATTERN<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ff config</span>
+<tr id="n-ff"><td><code>ff PATTERN</code></td><td><button class="fn" data-src="fn27" data-name="ff">show code</button></td><td>find files whose name contains PATTERN<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ff config</span>
 ./app/config.yaml
 ./docs/config.md</pre></details></td><td class="muted"></td></tr>
-<template id="fn28">ftext() {
+<template id="fn28">function ftext {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: ftext &lt;text&gt;&quot; &gt;&amp;2; return 2; }
   grep -rnI --exclude-dir=.git --exclude-dir=node_modules -- &quot;$*&quot; .
 }</template>
-<tr><td><code>ftext TEXT</code></td><td><button class="fn" data-src="fn28" data-name="ftext">show code</button></td><td>find TEXT in files below here (skips .git, node_modules)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ftext TODO</span>
+<tr id="n-ftext"><td><code>ftext TEXT</code></td><td><button class="fn" data-src="fn28" data-name="ftext">show code</button></td><td>find TEXT in files below here (skips .git, node_modules)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ftext TODO</span>
 ./api/user.go:42:// TODO: validate email
 ./web/app.js:7:// TODO: remove debug</pre></details></td><td class="muted"></td></tr>
-<template id="fn29">fdir() {
+<template id="fn29">function fdir {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: fdir &lt;pattern&gt;&quot; &gt;&amp;2; return 2; }
   find . -type d -iname &quot;*$1*&quot;
 }</template>
-<tr><td><code>fdir PATTERN</code></td><td><button class="fn" data-src="fn29" data-name="fdir">show code</button></td><td>find directories whose name contains PATTERN<details class="ex" open><summary>example</summary><pre><span class="cmd">$ fdir test</span>
+<tr id="n-fdir"><td><code>fdir PATTERN</code></td><td><button class="fn" data-src="fn29" data-name="fdir">show code</button></td><td>find directories whose name contains PATTERN<details class="ex" open><summary>example</summary><pre><span class="cmd">$ fdir test</span>
 ./tests
 ./api/testdata</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Disk</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>dfh</code></td><td><code>df -h</code></td><td>disk free, human sizes</td><td class="muted"></td></tr>
-<tr><td><code>dfi</code></td><td><code>df -i</code></td><td>inode usage</td><td class="muted"></td></tr>
-<tr><td><code>usage</code></td><td><code>du -sh .</code></td><td>size of current folder</td><td class="muted"></td></tr>
-<tr><td><code>biggest</code></td><td><code>du -sh ./* 2&gt;/dev/null | sort -h | tail -20</code></td><td>20 biggest items here</td><td class="muted"></td></tr>
-<tr><td><code>du1</code></td><td><code>du -h -d 1</code></td><td>size of each subfolder</td><td class="muted">macOS</td></tr>
-<tr><td><code>du1</code></td><td><code>du -h --max-depth=1</code></td><td>size of each subfolder</td><td class="muted">Linux</td></tr>
+<tr id="n-dfh"><td><code>dfh</code></td><td><code>df -h</code></td><td>disk free, human sizes</td><td class="muted"></td></tr>
+<tr id="n-dfi"><td><code>dfi</code></td><td><code>df -i</code></td><td>inode usage</td><td class="muted"></td></tr>
+<tr id="n-usage"><td><code>usage</code></td><td><code>du -sh .</code></td><td>size of current folder</td><td class="muted"></td></tr>
+<tr id="n-biggest"><td><code>biggest</code></td><td><code>du -sh ./* 2&gt;/dev/null | sort -h | tail -20</code></td><td>20 biggest items here</td><td class="muted"></td></tr>
+<tr id="n-du1"><td><code>du1</code></td><td><code>du -h -d 1</code></td><td>size of each subfolder</td><td class="muted">macOS</td></tr>
+<tr id="n-du1"><td><code>du1</code></td><td><code>du -h --max-depth=1</code></td><td>size of each subfolder</td><td class="muted">Linux</td></tr>
 </table>
 <h2>Calculate and hash</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>calc</code></td><td><code>bc -l</code></td><td>calculator</td><td class="muted"></td></tr>
-<template id="fn37">sha256file() {
+<tr id="n-calc"><td><code>calc</code></td><td><code>bc -l</code></td><td>calculator</td><td class="muted"></td></tr>
+<template id="fn37">function sha256file {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: sha256file &lt;file&gt;&quot; &gt;&amp;2; return 2; }
   if has sha256sum; then sha256sum -- &quot;$1&quot;; else shasum -a 256 -- &quot;$1&quot;; fi
 }</template>
-<tr><td><code>sha256file FILE</code></td><td><button class="fn" data-src="fn37" data-name="sha256file">show code</button></td><td>SHA-256 checksum on Linux or macOS<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sha256file app.tar.gz</span>
+<tr id="n-sha256file"><td><code>sha256file FILE</code></td><td><button class="fn" data-src="fn37" data-name="sha256file">show code</button></td><td>SHA-256 checksum on Linux or macOS<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sha256file app.tar.gz</span>
 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b  app.tar.gz</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>History</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>h</code></td><td><code>history</code></td><td>shell history</td><td class="muted"></td></tr>
-<template id="fn39">hgrep() {
+<tr id="n-h"><td><code>h</code></td><td><code>history</code></td><td>shell history</td><td class="muted"></td></tr>
+<template id="fn39">function hgrep {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: hgrep &lt;pattern&gt;&quot; &gt;&amp;2; return 2; }
   fc -l 1 | grep -i -- &quot;$*&quot;
 }</template>
-<tr><td><code>hgrep PATTERN</code></td><td><button class="fn" data-src="fn39" data-name="hgrep">show code</button></td><td>search shell history<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hgrep docker</span>
+<tr id="n-hgrep"><td><code>hgrep PATTERN</code></td><td><button class="fn" data-src="fn39" data-name="hgrep">show code</button></td><td>search shell history<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hgrep docker</span>
   412  docker compose up -d
   418  docker logs api</pre></details></td><td class="muted"></td></tr>
 </table>
@@ -205,6 +208,30 @@ project.zip</pre></details></td><td class="muted"></td></tr>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

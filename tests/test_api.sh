@@ -1,3 +1,4 @@
+# shellcheck disable=SC2016  # stubs and piped answers are intentional
 . "$ALIASX_ROOT/tests/helpers.sh"
 stubs="$(mktemp -d)"; log="$stubs/calls.log"
 # curl stub: log args, answer with JSON

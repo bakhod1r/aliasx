@@ -20,3 +20,11 @@ for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
     echo "added to $rc"
   fi
 done
+
+if [ "${1:-}" != "--uninstall" ]; then
+  echo
+  echo "Checking for name conflicts..."
+  # Run in a clean bash so only aliasx and your PATH are considered.
+  ALIASX_ROOT="$ROOT" bash -c '. "$ALIASX_ROOT/aliasx.sh" && aliasx conflicts'
+  echo "Rename or disable with ALIASX_DISABLE if a conflict matters to you."
+fi

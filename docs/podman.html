@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Podman — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,19 +44,19 @@
 <h2>Containers and images</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>pd</code></td><td><code>podman</code></td><td>podman</td><td class="muted"></td></tr>
-<tr><td><code>pdps</code></td><td><code>podman ps</code></td><td>running containers</td><td class="muted"></td></tr>
-<tr><td><code>pdpsa</code></td><td><code>podman ps --all</code></td><td>all containers</td><td class="muted"></td></tr>
-<tr><td><code>pdi</code></td><td><code>podman images</code></td><td>images</td><td class="muted"></td></tr>
-<tr><td><code>pdvol</code></td><td><code>podman volume ls</code></td><td>volumes</td><td class="muted"></td></tr>
-<tr><td><code>pdpods</code></td><td><code>podman pod ps</code></td><td>pods</td><td class="muted"></td></tr>
-<tr><td><code>pdlog</code></td><td><code>podman logs</code></td><td>container logs</td><td class="muted"></td></tr>
-<tr><td><code>pdlogf</code></td><td><code>podman logs --follow --tail 200</code></td><td>follow last 200 log lines</td><td class="muted"></td></tr>
-<tr><td><code>pdstats</code></td><td><code>podman stats</code></td><td>live resource usage</td><td class="muted"></td></tr>
-<tr><td><code>pdbuild</code></td><td><code>podman build</code></td><td>build image</td><td class="muted"></td></tr>
-<tr><td><code>pdpull</code></td><td><code>podman pull</code></td><td>pull image</td><td class="muted"></td></tr>
-<tr><td><code>pddf</code></td><td><code>podman system df</code></td><td>podman disk usage</td><td class="muted"></td></tr>
-<template id="fn13">pdsh() {
+<tr id="n-pd"><td><code>pd</code></td><td><code>podman</code></td><td>podman</td><td class="muted"></td></tr>
+<tr id="n-pdps"><td><code>pdps</code></td><td><code>podman ps</code></td><td>running containers</td><td class="muted"></td></tr>
+<tr id="n-pdpsa"><td><code>pdpsa</code></td><td><code>podman ps --all</code></td><td>all containers</td><td class="muted"></td></tr>
+<tr id="n-pdi"><td><code>pdi</code></td><td><code>podman images</code></td><td>images</td><td class="muted"></td></tr>
+<tr id="n-pdvol"><td><code>pdvol</code></td><td><code>podman volume ls</code></td><td>volumes</td><td class="muted"></td></tr>
+<tr id="n-pdpods"><td><code>pdpods</code></td><td><code>podman pod ps</code></td><td>pods</td><td class="muted"></td></tr>
+<tr id="n-pdlog"><td><code>pdlog</code></td><td><code>podman logs</code></td><td>container logs</td><td class="muted"></td></tr>
+<tr id="n-pdlogf"><td><code>pdlogf</code></td><td><code>podman logs --follow --tail 200</code></td><td>follow last 200 log lines</td><td class="muted"></td></tr>
+<tr id="n-pdstats"><td><code>pdstats</code></td><td><code>podman stats</code></td><td>live resource usage</td><td class="muted"></td></tr>
+<tr id="n-pdbuild"><td><code>pdbuild</code></td><td><code>podman build</code></td><td>build image</td><td class="muted"></td></tr>
+<tr id="n-pdpull"><td><code>pdpull</code></td><td><code>podman pull</code></td><td>pull image</td><td class="muted"></td></tr>
+<tr id="n-pddf"><td><code>pddf</code></td><td><code>podman system df</code></td><td>podman disk usage</td><td class="muted"></td></tr>
+<template id="fn13">function pdsh {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: pdsh &lt;container&gt; [command]&quot; &gt;&amp;2; return 2; }
   _c=&quot;$1&quot;; shift
   if [ &quot;$#&quot; -gt 0 ]; then podman exec -it &quot;$_c&quot; &quot;$@&quot;
@@ -61,21 +64,21 @@
   else podman exec -it &quot;$_c&quot; /bin/sh; fi
   unset _c
 }</template>
-<tr><td><code>pdsh CONTAINER [CMD]</code></td><td><button class="fn" data-src="fn13" data-name="pdsh">show code</button></td><td>shell into container (bash, else sh)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pdsh api</span>
+<tr id="n-pdsh"><td><code>pdsh CONTAINER [CMD]</code></td><td><button class="fn" data-src="fn13" data-name="pdsh">show code</button></td><td>shell into container (bash, else sh)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pdsh api</span>
 root@4f2a9c1b:/app#</pre></details></td><td class="muted"></td></tr>
-<template id="fn14">pdrun() {
+<template id="fn14">function pdrun {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: pdrun &lt;image&gt; [command]&quot; &gt;&amp;2; return 2; }
   podman run --rm -it &quot;$@&quot;
 }</template>
-<tr><td><code>pdrun IMAGE [CMD]</code></td><td><button class="fn" data-src="fn14" data-name="pdrun">show code</button></td><td>run throwaway interactive container<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pdrun alpine</span>
+<tr id="n-pdrun"><td><code>pdrun IMAGE [CMD]</code></td><td><button class="fn" data-src="fn14" data-name="pdrun">show code</button></td><td>run throwaway interactive container<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pdrun alpine</span>
 / #</pre></details></td><td class="muted"></td></tr>
-<template id="fn15">pdprune() {
+<template id="fn15">function pdprune {
   podman system df
   printf &#x27;Prune unused Podman data? [y/N] &#x27;; read -r _a
   case &quot;$_a&quot; in y|Y|yes) podman system prune ;; *) echo &quot;Cancelled.&quot; ;; esac # allow-destructive
   unset _a
 }</template>
-<tr><td><code>pdprune</code></td><td><button class="fn" data-src="fn15" data-name="pdprune">show code</button></td><td>show usage, then podman system prune after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pdprune</span>
+<tr id="n-pdprune"><td><code>pdprune</code></td><td><button class="fn" data-src="fn15" data-name="pdprune">show code</button></td><td>show usage, then podman system prune after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pdprune</span>
 TYPE     TOTAL  RECLAIMABLE
 Images   9      1.1GB (40%)
 Prune unused Podman data? [y/N] n
@@ -84,17 +87,41 @@ Cancelled.</pre></details></td><td class="muted"></td></tr>
 <h2>Compose</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>pdc</code></td><td><code>podman compose</code></td><td>podman compose</td><td class="muted"></td></tr>
-<tr><td><code>pdcu</code></td><td><code>podman compose up</code></td><td>compose up</td><td class="muted"></td></tr>
-<tr><td><code>pdcud</code></td><td><code>podman compose up --detach</code></td><td>compose up in background</td><td class="muted"></td></tr>
-<tr><td><code>pdcd</code></td><td><code>podman compose down</code></td><td>compose down</td><td class="muted"></td></tr>
-<tr><td><code>pdcps</code></td><td><code>podman compose ps</code></td><td>compose services</td><td class="muted"></td></tr>
-<tr><td><code>pdclf</code></td><td><code>podman compose logs --follow --tail 200</code></td><td>follow compose logs</td><td class="muted"></td></tr>
+<tr id="n-pdc"><td><code>pdc</code></td><td><code>podman compose</code></td><td>podman compose</td><td class="muted"></td></tr>
+<tr id="n-pdcu"><td><code>pdcu</code></td><td><code>podman compose up</code></td><td>compose up</td><td class="muted"></td></tr>
+<tr id="n-pdcud"><td><code>pdcud</code></td><td><code>podman compose up --detach</code></td><td>compose up in background</td><td class="muted"></td></tr>
+<tr id="n-pdcd"><td><code>pdcd</code></td><td><code>podman compose down</code></td><td>compose down</td><td class="muted"></td></tr>
+<tr id="n-pdcps"><td><code>pdcps</code></td><td><code>podman compose ps</code></td><td>compose services</td><td class="muted"></td></tr>
+<tr id="n-pdclf"><td><code>pdclf</code></td><td><code>podman compose logs --follow --tail 200</code></td><td>follow compose logs</td><td class="muted"></td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

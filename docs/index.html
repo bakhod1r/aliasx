@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html" class="on">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -36,13 +39,23 @@
 </nav>
 <main>
 <h1>aliasx</h1>
-<p>Safe, modular shell aliases for bash and zsh on Linux and macOS. 468 aliases and functions in 24 modules.</p>
+<p>Safe, modular shell aliases for bash and zsh on Linux and macOS. 494 aliases and functions in 25 modules.</p>
 
 <h2>Install</h2>
 <pre>git clone https://github.com/bakhod1r/aliasx ~/.aliasx
 ~/.aliasx/install.sh</pre>
 <p><code>install.sh</code> adds one line to <code>~/.bashrc</code> and <code>~/.zshrc</code>. Running it again changes nothing. Open a new shell.</p>
 <p>oh-my-zsh: clone into <code>$ZSH_CUSTOM/plugins/aliasx</code> and add <code>aliasx</code> to <code>plugins=(...)</code>.</p>
+
+<h2>Profiles</h2>
+<pre>export ALIASX_PROFILE=backend     # devops, sysadmin, minimal; combine: "backend devops"
+aliasx profiles                   # what each profile loads</pre>
+
+<h2>Your own aliases</h2>
+<pre>aliasx add deploy './scripts/deploy.sh --prod' "deploy to production"
+aliasx mine
+aliasx rm deploy</pre>
+<p>Saved in <code>~/.aliasx.local.sh</code>, loaded last, with hints and search like built-in ones.</p>
 
 <h2>Configure</h2>
 <pre>export ALIASX_DISABLE="docker k8s"      # skip default modules
@@ -53,6 +66,7 @@ export ALIASX_ENABLE="modern dangerous"  # load opt-in modules</pre>
 <pre>aliasx modules          # list modules
 aliasx list git         # aliases in one module
 aliasx check gs k tf    # is a name taken?
+aliasx conflicts        # names that hide programs or clash with your rc files
 aliasx why lni          # lni → ln -i · link, ask before overwriting</pre>
 
 <h2>Hints</h2>
@@ -86,11 +100,12 @@ export ALIASX_MODE=safe   # keep it on (put in rc before aliasx)</pre>
 <h2>Modules</h2>
 <table>
 <tr><th>Module</th><th>Covers</th><th>Count</th></tr>
-<tr><td><a href="core.html">Core</a></td><td>Core: helpers, terminal and the aliasx command. Always loaded.</td><td>12</td></tr>
+<tr><td><a href="core.html">Core</a></td><td>Core: helpers, terminal and the aliasx command. Always loaded.</td><td>14</td></tr>
 <tr><td><a href="hints.html">Hints</a></td><td>Hints: typing an aliasx name then Space shows what it does.</td><td>0</td></tr>
+<tr><td><a href="completion.html">Completion</a></td><td>Tab completion for the aliasx command.</td><td>1</td></tr>
 <tr><td><a href="nav.html">Navigation</a></td><td>Navigation and listing.</td><td>17</td></tr>
 <tr><td><a href="files.html">Files</a></td><td>Files: safe operations, search, disk, archives, history.</td><td>39</td></tr>
-<tr><td><a href="git.html">Git</a></td><td>Git and GitHub CLI.</td><td>53</td></tr>
+<tr><td><a href="git.html">Git</a></td><td>Git and GitHub CLI.</td><td>58</td></tr>
 <tr><td><a href="docker.html">Docker</a></td><td>Docker and Docker Compose.</td><td>30</td></tr>
 <tr><td><a href="podman.html">Podman</a></td><td>Podman (pd*): same shape as the docker module.</td><td>21</td></tr>
 <tr><td><a href="k8s.html">Kubernetes</a></td><td>Kubernetes and Helm.</td><td>49</td></tr>
@@ -99,7 +114,7 @@ export ALIASX_MODE=safe   # keep it on (put in rc before aliasx)</pre>
 <tr><td><a href="admin.html">Sysadmin</a></td><td>Sysadmin: users, logins, services, disk hogs, kernel messages.</td><td>14</td></tr>
 <tr><td><a href="net.html">Network</a></td><td>Networking and HTTP.</td><td>11</td></tr>
 <tr><td><a href="system.html">System</a></td><td>System: processes, services, packages, macOS.</td><td>54</td></tr>
-<tr><td><a href="dev.html">Development</a></td><td>Development: Node, Python, Go, Rust, Java, JSON, TLS.</td><td>39</td></tr>
+<tr><td><a href="dev.html">Development</a></td><td>Development: Node, Python (uv, poetry), PHP, Ruby, .NET, Go, Rust, Java, TLS.</td><td>57</td></tr>
 <tr><td><a href="api.html">Backend &amp; API</a></td><td>Backend and API work: HTTP calls, timing, JWT, ports, keys, certs.</td><td>12</td></tr>
 <tr><td><a href="db.html">Databases</a></td><td>Databases: PostgreSQL (pg*), MySQL (my*), Redis (r*), MongoDB.</td><td>25</td></tr>
 <tr><td><a href="nginx.html">nginx</a></td><td>nginx: test, reload, logs. Config is always tested before reload/restart.</td><td>9</td></tr>
@@ -119,6 +134,30 @@ export ALIASX_MODE=safe   # keep it on (put in rc before aliasx)</pre>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

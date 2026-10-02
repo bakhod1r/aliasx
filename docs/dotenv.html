@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>.env files — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -42,7 +45,7 @@
 <h2>General</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn1">envset() {
+<template id="fn1">function envset {
   case &quot;${1:-}&quot; in
     [A-Za-z_]*=*) ;;
     *) echo &quot;Usage: envset KEY=VALUE [file]&quot; &gt;&amp;2; return 2 ;;
@@ -67,28 +70,28 @@
   fi
   unset _k _f
 }</template>
-<tr><td><code>envset KEY=VALUE [FILE]</code></td><td><button class="fn" data-src="fn1" data-name="envset">show code</button></td><td>insert or update KEY in .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envset DB_HOST=localhost</span>
+<tr id="n-envset"><td><code>envset KEY=VALUE [FILE]</code></td><td><button class="fn" data-src="fn1" data-name="envset">show code</button></td><td>insert or update KEY in .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envset DB_HOST=localhost</span>
 updated DB_HOST in .env</pre></details></td><td class="muted"></td></tr>
-<template id="fn2">envget() {
+<template id="fn2">function envget {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: envget KEY [file]&quot; &gt;&amp;2; return 2; }
   ALIASX_K=&quot;$1&quot; awk &#x27;
     { m = $0; sub(/^export[ \t]+/, &quot;&quot;, m) }
     index(m, ENVIRON[&quot;ALIASX_K&quot;] &quot;=&quot;) == 1 { print substr(m, length(ENVIRON[&quot;ALIASX_K&quot;]) + 2); f = 1; exit }
     END { exit !f }&#x27; &quot;${2:-.env}&quot;
 }</template>
-<tr><td><code>envget KEY [FILE]</code></td><td><button class="fn" data-src="fn2" data-name="envget">show code</button></td><td>print value of KEY from .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envget DB_HOST</span>
+<tr id="n-envget"><td><code>envget KEY [FILE]</code></td><td><button class="fn" data-src="fn2" data-name="envget">show code</button></td><td>print value of KEY from .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envget DB_HOST</span>
 localhost</pre></details></td><td class="muted"></td></tr>
-<template id="fn3">envdel() {
+<template id="fn3">function envdel {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: envdel KEY [file]&quot; &gt;&amp;2; return 2; }
   _f=&quot;${2:-.env}&quot;; _t=&quot;$(mktemp)&quot; || return 1
   ALIASX_K=&quot;$1&quot; awk &#x27;{ m = $0; sub(/^export[ \t]+/, &quot;&quot;, m) } index(m, ENVIRON[&quot;ALIASX_K&quot;] &quot;=&quot;) != 1&#x27; &quot;$_f&quot; &gt; &quot;$_t&quot; &amp;&amp;
     cat &quot;$_t&quot; &gt; &quot;$_f&quot; &amp;&amp; echo &quot;removed $1 from $_f&quot;
   command rm -f &quot;$_t&quot;; unset _t _f
 }</template>
-<tr><td><code>envdel KEY [FILE]</code></td><td><button class="fn" data-src="fn3" data-name="envdel">show code</button></td><td>remove KEY from .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envdel DB_HOST</span>
+<tr id="n-envdel"><td><code>envdel KEY [FILE]</code></td><td><button class="fn" data-src="fn3" data-name="envdel">show code</button></td><td>remove KEY from .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envdel DB_HOST</span>
 removed DB_HOST from .env</pre></details></td><td class="muted"></td></tr>
-<template id="fn4">envls() { sed -n -E &#x27;s/^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=.*/\2/p&#x27; &quot;${1:-.env}&quot;; }</template>
-<tr><td><code>envls [FILE]</code></td><td><button class="fn" data-src="fn4" data-name="envls">show code</button></td><td>list keys in .env (values hidden)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envls</span>
+<template id="fn4">function envls { sed -n -E &#x27;s/^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=.*/\2/p&#x27; &quot;${1:-.env}&quot;; }</template>
+<tr id="n-envls"><td><code>envls [FILE]</code></td><td><button class="fn" data-src="fn4" data-name="envls">show code</button></td><td>list keys in .env (values hidden)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envls</span>
 DB_HOST
 DB_PORT
 JWT_SECRET</pre></details></td><td class="muted"></td></tr>
@@ -97,6 +100,30 @@ JWT_SECRET</pre></details></td><td class="muted"></td></tr>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

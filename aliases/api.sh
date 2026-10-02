@@ -2,7 +2,7 @@
 
 # == HTTP calls
 # Responses are pretty-printed with jq when they are JSON.
-_aliasx_http() {
+function _aliasx_http {
   _m="$1"; _u="$2"; shift 2
   if [ "$#" -gt 0 ] && [ "${1#-}" = "$1" ]; then
     _b="$(curl -sS -X "$_m" -H 'Accept: application/json' -H 'Content-Type: application/json' --data "$1" "$_u")"
@@ -19,7 +19,7 @@ _aliasx_http() {
 #     "id": 1,
 #     "name": "Ali"
 #   }
-hget() {
+function hget {
   [ "$#" -ge 1 ] || { echo "Usage: hget <url> [curl options]" >&2; return 2; }
   _u="$1"; shift; _aliasx_http GET "$_u" "$@"; unset _u
 }
@@ -30,7 +30,7 @@ hget() {
 #     "id": 2,
 #     "name": "Vali"
 #   }
-hpost() {
+function hpost {
   [ "$#" -ge 2 ] || { echo "Usage: hpost <url> <json|@file>" >&2; return 2; }
   _aliasx_http POST "$1" "$2"
 }
@@ -41,7 +41,7 @@ hpost() {
 #     "id": 2,
 #     "name": "Vali B"
 #   }
-hput() {
+function hput {
   [ "$#" -ge 2 ] || { echo "Usage: hput <url> <json|@file>" >&2; return 2; }
   _aliasx_http PUT "$1" "$2"
 }
@@ -52,7 +52,7 @@ hput() {
 #     "id": 2,
 #     "active": false
 #   }
-hpatch() {
+function hpatch {
   [ "$#" -ge 2 ] || { echo "Usage: hpatch <url> <json|@file>" >&2; return 2; }
   _aliasx_http PATCH "$1" "$2"
 }
@@ -60,7 +60,7 @@ hpatch() {
 # hdelete URL — DELETE after y/N
 #   $ hdelete localhost:8080/users/2
 #   DELETE localhost:8080/users/2 ? [y/N] y
-hdelete() {
+function hdelete {
   [ "$#" -ge 1 ] || { echo "Usage: hdelete <url>" >&2; return 2; }
   yesno "DELETE $1 ?" && _aliasx_http DELETE "$1"
 }
@@ -74,7 +74,7 @@ hdelete() {
 #   first:   0.230s
 #   total:   0.241s
 #   size:    1256 bytes
-timing() {
+function timing {
   [ "$#" -ge 1 ] || { echo "Usage: timing <url>" >&2; return 2; }
   curl -sS -o /dev/null -w 'status:  %{http_code}\ndns:     %{time_namelookup}s\nconnect: %{time_connect}s\ntls:     %{time_appconnect}s\nfirst:   %{time_starttransfer}s\ntotal:   %{time_total}s\nsize:    %{size_download} bytes\n' "$@"
 }
@@ -84,7 +84,7 @@ timing() {
 #   10:31:02  200 0.004s
 #   10:31:04  200 0.003s
 #   10:31:06  502 0.001s
-watchurl() {
+function watchurl {
   [ "$#" -ge 1 ] || { echo "Usage: watchurl <url> [seconds]" >&2; return 2; }
   while :; do
     printf '%s  %s\n' "$(date +%H:%M:%S)" "$(curl -s -o /dev/null -w '%{http_code} %{time_total}s' "$1")"
@@ -101,7 +101,7 @@ watchurl() {
 #   {
 #     "sub": "123"
 #   }
-jwt() {
+function jwt {
   [ "$#" -eq 1 ] || { echo "Usage: jwt <token>" >&2; return 2; }
   python3 - "$1" <<'PY'
 import base64, json, sys
@@ -119,12 +119,12 @@ PY
 # hexkey [BYTES] — random hex secret (default 32 bytes)
 #   $ hexkey 16
 #   9f2c4e1a7b3d8c05e6f1a2b3c4d5e6f7
-hexkey() { openssl rand -hex "${1:-32}"; }
+function hexkey { openssl rand -hex "${1:-32}"; }
 
 # selfcert DOMAIN — self-signed cert DOMAIN.crt + DOMAIN.key for local dev (1 year)
 #   $ selfcert dev.local
 #   dev.local.crt dev.local.key
-selfcert() {
+function selfcert {
   [ "$#" -eq 1 ] || { echo "Usage: selfcert <domain>" >&2; return 2; }
   openssl req -x509 -newkey rsa:2048 -nodes -days 365 -subj "/CN=$1" \
     -keyout "$1.key" -out "$1.crt" 2>/dev/null && echo "$1.crt $1.key"
@@ -134,7 +134,7 @@ selfcert() {
 # waitport HOST PORT [SEC] — wait until PORT accepts connections (default 30s)
 #   $ waitport localhost 5432
 #   localhost:5432 is up
-waitport() {
+function waitport {
   [ "$#" -ge 2 ] || { echo "Usage: waitport <host> <port> [seconds]" >&2; return 2; }
   _i=0
   while [ "$_i" -lt "${3:-30}" ]; do

@@ -1,3 +1,4 @@
+# shellcheck disable=SC2016  # stubs and piped answers are intentional
 . "$ALIASX_ROOT/tests/helpers.sh"
 
 stubs="$(mktemp -d)"
@@ -6,7 +7,7 @@ for t in git docker redis-cli nginx; do
   printf '#!/bin/sh\necho "%s $*" >> "%s"\n' "$t" "$log" > "$stubs/$t"; chmod +x "$stubs/$t"
 done
 PATH="$stubs:$PATH"
-ALIASX_ENABLE="dangerous" . "$ALIASX_ROOT/aliasx.sh"
+ALIASX_ENABLE="modern dangerous"; . "$ALIASX_ROOT/aliasx.sh"
 
 # Wrong confirmation: nothing destructive runs.
 echo "no" | gpristine >/dev/null 2>&1

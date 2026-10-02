@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DevOps — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,7 +44,7 @@
 <h2>Run control</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn1">retry() {
+<template id="fn1">function retry {
   [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: retry &lt;times&gt; &lt;command&gt; [args]&quot; &gt;&amp;2; return 2; }
   _n=&quot;$1&quot;; _i=1; _w=1; shift
   while :; do
@@ -52,15 +55,15 @@
     sleep &quot;$_w&quot;; _i=$((_i + 1)); _w=$((_w * 2))
   done
 }</template>
-<tr><td><code>retry N CMD...</code></td><td><button class="fn" data-src="fn1" data-name="retry">show code</button></td><td>run CMD up to N times, waiting 1s, 2s, 4s... between tries<details class="ex" open><summary>example</summary><pre><span class="cmd">$ retry 3 curl -f localhost:8080/health</span>
+<tr id="n-retry"><td><code>retry N CMD...</code></td><td><button class="fn" data-src="fn1" data-name="retry">show code</button></td><td>run CMD up to N times, waiting 1s, 2s, 4s... between tries<details class="ex" open><summary>example</summary><pre><span class="cmd">$ retry 3 curl -f localhost:8080/health</span>
 retry: try 1 failed, waiting 1s
 ok</pre></details></td><td class="muted"></td></tr>
-<template id="fn2">every() {
+<template id="fn2">function every {
   [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: every &lt;seconds&gt; &lt;command&gt; [args]&quot; &gt;&amp;2; return 2; }
   _s=&quot;$1&quot;; shift
   while :; do echo &quot;── $(date +%H:%M:%S)&quot;; &quot;$@&quot;; sleep &quot;$_s&quot;; done
 }</template>
-<tr><td><code>every SEC CMD...</code></td><td><button class="fn" data-src="fn2" data-name="every">show code</button></td><td>run CMD every SEC seconds (watch without clearing)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ every 5 kubectl get pods</span>
+<tr id="n-every"><td><code>every SEC CMD...</code></td><td><button class="fn" data-src="fn2" data-name="every">show code</button></td><td>run CMD every SEC seconds (watch without clearing)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ every 5 kubectl get pods</span>
 ── 10:31:02
 NAME                  READY   STATUS
 api-7d9f8b-x2k4       1/1     Running</pre></details></td><td class="muted"></td></tr>
@@ -68,33 +71,33 @@ api-7d9f8b-x2k4       1/1     Running</pre></details></td><td class="muted"></td
 <h2>Remote</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn3">tunnel() {
+<template id="fn3">function tunnel {
   [ &quot;$#&quot; -eq 3 ] || { echo &quot;Usage: tunnel &lt;local-port&gt; &lt;target:port&gt; &lt;user@jump-host&gt;&quot; &gt;&amp;2; return 2; }
   echo &quot;localhost:$1 → $2 via $3 (Ctrl-C to stop)&quot;
   ssh -N -L &quot;$1:$2&quot; &quot;$3&quot;
 }</template>
-<tr><td><code>tunnel LOCALPORT TARGET:PORT USER@JUMP</code></td><td><button class="fn" data-src="fn3" data-name="tunnel">show code</button></td><td>forward localhost:LOCALPORT through ssh<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tunnel 5433 db.internal:5432 ali@bastion</span>
+<tr id="n-tunnel"><td><code>tunnel LOCALPORT TARGET:PORT USER@JUMP</code></td><td><button class="fn" data-src="fn3" data-name="tunnel">show code</button></td><td>forward localhost:LOCALPORT through ssh<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tunnel 5433 db.internal:5432 ali@bastion</span>
 localhost:5433 → db.internal:5432 via ali@bastion (Ctrl-C to stop)</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Certificates</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn4">certexp() {
+<template id="fn4">function certexp {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: certexp &lt;host[:port]&gt;&quot; &gt;&amp;2; return 2; }
   _h=&quot;${1%%:*}&quot;; _p=&quot;${1##*:}&quot;; [ &quot;$_h&quot; = &quot;$_p&quot; ] &amp;&amp; _p=443
   openssl s_client -connect &quot;$_h:$_p&quot; -servername &quot;$_h&quot; &lt;/dev/null 2&gt;/dev/null | _aliasx_cert_report
   unset _h _p
 }</template>
-<tr><td><code>certexp HOST[:PORT]</code></td><td><button class="fn" data-src="fn4" data-name="certexp">show code</button></td><td>certificate subject, issuer and days until expiry<details class="ex" open><summary>example</summary><pre><span class="cmd">$ certexp example.com</span>
+<tr id="n-certexp"><td><code>certexp HOST[:PORT]</code></td><td><button class="fn" data-src="fn4" data-name="certexp">show code</button></td><td>certificate subject, issuer and days until expiry<details class="ex" open><summary>example</summary><pre><span class="cmd">$ certexp example.com</span>
 subject=CN=example.com
 issuer=C=US, O=Let&#x27;s Encrypt, CN=R11
 notAfter=Dec 30 23:59:59 2026 GMT
 days left: 89</pre></details></td><td class="muted"></td></tr>
-<template id="fn5">certfile() {
+<template id="fn5">function certfile {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: certfile &lt;file&gt;&quot; &gt;&amp;2; return 2; }
   _aliasx_cert_report &lt; &quot;$1&quot;
 }</template>
-<tr><td><code>certfile FILE</code></td><td><button class="fn" data-src="fn5" data-name="certfile">show code</button></td><td>same report for a local .crt/.pem file<details class="ex" open><summary>example</summary><pre><span class="cmd">$ certfile /etc/ssl/certs/site.crt</span>
+<tr id="n-certfile"><td><code>certfile FILE</code></td><td><button class="fn" data-src="fn5" data-name="certfile">show code</button></td><td>same report for a local .crt/.pem file<details class="ex" open><summary>example</summary><pre><span class="cmd">$ certfile /etc/ssl/certs/site.crt</span>
 subject=CN=site.local
 notAfter=Oct 20 10:00:00 2026 GMT
 days left: 18  ← renew soon</pre></details></td><td class="muted"></td></tr>
@@ -102,25 +105,25 @@ days left: 18  ← renew soon</pre></details></td><td class="muted"></td></tr>
 <h2>DNS and sockets</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn6">dnscheck() {
+<template id="fn6">function dnscheck {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: dnscheck &lt;name&gt; [type]&quot; &gt;&amp;2; return 2; }
   for _r in &quot;&quot; 1.1.1.1 8.8.8.8; do
     printf &#x27;%-9s %s\n&#x27; &quot;${_r:-system}&quot; &quot;$(dig +short ${_r:+@$_r} &quot;$1&quot; &quot;${2:-A}&quot; | tr &#x27;\n&#x27; &#x27; &#x27;)&quot;
   done
   unset _r
 }</template>
-<tr><td><code>dnscheck NAME [TYPE]</code></td><td><button class="fn" data-src="fn6" data-name="dnscheck">show code</button></td><td>compare answers from system, Cloudflare and Google DNS<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dnscheck api.example.com</span>
+<tr id="n-dnscheck"><td><code>dnscheck NAME [TYPE]</code></td><td><button class="fn" data-src="fn6" data-name="dnscheck">show code</button></td><td>compare answers from system, Cloudflare and Google DNS<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dnscheck api.example.com</span>
 system    93.184.215.14
 1.1.1.1   93.184.215.14
 8.8.8.8   93.184.215.14</pre></details></td><td class="muted"></td></tr>
-<tr><td><code>sockets</code></td><td><code>ss -tulpn</code></td><td>listening sockets with processes</td><td class="muted">Linux</td></tr>
+<tr id="n-sockets"><td><code>sockets</code></td><td><code>ss -tulpn</code></td><td>listening sockets with processes</td><td class="muted">Linux</td></tr>
 </table>
 <h2>Cron and logs</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>crons</code></td><td><code>crontab -l</code></td><td>your cron jobs</td><td class="muted">needs crontab</td></tr>
-<template id="fn9">logsize() { find &quot;${1:-/var/log}&quot; -type f -exec du -h {} + 2&gt;/dev/null | sort -rh | head -15; }</template>
-<tr><td><code>logsize [DIR]</code></td><td><button class="fn" data-src="fn9" data-name="logsize">show code</button></td><td>biggest log files (default /var/log)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ logsize</span>
+<tr id="n-crons"><td><code>crons</code></td><td><code>crontab -l</code></td><td>your cron jobs</td><td class="muted">needs crontab</td></tr>
+<template id="fn9">function logsize { find &quot;${1:-/var/log}&quot; -type f -exec du -h {} + 2&gt;/dev/null | sort -rh | head -15; }</template>
+<tr id="n-logsize"><td><code>logsize [DIR]</code></td><td><button class="fn" data-src="fn9" data-name="logsize">show code</button></td><td>biggest log files (default /var/log)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ logsize</span>
 812M	/var/log/journal/system.journal
 120M	/var/log/nginx/access.log</pre></details></td><td class="muted"></td></tr>
 </table>
@@ -128,6 +131,30 @@ system    93.184.215.14
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

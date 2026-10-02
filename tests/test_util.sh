@@ -28,7 +28,7 @@ mkdir src && echo hi > src/f && tgz src >/dev/null
 mkdir out && cd out && extract ../src.tar.gz && assert_eq "$(cat src/f)" "hi" "tgz content" && cd ..
 
 # cl enters dir
-cl src >/dev/null; assert_eq "$(pwd -P)" "$real/src" "cl enters"; cd "$real"
+cl src >/dev/null; assert_eq "$(pwd -P)" "$real/src" "cl enters"; cd "$real" || exit 1
 
 # perms
 echo x > p; chmod 640 p; assert_eq "$(perms p)" "640 p" "perms"
@@ -44,7 +44,7 @@ assert_eq "$(ftext needle)" "./found.txt:1:needle" "ftext"
 # tmpd creates and enters a temp dir
 before="$(pwd -P)"; tmpd >/dev/null
 [ "$(pwd -P)" != "$before" ] && [ -d "$(pwd -P)" ] || { echo "  tmpd"; _failures=$((_failures + 1)); }
-cd "$real"
+cd "$real" || exit 1
 
 # usage errors
 pk >/dev/null 2>&1; assert_eq "$?" "2" "pk without args"

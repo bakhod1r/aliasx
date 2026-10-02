@@ -1,3 +1,4 @@
+# shellcheck disable=SC2216  # stubs and piped answers are intentional
 . "$ALIASX_ROOT/tests/helpers.sh"
 . "$ALIASX_ROOT/aliasx.sh"
 

@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>nginx — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,48 +44,72 @@
 <h2>Config</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>ngt</code></td><td><code>sudo nginx -t</code></td><td>test config</td><td class="muted"></td></tr>
-<tr><td><code>ngconf</code></td><td><code>sudo nginx -T</code></td><td>print full loaded config</td><td class="muted"></td></tr>
-<tr><td><code>ngv</code></td><td><code>nginx -V</code></td><td>version and build options</td><td class="muted"></td></tr>
-<tr><td><code>ngsites</code></td><td><code>ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2&gt;/dev/null</code></td><td>enabled sites</td><td class="muted"></td></tr>
-<template id="fn5">ngr() {
+<tr id="n-ngt"><td><code>ngt</code></td><td><code>sudo nginx -t</code></td><td>test config</td><td class="muted"></td></tr>
+<tr id="n-ngconf"><td><code>ngconf</code></td><td><code>sudo nginx -T</code></td><td>print full loaded config</td><td class="muted"></td></tr>
+<tr id="n-ngv"><td><code>ngv</code></td><td><code>nginx -V</code></td><td>version and build options</td><td class="muted"></td></tr>
+<tr id="n-ngsites"><td><code>ngsites</code></td><td><code>ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2&gt;/dev/null</code></td><td>enabled sites</td><td class="muted"></td></tr>
+<template id="fn5">function ngr {
   _aliasx_ng_test || return
-  if has systemctl; then sudo systemctl reload nginx; else ${_aliasx_ngsudo}nginx -s reload; fi
+  if has systemctl; then sudo systemctl reload nginx; else _aliasx_ngrun nginx -s reload; fi
 }</template>
-<tr><td><code>ngr</code></td><td><button class="fn" data-src="fn5" data-name="ngr">show code</button></td><td>test config, then reload if OK<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngr</span>
+<tr id="n-ngr"><td><code>ngr</code></td><td><button class="fn" data-src="fn5" data-name="ngr">show code</button></td><td>test config, then reload if OK<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngr</span>
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful</pre></details></td><td class="muted"></td></tr>
-<template id="fn6">ngrestart() {
+<template id="fn6">function ngrestart {
   _aliasx_ng_test || return
   if has systemctl; then sudo systemctl restart nginx
   elif has brew; then brew services restart nginx
-  else ${_aliasx_ngsudo}nginx -s stop &amp;&amp; ${_aliasx_ngsudo}nginx; fi
+  else _aliasx_ngrun nginx -s stop &amp;&amp; _aliasx_ngrun nginx; fi
 }</template>
-<tr><td><code>ngrestart</code></td><td><button class="fn" data-src="fn6" data-name="ngrestart">show code</button></td><td>test config, then restart if OK<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngrestart</span>
+<tr id="n-ngrestart"><td><code>ngrestart</code></td><td><button class="fn" data-src="fn6" data-name="ngrestart">show code</button></td><td>test config, then restart if OK<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngrestart</span>
 nginx: configuration file /etc/nginx/nginx.conf test is successful</pre></details></td><td class="muted"></td></tr>
-<template id="fn7">ngs() {
+<template id="fn7">function ngs {
   if has systemctl; then systemctl status nginx --no-pager
   elif has brew; then brew services info nginx
   else pgrep -l nginx; fi
 }</template>
-<tr><td><code>ngs</code></td><td><button class="fn" data-src="fn7" data-name="ngs">show code</button></td><td>service status<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngs</span>
+<tr id="n-ngs"><td><code>ngs</code></td><td><button class="fn" data-src="fn7" data-name="ngs">show code</button></td><td>service status<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngs</span>
 ● nginx.service - A high performance web server
      Active: active (running)</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Logs</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn8">nge() { _aliasx_ng_log error; }</template>
-<tr><td><code>nge</code></td><td><button class="fn" data-src="fn8" data-name="nge">show code</button></td><td>follow error log<details class="ex" open><summary>example</summary><pre><span class="cmd">$ nge</span>
+<template id="fn8">function nge { _aliasx_ng_log error; }</template>
+<tr id="n-nge"><td><code>nge</code></td><td><button class="fn" data-src="fn8" data-name="nge">show code</button></td><td>follow error log<details class="ex" open><summary>example</summary><pre><span class="cmd">$ nge</span>
 2026/10/02 10:31:07 [error] 812#812: *41 connect() failed (111: Connection refused) while connecting to upstream</pre></details></td><td class="muted"></td></tr>
-<template id="fn9">nga() { _aliasx_ng_log access; }</template>
-<tr><td><code>nga</code></td><td><button class="fn" data-src="fn9" data-name="nga">show code</button></td><td>follow access log<details class="ex" open><summary>example</summary><pre><span class="cmd">$ nga</span>
+<template id="fn9">function nga { _aliasx_ng_log access; }</template>
+<tr id="n-nga"><td><code>nga</code></td><td><button class="fn" data-src="fn9" data-name="nga">show code</button></td><td>follow access log<details class="ex" open><summary>example</summary><pre><span class="cmd">$ nga</span>
 203.0.113.9 - - [02/Oct/2026:10:31:07 +0000] &quot;GET /api/users HTTP/1.1&quot; 200 512</pre></details></td><td class="muted"></td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

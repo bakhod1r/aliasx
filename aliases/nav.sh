@@ -11,28 +11,28 @@ alias home='cd "$HOME"'  # go to home directory
 # mkcd DIR — create directory and enter it
 #   $ mkcd projects/demo
 #   (created and now inside projects/demo)
-mkcd() {
+function mkcd {
   [ "$#" -eq 1 ] || { echo "Usage: mkcd <directory>" >&2; return 2; }
-  mkdir -p -- "$1" && cd -- "$1"
+  mkdir -p -- "$1" && cd -- "$1" || return
 }
 
 # up [N] — go up N directories (default 1)
 #   $ up 2
 #   (moved two folders up)
-up() {
+function up {
   case "${1:-1}" in ''|*[!0-9]*) echo "Usage: up [number]" >&2; return 2 ;; esac
   _n="${1:-1}" _p=""
   while [ "$_n" -gt 0 ]; do _p="../$_p"; _n=$((_n - 1)); done
-  cd -- "${_p:-.}"
+  cd -- "${_p:-.}" || return
   unset _n _p
 }
 
 # croot — go to the root of the current git repository
 #   $ croot
 #   (now at the repository root)
-croot() {
+function croot {
   _r="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "Not inside a git repository" >&2; return 1; }
-  cd -- "$_r"; unset _r
+  cd -- "$_r" || return; unset _r
 }
 
 # == Listing

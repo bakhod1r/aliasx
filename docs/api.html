@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Backend &amp; API — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,53 +44,53 @@
 <h2>HTTP calls</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn1">hget() {
+<template id="fn1">function hget {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: hget &lt;url&gt; [curl options]&quot; &gt;&amp;2; return 2; }
   _u=&quot;$1&quot;; shift; _aliasx_http GET &quot;$_u&quot; &quot;$@&quot;; unset _u
 }</template>
-<tr><td><code>hget URL [curl options]</code></td><td><button class="fn" data-src="fn1" data-name="hget">show code</button></td><td>GET, JSON pretty-printed<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hget localhost:8080/users/1</span>
+<tr id="n-hget"><td><code>hget URL [curl options]</code></td><td><button class="fn" data-src="fn1" data-name="hget">show code</button></td><td>GET, JSON pretty-printed<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hget localhost:8080/users/1</span>
 {
   &quot;id&quot;: 1,
   &quot;name&quot;: &quot;Ali&quot;
 }</pre></details></td><td class="muted"></td></tr>
-<template id="fn2">hpost() {
+<template id="fn2">function hpost {
   [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: hpost &lt;url&gt; &lt;json|@file&gt;&quot; &gt;&amp;2; return 2; }
   _aliasx_http POST &quot;$1&quot; &quot;$2&quot;
 }</template>
-<tr><td><code>hpost URL JSON</code></td><td><button class="fn" data-src="fn2" data-name="hpost">show code</button></td><td>POST JSON body (use @file.json for a file)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hpost localhost:8080/users &#x27;{&quot;name&quot;:&quot;Vali&quot;}&#x27;</span>
+<tr id="n-hpost"><td><code>hpost URL JSON</code></td><td><button class="fn" data-src="fn2" data-name="hpost">show code</button></td><td>POST JSON body (use @file.json for a file)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hpost localhost:8080/users &#x27;{&quot;name&quot;:&quot;Vali&quot;}&#x27;</span>
 {
   &quot;id&quot;: 2,
   &quot;name&quot;: &quot;Vali&quot;
 }</pre></details></td><td class="muted"></td></tr>
-<template id="fn3">hput() {
+<template id="fn3">function hput {
   [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: hput &lt;url&gt; &lt;json|@file&gt;&quot; &gt;&amp;2; return 2; }
   _aliasx_http PUT &quot;$1&quot; &quot;$2&quot;
 }</template>
-<tr><td><code>hput URL JSON</code></td><td><button class="fn" data-src="fn3" data-name="hput">show code</button></td><td>PUT JSON body<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hput localhost:8080/users/2 &#x27;{&quot;name&quot;:&quot;Vali B&quot;}&#x27;</span>
+<tr id="n-hput"><td><code>hput URL JSON</code></td><td><button class="fn" data-src="fn3" data-name="hput">show code</button></td><td>PUT JSON body<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hput localhost:8080/users/2 &#x27;{&quot;name&quot;:&quot;Vali B&quot;}&#x27;</span>
 {
   &quot;id&quot;: 2,
   &quot;name&quot;: &quot;Vali B&quot;
 }</pre></details></td><td class="muted"></td></tr>
-<template id="fn4">hpatch() {
+<template id="fn4">function hpatch {
   [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: hpatch &lt;url&gt; &lt;json|@file&gt;&quot; &gt;&amp;2; return 2; }
   _aliasx_http PATCH &quot;$1&quot; &quot;$2&quot;
 }</template>
-<tr><td><code>hpatch URL JSON</code></td><td><button class="fn" data-src="fn4" data-name="hpatch">show code</button></td><td>PATCH JSON body<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hpatch localhost:8080/users/2 &#x27;{&quot;active&quot;:false}&#x27;</span>
+<tr id="n-hpatch"><td><code>hpatch URL JSON</code></td><td><button class="fn" data-src="fn4" data-name="hpatch">show code</button></td><td>PATCH JSON body<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hpatch localhost:8080/users/2 &#x27;{&quot;active&quot;:false}&#x27;</span>
 {
   &quot;id&quot;: 2,
   &quot;active&quot;: false
 }</pre></details></td><td class="muted"></td></tr>
-<template id="fn5">hdelete() {
+<template id="fn5">function hdelete {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: hdelete &lt;url&gt;&quot; &gt;&amp;2; return 2; }
   yesno &quot;DELETE $1 ?&quot; &amp;&amp; _aliasx_http DELETE &quot;$1&quot;
 }</template>
-<tr><td><code>hdelete URL</code></td><td><button class="fn" data-src="fn5" data-name="hdelete">show code</button></td><td>DELETE after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hdelete localhost:8080/users/2</span>
+<tr id="n-hdelete"><td><code>hdelete URL</code></td><td><button class="fn" data-src="fn5" data-name="hdelete">show code</button></td><td>DELETE after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hdelete localhost:8080/users/2</span>
 DELETE localhost:8080/users/2 ? [y/N] y</pre></details></td><td class="muted"></td></tr>
-<template id="fn6">timing() {
+<template id="fn6">function timing {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: timing &lt;url&gt;&quot; &gt;&amp;2; return 2; }
   curl -sS -o /dev/null -w &#x27;status:  %{http_code}\ndns:     %{time_namelookup}s\nconnect: %{time_connect}s\ntls:     %{time_appconnect}s\nfirst:   %{time_starttransfer}s\ntotal:   %{time_total}s\nsize:    %{size_download} bytes\n&#x27; &quot;$@&quot;
 }</template>
-<tr><td><code>timing URL</code></td><td><button class="fn" data-src="fn6" data-name="timing">show code</button></td><td>DNS, connect, TLS, first byte and total time<details class="ex" open><summary>example</summary><pre><span class="cmd">$ timing https://example.com</span>
+<tr id="n-timing"><td><code>timing URL</code></td><td><button class="fn" data-src="fn6" data-name="timing">show code</button></td><td>DNS, connect, TLS, first byte and total time<details class="ex" open><summary>example</summary><pre><span class="cmd">$ timing https://example.com</span>
 status:  200
 dns:     0.012s
 connect: 0.045s
@@ -95,14 +98,14 @@ tls:     0.110s
 first:   0.230s
 total:   0.241s
 size:    1256 bytes</pre></details></td><td class="muted"></td></tr>
-<template id="fn7">watchurl() {
+<template id="fn7">function watchurl {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: watchurl &lt;url&gt; [seconds]&quot; &gt;&amp;2; return 2; }
   while :; do
     printf &#x27;%s  %s\n&#x27; &quot;$(date +%H:%M:%S)&quot; &quot;$(curl -s -o /dev/null -w &#x27;%{http_code} %{time_total}s&#x27; &quot;$1&quot;)&quot;
     sleep &quot;${2:-2}&quot;
   done
 }</template>
-<tr><td><code>watchurl URL [SEC]</code></td><td><button class="fn" data-src="fn7" data-name="watchurl">show code</button></td><td>print status code every SEC seconds (default 2)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ watchurl localhost:8080/health</span>
+<tr id="n-watchurl"><td><code>watchurl URL [SEC]</code></td><td><button class="fn" data-src="fn7" data-name="watchurl">show code</button></td><td>print status code every SEC seconds (default 2)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ watchurl localhost:8080/health</span>
 10:31:02  200 0.004s
 10:31:04  200 0.003s
 10:31:06  502 0.001s</pre></details></td><td class="muted"></td></tr>
@@ -110,7 +113,7 @@ size:    1256 bytes</pre></details></td><td class="muted"></td></tr>
 <h2>Tokens and keys</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn8">jwt() {
+<template id="fn8">function jwt {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: jwt &lt;token&gt;&quot; &gt;&amp;2; return 2; }
   python3 - &quot;$1&quot; &lt;&lt;&#x27;PY&#x27;
 import base64, json, sys
@@ -124,28 +127,28 @@ except Exception:
     sys.exit(&quot;jwt: cannot decode&quot;)
 PY
 }</template>
-<tr><td><code>jwt TOKEN</code></td><td><button class="fn" data-src="fn8" data-name="jwt">show code</button></td><td>decode JWT header and payload (no signature check)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMifQ.sig</span>
+<tr id="n-jwt"><td><code>jwt TOKEN</code></td><td><button class="fn" data-src="fn8" data-name="jwt">show code</button></td><td>decode JWT header and payload (no signature check)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMifQ.sig</span>
 {
   &quot;alg&quot;: &quot;HS256&quot;
 }
 {
   &quot;sub&quot;: &quot;123&quot;
 }</pre></details></td><td class="muted"></td></tr>
-<template id="fn9">hexkey() { openssl rand -hex &quot;${1:-32}&quot;; }</template>
-<tr><td><code>hexkey [BYTES]</code></td><td><button class="fn" data-src="fn9" data-name="hexkey">show code</button></td><td>random hex secret (default 32 bytes)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hexkey 16</span>
+<template id="fn9">function hexkey { openssl rand -hex &quot;${1:-32}&quot;; }</template>
+<tr id="n-hexkey"><td><code>hexkey [BYTES]</code></td><td><button class="fn" data-src="fn9" data-name="hexkey">show code</button></td><td>random hex secret (default 32 bytes)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ hexkey 16</span>
 9f2c4e1a7b3d8c05e6f1a2b3c4d5e6f7</pre></details></td><td class="muted"></td></tr>
-<template id="fn10">selfcert() {
+<template id="fn10">function selfcert {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: selfcert &lt;domain&gt;&quot; &gt;&amp;2; return 2; }
   openssl req -x509 -newkey rsa:2048 -nodes -days 365 -subj &quot;/CN=$1&quot; \
     -keyout &quot;$1.key&quot; -out &quot;$1.crt&quot; 2&gt;/dev/null &amp;&amp; echo &quot;$1.crt $1.key&quot;
 }</template>
-<tr><td><code>selfcert DOMAIN</code></td><td><button class="fn" data-src="fn10" data-name="selfcert">show code</button></td><td>self-signed cert DOMAIN.crt + DOMAIN.key for local dev (1 year)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ selfcert dev.local</span>
+<tr id="n-selfcert"><td><code>selfcert DOMAIN</code></td><td><button class="fn" data-src="fn10" data-name="selfcert">show code</button></td><td>self-signed cert DOMAIN.crt + DOMAIN.key for local dev (1 year)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ selfcert dev.local</span>
 dev.local.crt dev.local.key</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Services</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn11">waitport() {
+<template id="fn11">function waitport {
   [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: waitport &lt;host&gt; &lt;port&gt; [seconds]&quot; &gt;&amp;2; return 2; }
   _i=0
   while [ &quot;$_i&quot; -lt &quot;${3:-30}&quot; ]; do
@@ -154,18 +157,42 @@ dev.local.crt dev.local.key</pre></details></td><td class="muted"></td></tr>
   done
   echo &quot;$1:$2 not up after ${3:-30}s&quot; &gt;&amp;2; unset _i; return 1
 }</template>
-<tr><td><code>waitport HOST PORT [SEC]</code></td><td><button class="fn" data-src="fn11" data-name="waitport">show code</button></td><td>wait until PORT accepts connections (default 30s)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ waitport localhost 5432</span>
+<tr id="n-waitport"><td><code>waitport HOST PORT [SEC]</code></td><td><button class="fn" data-src="fn11" data-name="waitport">show code</button></td><td>wait until PORT accepts connections (default 30s)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ waitport localhost 5432</span>
 localhost:5432 is up</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Logs</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>jl</code></td><td><code>jq -R &#x27;fromjson? // .&#x27;</code></td><td>readable JSON log lines</td><td class="muted">needs jq</td></tr>
+<tr id="n-jl"><td><code>jl</code></td><td><code>jq -R &#x27;fromjson? // .&#x27;</code></td><td>readable JSON log lines</td><td class="muted">needs jq</td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

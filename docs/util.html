@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Utilities — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,69 +44,69 @@
 <h2>Generate</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn1">genpass() { LC_ALL=C tr -dc &#x27;A-Za-z0-9!@#%^_+=-&#x27; &lt;/dev/urandom | head -c &quot;${1:-20}&quot;; echo; }</template>
-<tr><td><code>genpass [N]</code></td><td><button class="fn" data-src="fn1" data-name="genpass">show code</button></td><td>random password, N chars (default 20)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ genpass 16</span>
+<template id="fn1">function genpass { LC_ALL=C tr -dc &#x27;A-Za-z0-9!@#%^_+=-&#x27; &lt;/dev/urandom | head -c &quot;${1:-20}&quot;; echo; }</template>
+<tr id="n-genpass"><td><code>genpass [N]</code></td><td><button class="fn" data-src="fn1" data-name="genpass">show code</button></td><td>random password, N chars (default 20)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ genpass 16</span>
 q7K#m2Rx_9vT!pLz</pre></details></td><td class="muted"></td></tr>
-<template id="fn2">newuuid() {
-  if has uuidgen; then uuidgen | tr &#x27;A-Z&#x27; &#x27;a-z&#x27;
+<template id="fn2">function newuuid {
+  if has uuidgen; then uuidgen | tr &#x27;[:upper:]&#x27; &#x27;[:lower:]&#x27;
   else cat /proc/sys/kernel/random/uuid; fi
 }</template>
-<tr><td><code>newuuid</code></td><td><button class="fn" data-src="fn2" data-name="newuuid">show code</button></td><td>random UUID (lowercase)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ newuuid</span>
+<tr id="n-newuuid"><td><code>newuuid</code></td><td><button class="fn" data-src="fn2" data-name="newuuid">show code</button></td><td>random UUID (lowercase)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ newuuid</span>
 3f1c9b2e-7a4d-4e8f-9c21-5b6a7d8e9f01</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Time</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn3">epoch() { date +%s; }</template>
-<tr><td><code>epoch</code></td><td><button class="fn" data-src="fn3" data-name="epoch">show code</button></td><td>current Unix timestamp<details class="ex" open><summary>example</summary><pre><span class="cmd">$ epoch</span>
+<template id="fn3">function epoch { date +%s; }</template>
+<tr id="n-epoch"><td><code>epoch</code></td><td><button class="fn" data-src="fn3" data-name="epoch">show code</button></td><td>current Unix timestamp<details class="ex" open><summary>example</summary><pre><span class="cmd">$ epoch</span>
 1790932262</pre></details></td><td class="muted"></td></tr>
-<template id="fn4">fromepoch() {
+<template id="fn4">function fromepoch {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: fromepoch &lt;timestamp&gt;&quot; &gt;&amp;2; return 2; }
   date -u -d &quot;@$1&quot; &#x27;+%Y-%m-%d %H:%M:%S UTC&#x27; 2&gt;/dev/null || date -u -r &quot;$1&quot; &#x27;+%Y-%m-%d %H:%M:%S UTC&#x27;
 }</template>
-<tr><td><code>fromepoch TS</code></td><td><button class="fn" data-src="fn4" data-name="fromepoch">show code</button></td><td>Unix timestamp to UTC date<details class="ex" open><summary>example</summary><pre><span class="cmd">$ fromepoch 0</span>
+<tr id="n-fromepoch"><td><code>fromepoch TS</code></td><td><button class="fn" data-src="fn4" data-name="fromepoch">show code</button></td><td>Unix timestamp to UTC date<details class="ex" open><summary>example</summary><pre><span class="cmd">$ fromepoch 0</span>
 1970-01-01 00:00:00 UTC</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Encode</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn5">b64() { if [ &quot;$#&quot; -gt 0 ]; then printf &#x27;%s&#x27; &quot;$*&quot; | base64; else base64; fi; }</template>
-<tr><td><code>b64 [TEXT]</code></td><td><button class="fn" data-src="fn5" data-name="b64">show code</button></td><td>base64 encode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64 hello</span>
+<template id="fn5">function b64 { if [ &quot;$#&quot; -gt 0 ]; then printf &#x27;%s&#x27; &quot;$*&quot; | base64; else base64; fi; }</template>
+<tr id="n-b64"><td><code>b64 [TEXT]</code></td><td><button class="fn" data-src="fn5" data-name="b64">show code</button></td><td>base64 encode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64 hello</span>
 aGVsbG8=</pre></details></td><td class="muted"></td></tr>
-<template id="fn6">b64d() {
+<template id="fn6">function b64d {
   if [ &quot;$#&quot; -gt 0 ]; then printf &#x27;%s&#x27; &quot;$*&quot; | base64 --decode; else base64 --decode; fi
   echo
 }</template>
-<tr><td><code>b64d [TEXT]</code></td><td><button class="fn" data-src="fn6" data-name="b64d">show code</button></td><td>base64 decode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64d aGVsbG8=</span>
+<tr id="n-b64d"><td><code>b64d [TEXT]</code></td><td><button class="fn" data-src="fn6" data-name="b64d">show code</button></td><td>base64 decode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64d aGVsbG8=</span>
 hello</pre></details></td><td class="muted"></td></tr>
-<template id="fn7">urlenc() { python3 -c &#x27;import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1],safe=&quot;&quot;))&#x27; &quot;$*&quot;; }</template>
-<tr><td><code>urlenc TEXT</code></td><td><button class="fn" data-src="fn7" data-name="urlenc">show code</button></td><td>percent-encode for URLs<details class="ex" open><summary>example</summary><pre><span class="cmd">$ urlenc &#x27;a b&amp;c&#x27;</span>
+<template id="fn7">function urlenc { python3 -c &#x27;import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1],safe=&quot;&quot;))&#x27; &quot;$*&quot;; }</template>
+<tr id="n-urlenc"><td><code>urlenc TEXT</code></td><td><button class="fn" data-src="fn7" data-name="urlenc">show code</button></td><td>percent-encode for URLs<details class="ex" open><summary>example</summary><pre><span class="cmd">$ urlenc &#x27;a b&amp;c&#x27;</span>
 a%20b%26c</pre></details></td><td class="muted"></td></tr>
-<template id="fn8">urldec() { python3 -c &#x27;import sys,urllib.parse;print(urllib.parse.unquote(sys.argv[1]))&#x27; &quot;$*&quot;; }</template>
-<tr><td><code>urldec TEXT</code></td><td><button class="fn" data-src="fn8" data-name="urldec">show code</button></td><td>decode percent-encoding<details class="ex" open><summary>example</summary><pre><span class="cmd">$ urldec a%20b%26c</span>
+<template id="fn8">function urldec { python3 -c &#x27;import sys,urllib.parse;print(urllib.parse.unquote(sys.argv[1]))&#x27; &quot;$*&quot;; }</template>
+<tr id="n-urldec"><td><code>urldec TEXT</code></td><td><button class="fn" data-src="fn8" data-name="urldec">show code</button></td><td>decode percent-encoding<details class="ex" open><summary>example</summary><pre><span class="cmd">$ urldec a%20b%26c</span>
 a b&amp;c</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Quick checks</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn9">httpcode() {
+<template id="fn9">function httpcode {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: httpcode &lt;url&gt;&quot; &gt;&amp;2; return 2; }
   curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -- &quot;$1&quot;
 }</template>
-<tr><td><code>httpcode URL</code></td><td><button class="fn" data-src="fn9" data-name="httpcode">show code</button></td><td>HTTP status code only<details class="ex" open><summary>example</summary><pre><span class="cmd">$ httpcode https://example.com</span>
+<tr id="n-httpcode"><td><code>httpcode URL</code></td><td><button class="fn" data-src="fn9" data-name="httpcode">show code</button></td><td>HTTP status code only<details class="ex" open><summary>example</summary><pre><span class="cmd">$ httpcode https://example.com</span>
 200</pre></details></td><td class="muted"></td></tr>
-<template id="fn10">digs() {
+<template id="fn10">function digs {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: digs &lt;name&gt; [type]&quot; &gt;&amp;2; return 2; }
   dig +short &quot;$@&quot;
 }</template>
-<tr><td><code>digs NAME</code></td><td><button class="fn" data-src="fn10" data-name="digs">show code</button></td><td>DNS answer only<details class="ex" open><summary>example</summary><pre><span class="cmd">$ digs example.com</span>
+<tr id="n-digs"><td><code>digs NAME</code></td><td><button class="fn" data-src="fn10" data-name="digs">show code</button></td><td>DNS answer only<details class="ex" open><summary>example</summary><pre><span class="cmd">$ digs example.com</span>
 93.184.215.14</pre></details></td><td class="muted"></td></tr>
-<template id="fn11">topcmds() { fc -l 1 | awk &#x27;{print $2}&#x27; | sort | uniq -c | sort -rn | head -n &quot;${1:-15}&quot;; }</template>
-<tr><td><code>topcmds [N]</code></td><td><button class="fn" data-src="fn11" data-name="topcmds">show code</button></td><td>your most used commands (default 15)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ topcmds 3</span>
+<template id="fn11">function topcmds { fc -l 1 | awk &#x27;{print $2}&#x27; | sort | uniq -c | sort -rn | head -n &quot;${1:-15}&quot;; }</template>
+<tr id="n-topcmds"><td><code>topcmds [N]</code></td><td><button class="fn" data-src="fn11" data-name="topcmds">show code</button></td><td>your most used commands (default 15)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ topcmds 3</span>
   412 git
   210 docker
   155 cd</pre></details></td><td class="muted"></td></tr>
-<template id="fn12">sysinfo() {
+<template id="fn12">function sysinfo {
   echo &quot;OS:     $(uname -sr) $(uname -m)&quot;
   echo &quot;Host:   $(hostname)&quot;
   if [ &quot;$ALIASX_OS&quot; = macos ]; then
@@ -116,21 +119,21 @@ a b&amp;c</pre></details></td><td class="muted"></td></tr>
   echo &quot;Disk /: $(df -h / | awk &#x27;NR==2 {print $3 &quot; used / &quot; $2 &quot; (&quot; $5 &quot;)&quot;}&#x27;)&quot;
   echo &quot;Uptime:$(uptime | sed &#x27;s/.*up/ up/; s/,  *[0-9]* user.*//&#x27;)&quot;
 }</template>
-<tr><td><code>sysinfo</code></td><td><button class="fn" data-src="fn12" data-name="sysinfo">show code</button></td><td>OS, CPU, memory, disk, uptime in one screen<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sysinfo</span>
+<tr id="n-sysinfo"><td><code>sysinfo</code></td><td><button class="fn" data-src="fn12" data-name="sysinfo">show code</button></td><td>OS, CPU, memory, disk, uptime in one screen<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sysinfo</span>
 OS:     Linux 6.8.0 x86_64
 Host:   web1
 CPU:    AMD EPYC 7763 (4 cores)
 Memory: 3.1Gi used / 7.7Gi
 Disk /: 21G used / 79G (27%)
 Uptime: up 12 days</pre></details></td><td class="muted"></td></tr>
-<template id="fn13">pk() {
+<template id="fn13">function pk {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: pk &lt;name&gt;&quot; &gt;&amp;2; return 2; }
   pgrep -fl -- &quot;$1&quot; || { echo &quot;No process matches &#x27;$1&#x27;.&quot;; return 0; }
   printf &#x27;Kill these processes? [y/N] &#x27;; read -r _a
   case &quot;$_a&quot; in y|Y|yes) pkill -f -- &quot;$1&quot; ;; *) echo &quot;Cancelled.&quot; ;; esac
   unset _a
 }</template>
-<tr><td><code>pk NAME</code></td><td><button class="fn" data-src="fn13" data-name="pk">show code</button></td><td>kill processes by name after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pk node</span>
+<tr id="n-pk"><td><code>pk NAME</code></td><td><button class="fn" data-src="fn13" data-name="pk">show code</button></td><td>kill processes by name after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pk node</span>
 4123 node server.js
 Kill these processes? [y/N] n
 Cancelled.</pre></details></td><td class="muted"></td></tr>
@@ -139,6 +142,30 @@ Cancelled.</pre></details></td><td class="muted"></td></tr>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

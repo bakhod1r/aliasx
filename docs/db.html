@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Databases — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,83 +44,107 @@
 <h2>PostgreSQL</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>pg</code></td><td><code>psql</code></td><td>psql</td><td class="muted">needs psql</td></tr>
-<tr><td><code>pgl</code></td><td><code>psql -h localhost</code></td><td>psql to localhost</td><td class="muted">needs psql</td></tr>
-<tr><td><code>pgls</code></td><td><code>psql -l</code></td><td>list databases</td><td class="muted">needs psql</td></tr>
-<tr><td><code>pgready</code></td><td><code>pg_isready</code></td><td>is the server accepting connections</td><td class="muted">needs psql</td></tr>
-<tr><td><code>pgsize</code></td><td><code>psql -c &quot;SELECT datname, pg_size_pretty(pg_database_size(datname)) FROM pg_database ORDER BY pg_database_size(datname) DESC&quot;</code></td><td>database sizes</td><td class="muted">needs psql</td></tr>
-<tr><td><code>pgconns</code></td><td><code>psql -c &quot;SELECT pid, usename, datname, state, left(query, 60) AS query FROM pg_stat_activity WHERE pid &lt;&gt; pg_backend_pid()&quot;</code></td><td>active connections</td><td class="muted">needs psql</td></tr>
-<template id="fn7">pgq() {
+<tr id="n-pg"><td><code>pg</code></td><td><code>psql</code></td><td>psql</td><td class="muted">needs psql</td></tr>
+<tr id="n-pgl"><td><code>pgl</code></td><td><code>psql -h localhost</code></td><td>psql to localhost</td><td class="muted">needs psql</td></tr>
+<tr id="n-pgls"><td><code>pgls</code></td><td><code>psql -l</code></td><td>list databases</td><td class="muted">needs psql</td></tr>
+<tr id="n-pgready"><td><code>pgready</code></td><td><code>pg_isready</code></td><td>is the server accepting connections</td><td class="muted">needs psql</td></tr>
+<tr id="n-pgsize"><td><code>pgsize</code></td><td><code>psql -c &quot;SELECT datname, pg_size_pretty(pg_database_size(datname)) FROM pg_database ORDER BY pg_database_size(datname) DESC&quot;</code></td><td>database sizes</td><td class="muted">needs psql</td></tr>
+<tr id="n-pgconns"><td><code>pgconns</code></td><td><code>psql -c &quot;SELECT pid, usename, datname, state, left(query, 60) AS query FROM pg_stat_activity WHERE pid &lt;&gt; pg_backend_pid()&quot;</code></td><td>active connections</td><td class="muted">needs psql</td></tr>
+<template id="fn7">function pgq {
   [ &quot;$#&quot; -eq 2 ] || { echo &quot;Usage: pgq &lt;database&gt; &lt;sql&gt;&quot; &gt;&amp;2; return 2; }
   psql -d &quot;$1&quot; -c &quot;$2&quot;
 }</template>
-<tr><td><code>pgq DB SQL</code></td><td><button class="fn" data-src="fn7" data-name="pgq">show code</button></td><td>run one query<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pgq shop &#x27;SELECT count(*) FROM orders&#x27;</span>
+<tr id="n-pgq"><td><code>pgq DB SQL</code></td><td><button class="fn" data-src="fn7" data-name="pgq">show code</button></td><td>run one query<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pgq shop &#x27;SELECT count(*) FROM orders&#x27;</span>
  count
 -------
   1520
 (1 row)</pre></details></td><td class="muted">needs psql</td></tr>
-<template id="fn8">pgdump() {
+<template id="fn8">function pgdump {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: pgdump &lt;database&gt;&quot; &gt;&amp;2; return 2; }
   _f=&quot;$1-$(date +%Y%m%d-%H%M%S).dump&quot;
   pg_dump -Fc -f &quot;$_f&quot; &quot;$1&quot; &amp;&amp; echo &quot;$_f&quot;
   unset _f
 }</template>
-<tr><td><code>pgdump DB</code></td><td><button class="fn" data-src="fn8" data-name="pgdump">show code</button></td><td>dump to DB-YYYYmmdd-HHMMSS.dump (custom format)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pgdump shop</span>
+<tr id="n-pgdump"><td><code>pgdump DB</code></td><td><button class="fn" data-src="fn8" data-name="pgdump">show code</button></td><td>dump to DB-YYYYmmdd-HHMMSS.dump (custom format)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pgdump shop</span>
 shop-20261002-103512.dump</pre></details></td><td class="muted">needs psql</td></tr>
-<template id="fn9">pgrestore() {
+<template id="fn9">function pgrestore {
   [ &quot;$#&quot; -eq 2 ] || { echo &quot;Usage: pgrestore &lt;file.dump&gt; &lt;database&gt;&quot; &gt;&amp;2; return 2; }
   pg_restore --no-owner -d &quot;$2&quot; &quot;$1&quot;
 }</template>
-<tr><td><code>pgrestore FILE DB</code></td><td><button class="fn" data-src="fn9" data-name="pgrestore">show code</button></td><td>restore a .dump into DB (no drop, no owners)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pgrestore shop-20261002-103512.dump shop_copy</span>
+<tr id="n-pgrestore"><td><code>pgrestore FILE DB</code></td><td><button class="fn" data-src="fn9" data-name="pgrestore">show code</button></td><td>restore a .dump into DB (no drop, no owners)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pgrestore shop-20261002-103512.dump shop_copy</span>
 (no output on success)</pre></details></td><td class="muted">needs psql</td></tr>
 </table>
 <h2>MySQL / MariaDB</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>my</code></td><td><code>mysql</code></td><td>mysql</td><td class="muted">needs mysql</td></tr>
-<tr><td><code>myl</code></td><td><code>mysql -h 127.0.0.1</code></td><td>mysql to localhost</td><td class="muted">needs mysql</td></tr>
-<tr><td><code>myls</code></td><td><code>mysql -e &quot;SHOW DATABASES&quot;</code></td><td>list databases</td><td class="muted">needs mysql</td></tr>
-<tr><td><code>myproc</code></td><td><code>mysql -e &quot;SHOW FULL PROCESSLIST&quot;</code></td><td>running queries</td><td class="muted">needs mysql</td></tr>
-<template id="fn14">myq() {
+<tr id="n-my"><td><code>my</code></td><td><code>mysql</code></td><td>mysql</td><td class="muted">needs mysql</td></tr>
+<tr id="n-myl"><td><code>myl</code></td><td><code>mysql -h 127.0.0.1</code></td><td>mysql to localhost</td><td class="muted">needs mysql</td></tr>
+<tr id="n-myls"><td><code>myls</code></td><td><code>mysql -e &quot;SHOW DATABASES&quot;</code></td><td>list databases</td><td class="muted">needs mysql</td></tr>
+<tr id="n-myproc"><td><code>myproc</code></td><td><code>mysql -e &quot;SHOW FULL PROCESSLIST&quot;</code></td><td>running queries</td><td class="muted">needs mysql</td></tr>
+<template id="fn14">function myq {
   [ &quot;$#&quot; -eq 2 ] || { echo &quot;Usage: myq &lt;database&gt; &lt;sql&gt;&quot; &gt;&amp;2; return 2; }
   mysql -D &quot;$1&quot; -e &quot;$2&quot;
 }</template>
-<tr><td><code>myq DB SQL</code></td><td><button class="fn" data-src="fn14" data-name="myq">show code</button></td><td>run one query<details class="ex" open><summary>example</summary><pre><span class="cmd">$ myq shop &#x27;SELECT count(*) FROM orders&#x27;</span>
+<tr id="n-myq"><td><code>myq DB SQL</code></td><td><button class="fn" data-src="fn14" data-name="myq">show code</button></td><td>run one query<details class="ex" open><summary>example</summary><pre><span class="cmd">$ myq shop &#x27;SELECT count(*) FROM orders&#x27;</span>
 +----------+
 | count(*) |
 +----------+
 |     1520 |
 +----------+</pre></details></td><td class="muted">needs mysql</td></tr>
-<template id="fn15">mydump() {
+<template id="fn15">function mydump {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: mydump &lt;database&gt;&quot; &gt;&amp;2; return 2; }
   _f=&quot;$1-$(date +%Y%m%d-%H%M%S).sql&quot;
   mysqldump --single-transaction &quot;$1&quot; &gt; &quot;$_f&quot; &amp;&amp; echo &quot;$_f&quot;
   unset _f
 }</template>
-<tr><td><code>mydump DB</code></td><td><button class="fn" data-src="fn15" data-name="mydump">show code</button></td><td>dump to DB-YYYYmmdd-HHMMSS.sql<details class="ex" open><summary>example</summary><pre><span class="cmd">$ mydump shop</span>
+<tr id="n-mydump"><td><code>mydump DB</code></td><td><button class="fn" data-src="fn15" data-name="mydump">show code</button></td><td>dump to DB-YYYYmmdd-HHMMSS.sql<details class="ex" open><summary>example</summary><pre><span class="cmd">$ mydump shop</span>
 shop-20261002-103512.sql</pre></details></td><td class="muted">needs mysql</td></tr>
 </table>
 <h2>Redis</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>rcli</code></td><td><code>redis-cli</code></td><td>redis-cli</td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>rping</code></td><td><code>redis-cli ping</code></td><td>PONG if alive</td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>rinfo</code></td><td><code>redis-cli info</code></td><td>server info</td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>rmem</code></td><td><code>redis-cli info memory</code></td><td>memory usage</td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>rmon</code></td><td><code>redis-cli monitor</code></td><td>watch every command live</td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>rlat</code></td><td><code>redis-cli --latency</code></td><td>measure latency</td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>rbig</code></td><td><code>redis-cli --bigkeys</code></td><td>find biggest keys</td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>rget</code></td><td><code>redis-cli get</code></td><td>get a key</td><td class="muted">needs redis-cli</td></tr>
-<template id="fn24">rkeys() { redis-cli --scan --pattern &quot;${1:-*}&quot;; }</template>
-<tr><td><code>rkeys [PATTERN]</code></td><td><button class="fn" data-src="fn24" data-name="rkeys">show code</button></td><td>list keys with SCAN (safe on big databases)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ rkeys &#x27;session:*&#x27;</span>
+<tr id="n-rcli"><td><code>rcli</code></td><td><code>redis-cli</code></td><td>redis-cli</td><td class="muted">needs redis-cli</td></tr>
+<tr id="n-rping"><td><code>rping</code></td><td><code>redis-cli ping</code></td><td>PONG if alive</td><td class="muted">needs redis-cli</td></tr>
+<tr id="n-rinfo"><td><code>rinfo</code></td><td><code>redis-cli info</code></td><td>server info</td><td class="muted">needs redis-cli</td></tr>
+<tr id="n-rmem"><td><code>rmem</code></td><td><code>redis-cli info memory</code></td><td>memory usage</td><td class="muted">needs redis-cli</td></tr>
+<tr id="n-rmon"><td><code>rmon</code></td><td><code>redis-cli monitor</code></td><td>watch every command live</td><td class="muted">needs redis-cli</td></tr>
+<tr id="n-rlat"><td><code>rlat</code></td><td><code>redis-cli --latency</code></td><td>measure latency</td><td class="muted">needs redis-cli</td></tr>
+<tr id="n-rbig"><td><code>rbig</code></td><td><code>redis-cli --bigkeys</code></td><td>find biggest keys</td><td class="muted">needs redis-cli</td></tr>
+<tr id="n-rget"><td><code>rget</code></td><td><code>redis-cli get</code></td><td>get a key</td><td class="muted">needs redis-cli</td></tr>
+<template id="fn24">function rkeys { redis-cli --scan --pattern &quot;${1:-*}&quot;; }</template>
+<tr id="n-rkeys"><td><code>rkeys [PATTERN]</code></td><td><button class="fn" data-src="fn24" data-name="rkeys">show code</button></td><td>list keys with SCAN (safe on big databases)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ rkeys &#x27;session:*&#x27;</span>
 session:9f2c
 session:a71b</pre></details></td><td class="muted">needs redis-cli</td></tr>
-<tr><td><code>mongol</code></td><td><code>mongosh mongodb://127.0.0.1:27017</code></td><td>mongosh to localhost</td><td class="muted">needs mongosh</td></tr>
+<tr id="n-mongol"><td><code>mongol</code></td><td><code>mongosh mongodb://127.0.0.1:27017</code></td><td>mongosh to localhost</td><td class="muted">needs mongosh</td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

@@ -20,7 +20,7 @@ alias please='eval "sudo $(fc -ln -1)"'  # rerun last command with sudo
 #   $ psgrep nginx
 #   root   812  0.0  0.1  nginx: master process
 #   www    813  0.0  0.2  nginx: worker process
-psgrep() {
+function psgrep {
   [ "$#" -ge 1 ] || { echo "Usage: psgrep <pattern>" >&2; return 2; }
   ps aux | grep -i -- "$*" | grep -v grep
 }
@@ -45,7 +45,7 @@ if has systemctl; then
   # svclogs SERVICE [OPTS] — journal for one service
   #   $ svclogs nginx -n 5
   #   Oct 02 10:31:07 web1 nginx[812]: started
-  svclogs() {
+  function svclogs {
     [ "$#" -ge 1 ] || { echo "Usage: svclogs <service> [journalctl options]" >&2; return 2; }
     _s="$1"; shift; journalctl -u "$_s" "$@"; unset _s
   }
@@ -98,18 +98,18 @@ if has systemctl; then
   #   $ sys-reboot
   #   Reboot web1 now? [y/N] n
   #   Cancelled.
-  sys-reboot() { yesno "Reboot $(hostname) now?" && sudo systemctl reboot; }
+  function sys-reboot { yesno "Reboot $(hostname) now?" && sudo systemctl reboot; }
 
   # sys-poweroff — power off machine after y/N
   #   $ sys-poweroff
   #   Power off web1 now? [y/N] n
   #   Cancelled.
-  sys-poweroff() { yesno "Power off $(hostname) now?" && sudo systemctl poweroff; }
+  function sys-poweroff { yesno "Power off $(hostname) now?" && sudo systemctl poweroff; }
 
   # sys-suspend — suspend machine after y/N
   #   $ sys-suspend
   #   Suspend laptop now? [y/N] y
-  sys-suspend() { yesno "Suspend $(hostname) now?" && sudo systemctl suspend; }
+  function sys-suspend { yesno "Suspend $(hostname) now?" && sudo systemctl suspend; }
 fi
 
 # == macOS
@@ -124,13 +124,13 @@ if [ "$ALIASX_OS" = macos ]; then
   # sleepnow — put the Mac to sleep after y/N
   #   $ sleepnow
   #   Sleep now? [y/N] y
-  sleepnow() { yesno "Sleep now?" && pmset sleepnow; }
+  function sleepnow { yesno "Sleep now?" && pmset sleepnow; }
 fi
 
 # clipcopy — stdin to clipboard (pbcopy, wl-copy or xclip)
 #   $ cat id_ed25519.pub | clipcopy
 #   (public key copied to clipboard)
-clipcopy() {
+function clipcopy {
   if has pbcopy; then pbcopy
   elif has wl-copy; then wl-copy
   elif has xclip; then xclip -selection clipboard
@@ -140,7 +140,7 @@ clipcopy() {
 # clippaste — clipboard to stdout
 #   $ clippaste > note.txt
 #   (clipboard saved to note.txt)
-clippaste() {
+function clippaste {
   if has pbpaste; then pbpaste
   elif has wl-paste; then wl-paste
   elif has xclip; then xclip -selection clipboard -o

@@ -9,7 +9,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then
   _aliasx_space_orig="$(bindkey ' ' 2>/dev/null)"; _aliasx_space_orig="${_aliasx_space_orig##* }"
   case "$_aliasx_space_orig" in ''|_aliasx_hint_space|undefined-key) _aliasx_space_orig=self-insert ;; esac
 
-  _aliasx_hint_space() {
+  function _aliasx_hint_space {
     local _hint
     if [[ -n $LBUFFER && $LBUFFER != *[[:space:]]* ]]; then
       if _hint="$(aliasx_hint "$LBUFFER")"; then
@@ -26,7 +26,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then
 elif [ -n "${BASH_VERSION:-}" ] && [ "${BASH_VERSINFO[0]}" -ge 4 ]; then
   case "$-" in *i*) ;; *) return 0 ;; esac
 
-  _aliasx_hint_space() {
+  function _aliasx_hint_space {
     local _left="${READLINE_LINE:0:READLINE_POINT}" _hint
     READLINE_LINE="$_left ${READLINE_LINE:READLINE_POINT}"
     READLINE_POINT=$((READLINE_POINT + 1))

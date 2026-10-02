@@ -5,7 +5,7 @@
 #   $ retry 3 curl -f localhost:8080/health
 #   retry: try 1 failed, waiting 1s
 #   ok
-retry() {
+function retry {
   [ "$#" -ge 2 ] || { echo "Usage: retry <times> <command> [args]" >&2; return 2; }
   _n="$1"; _i=1; _w=1; shift
   while :; do
@@ -22,7 +22,7 @@ retry() {
 #   ── 10:31:02
 #   NAME                  READY   STATUS
 #   api-7d9f8b-x2k4       1/1     Running
-every() {
+function every {
   [ "$#" -ge 2 ] || { echo "Usage: every <seconds> <command> [args]" >&2; return 2; }
   _s="$1"; shift
   while :; do echo "── $(date +%H:%M:%S)"; "$@"; sleep "$_s"; done
@@ -32,14 +32,14 @@ every() {
 # tunnel LOCALPORT TARGET:PORT USER@JUMP — forward localhost:LOCALPORT through ssh
 #   $ tunnel 5433 db.internal:5432 ali@bastion
 #   localhost:5433 → db.internal:5432 via ali@bastion (Ctrl-C to stop)
-tunnel() {
+function tunnel {
   [ "$#" -eq 3 ] || { echo "Usage: tunnel <local-port> <target:port> <user@jump-host>" >&2; return 2; }
   echo "localhost:$1 → $2 via $3 (Ctrl-C to stop)"
   ssh -N -L "$1:$2" "$3"
 }
 
 # == Certificates
-_aliasx_cert_report() {
+function _aliasx_cert_report {
   openssl x509 -noout -subject -issuer -enddate | python3 -c '
 import sys, ssl, time
 for line in sys.stdin:
@@ -55,7 +55,7 @@ for line in sys.stdin:
 #   issuer=C=US, O=Let's Encrypt, CN=R11
 #   notAfter=Dec 30 23:59:59 2026 GMT
 #   days left: 89
-certexp() {
+function certexp {
   [ "$#" -eq 1 ] || { echo "Usage: certexp <host[:port]>" >&2; return 2; }
   _h="${1%%:*}"; _p="${1##*:}"; [ "$_h" = "$_p" ] && _p=443
   openssl s_client -connect "$_h:$_p" -servername "$_h" </dev/null 2>/dev/null | _aliasx_cert_report
@@ -67,7 +67,7 @@ certexp() {
 #   subject=CN=site.local
 #   notAfter=Oct 20 10:00:00 2026 GMT
 #   days left: 18  ← renew soon
-certfile() {
+function certfile {
   [ "$#" -eq 1 ] || { echo "Usage: certfile <file>" >&2; return 2; }
   _aliasx_cert_report < "$1"
 }
@@ -78,7 +78,7 @@ certfile() {
 #   system    93.184.215.14
 #   1.1.1.1   93.184.215.14
 #   8.8.8.8   93.184.215.14
-dnscheck() {
+function dnscheck {
   [ "$#" -ge 1 ] || { echo "Usage: dnscheck <name> [type]" >&2; return 2; }
   for _r in "" 1.1.1.1 8.8.8.8; do
     printf '%-9s %s\n' "${_r:-system}" "$(dig +short ${_r:+@$_r} "$1" "${2:-A}" | tr '\n' ' ')"
@@ -97,4 +97,4 @@ has crontab && alias crons='crontab -l'  # your cron jobs
 #   $ logsize
 #   812M	/var/log/journal/system.journal
 #   120M	/var/log/nginx/access.log
-logsize() { find "${1:-/var/log}" -type f -exec du -h {} + 2>/dev/null | sort -rh | head -15; }
+function logsize { find "${1:-/var/log}" -type f -exec du -h {} + 2>/dev/null | sort -rh | head -15; }

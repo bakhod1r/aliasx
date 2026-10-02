@@ -63,18 +63,18 @@ alias gwho='git shortlog --summary --numbered'  # commits per author
 # groot — print repository root
 #   $ groot
 #   /home/ali/projects/shop
-groot() { git rev-parse --show-toplevel; }
+function groot { git rev-parse --show-toplevel; }
 
 # gundo — undo last commit, keep changes staged
 #   $ gundo
 #   (last commit undone, changes stay staged)
-gundo() { git reset --soft HEAD~1; }
+function gundo { git reset --soft HEAD~1; }
 
 # gclean-preview — show untracked files git clean would remove
 #   $ gclean-preview
 #   Would remove build/
 #   Would remove tmp.log
-gclean-preview() { git clean -nd; }
+function gclean-preview { git clean -nd; }
 
 # gpristine — discard all changes after typing PRISTINE
 #   $ gpristine
@@ -82,13 +82,57 @@ gclean-preview() { git clean -nd; }
 #   ?? tmp.log
 #   Discard tracked changes and remove untracked files. Type PRISTINE to continue: no
 #   Cancelled.
-gpristine() {
+function gpristine {
   git status --short
   printf 'Discard tracked changes and remove untracked files. Type PRISTINE to continue: '
   read -r _a
   [ "$_a" = PRISTINE ] || { echo "Cancelled."; unset _a; return 1; }
   unset _a
   git reset --hard HEAD && git clean -fd # allow-destructive
+}
+
+# == Work in progress
+# gwip — commit everything as a temporary WIP commit
+#   $ gwip
+#   [main 3f1c9b2] --wip-- [skip ci]
+function gwip { git add -A && git commit --no-verify -qm "--wip-- [skip ci]" && git log -1 --oneline; }
+
+# gunwip — undo the last commit if it is a WIP commit, keep changes
+#   $ gunwip
+#   undid 3f1c9b2 --wip-- [skip ci]
+function gunwip {
+  [ "$(git log -1 --format=%s)" = "--wip-- [skip ci]" ] || { echo "gunwip: last commit is not a WIP commit" >&2; return 1; }
+  echo "undid $(git log -1 --oneline)"; git reset -q HEAD~1
+}
+
+# gfixup COMMIT — commit staged changes as a fixup of COMMIT, then autosquash
+#   $ gfixup 3f1c9b2
+#   [main 9a1b2c3] fixup! add login form
+#   Successfully rebased and updated refs/heads/main.
+function gfixup {
+  [ "$#" -eq 1 ] || { echo "Usage: gfixup <commit>" >&2; return 2; }
+  git commit --fixup="$1" && GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash "$1~1"
+}
+
+# gclean-branches — delete local branches already merged into the current one, after y/N
+#   $ gclean-branches
+#   feature/login
+#   fix/typo
+#   Delete these merged branches? [y/N] y
+function gclean-branches {
+  _b="$(git branch --merged | grep -v -E '^\*|^[[:space:]]*(main|master|develop)$' | sed 's/^[[:space:]]*//')"
+  [ -n "$_b" ] || { echo "No merged branches."; unset _b; return 0; }
+  echo "$_b"
+  yesno "Delete these merged branches?" && echo "$_b" | xargs git branch -d
+  unset _b
+}
+
+# gbl FILE [LINE] — who changed FILE (or one LINE of it), ignoring whitespace
+#   $ gbl api/user.go 42
+#   3f1c9b2 (Ali 2026-09-30 42) if err := validate(u); err != nil {
+function gbl {
+  [ "$#" -ge 1 ] || { echo "Usage: gbl <file> [line]" >&2; return 2; }
+  if [ -n "${2:-}" ]; then git blame -w -L "$2,$2" -- "$1"; else git blame -w -- "$1"; fi
 }
 
 # == GitHub CLI

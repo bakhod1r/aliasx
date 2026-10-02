@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Kubernetes — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,118 +44,142 @@
 <h2>kubectl</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>k</code></td><td><code>kubectl</code></td><td>kubectl</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kg</code></td><td><code>kubectl get</code></td><td>get resources</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kd</code></td><td><code>kubectl describe</code></td><td>describe resource</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>ka</code></td><td><code>kubectl apply -f</code></td><td>apply manifest file</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>ke</code></td><td><code>kubectl edit</code></td><td>edit resource</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kdiff</code></td><td><code>kubectl diff -f</code></td><td>diff manifest against cluster</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-k"><td><code>k</code></td><td><code>kubectl</code></td><td>kubectl</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kg"><td><code>kg</code></td><td><code>kubectl get</code></td><td>get resources</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kd"><td><code>kd</code></td><td><code>kubectl describe</code></td><td>describe resource</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-ka"><td><code>ka</code></td><td><code>kubectl apply -f</code></td><td>apply manifest file</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-ke"><td><code>ke</code></td><td><code>kubectl edit</code></td><td>edit resource</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kdiff"><td><code>kdiff</code></td><td><code>kubectl diff -f</code></td><td>diff manifest against cluster</td><td class="muted">needs kubectl</td></tr>
 </table>
 <h2>Resources</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>kgp</code></td><td><code>kubectl get pods</code></td><td>pods</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgpa</code></td><td><code>kubectl get pods --all-namespaces</code></td><td>pods, all namespaces</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgpw</code></td><td><code>kubectl get pods --watch</code></td><td>watch pods</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgd</code></td><td><code>kubectl get deployments</code></td><td>deployments</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgs</code></td><td><code>kubectl get services</code></td><td>services</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgi</code></td><td><code>kubectl get ingress</code></td><td>ingresses</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgn</code></td><td><code>kubectl get nodes</code></td><td>nodes</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgns</code></td><td><code>kubectl get namespaces</code></td><td>namespaces</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgcm</code></td><td><code>kubectl get configmaps</code></td><td>configmaps</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kdp</code></td><td><code>kubectl describe pod</code></td><td>describe pod</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kdd</code></td><td><code>kubectl describe deployment</code></td><td>describe deployment</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kev</code></td><td><code>kubectl get events --sort-by=.metadata.creationTimestamp</code></td><td>events, oldest first</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgp"><td><code>kgp</code></td><td><code>kubectl get pods</code></td><td>pods</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgpa"><td><code>kgpa</code></td><td><code>kubectl get pods --all-namespaces</code></td><td>pods, all namespaces</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgpw"><td><code>kgpw</code></td><td><code>kubectl get pods --watch</code></td><td>watch pods</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgd"><td><code>kgd</code></td><td><code>kubectl get deployments</code></td><td>deployments</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgs"><td><code>kgs</code></td><td><code>kubectl get services</code></td><td>services</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgi"><td><code>kgi</code></td><td><code>kubectl get ingress</code></td><td>ingresses</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgn"><td><code>kgn</code></td><td><code>kubectl get nodes</code></td><td>nodes</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgns"><td><code>kgns</code></td><td><code>kubectl get namespaces</code></td><td>namespaces</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgcm"><td><code>kgcm</code></td><td><code>kubectl get configmaps</code></td><td>configmaps</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kdp"><td><code>kdp</code></td><td><code>kubectl describe pod</code></td><td>describe pod</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kdd"><td><code>kdd</code></td><td><code>kubectl describe deployment</code></td><td>describe deployment</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kev"><td><code>kev</code></td><td><code>kubectl get events --sort-by=.metadata.creationTimestamp</code></td><td>events, oldest first</td><td class="muted">needs kubectl</td></tr>
 </table>
 <h2>Logs and debugging</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>kl</code></td><td><code>kubectl logs</code></td><td>pod logs</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>klf</code></td><td><code>kubectl logs --follow --tail=200</code></td><td>follow last 200 pod log lines</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kexec</code></td><td><code>kubectl exec -it</code></td><td>exec into pod</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>ktopn</code></td><td><code>kubectl top nodes</code></td><td>node CPU and memory</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>ktopp</code></td><td><code>kubectl top pods</code></td><td>pod CPU and memory</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kl"><td><code>kl</code></td><td><code>kubectl logs</code></td><td>pod logs</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-klf"><td><code>klf</code></td><td><code>kubectl logs --follow --tail=200</code></td><td>follow last 200 pod log lines</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kexec"><td><code>kexec</code></td><td><code>kubectl exec -it</code></td><td>exec into pod</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-ktopn"><td><code>ktopn</code></td><td><code>kubectl top nodes</code></td><td>node CPU and memory</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-ktopp"><td><code>ktopp</code></td><td><code>kubectl top pods</code></td><td>pod CPU and memory</td><td class="muted">needs kubectl</td></tr>
 </table>
 <h2>Context and namespace</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>kctx</code></td><td><code>kubectl config current-context</code></td><td>current context</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kctxs</code></td><td><code>kubectl config get-contexts</code></td><td>all contexts</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kns</code></td><td><code>kubectl config view --minify --output &quot;jsonpath={..namespace}&quot;</code></td><td>current namespace</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kctx"><td><code>kctx</code></td><td><code>kubectl config current-context</code></td><td>current context</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kctxs"><td><code>kctxs</code></td><td><code>kubectl config get-contexts</code></td><td>all contexts</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kns"><td><code>kns</code></td><td><code>kubectl config view --minify --output &quot;jsonpath={..namespace}&quot;</code></td><td>current namespace</td><td class="muted">needs kubectl</td></tr>
 </table>
 <h2>Rollout</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>kroll</code></td><td><code>kubectl rollout status</code></td><td>rollout status</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>krestart</code></td><td><code>kubectl rollout restart</code></td><td>restart rollout</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>khistory</code></td><td><code>kubectl rollout history</code></td><td>rollout history</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kroll"><td><code>kroll</code></td><td><code>kubectl rollout status</code></td><td>rollout status</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-krestart"><td><code>krestart</code></td><td><code>kubectl rollout restart</code></td><td>restart rollout</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-khistory"><td><code>khistory</code></td><td><code>kubectl rollout history</code></td><td>rollout history</td><td class="muted">needs kubectl</td></tr>
 </table>
 <h2>Troubleshooting</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>kbad</code></td><td><code>kubectl get pods -A --field-selector=status.phase!=Running,status.phase!=Succeeded</code></td><td>pods not running</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kimages</code></td><td><code>kubectl get pods -A -o jsonpath=&quot;{..image}&quot; | tr &quot; &quot; &quot;\n&quot; | sort | uniq -c</code></td><td>images in use</td><td class="muted">needs kubectl</td></tr>
-<tr><td><code>kgall</code></td><td><code>kubectl get all</code></td><td>everything in namespace</td><td class="muted">needs kubectl</td></tr>
-<template id="fn33">ksecret() {
+<tr id="n-kbad"><td><code>kbad</code></td><td><code>kubectl get pods -A --field-selector=status.phase!=Running,status.phase!=Succeeded</code></td><td>pods not running</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kimages"><td><code>kimages</code></td><td><code>kubectl get pods -A -o jsonpath=&quot;{..image}&quot; | tr &quot; &quot; &quot;\n&quot; | sort | uniq -c</code></td><td>images in use</td><td class="muted">needs kubectl</td></tr>
+<tr id="n-kgall"><td><code>kgall</code></td><td><code>kubectl get all</code></td><td>everything in namespace</td><td class="muted">needs kubectl</td></tr>
+<template id="fn33">function ksecret {
   [ &quot;$#&quot; -eq 2 ] || { echo &quot;Usage: ksecret &lt;secret&gt; &lt;key&gt;&quot; &gt;&amp;2; return 2; }
   kubectl get secret &quot;$1&quot; -o jsonpath=&quot;{.data.$2}&quot; | base64 --decode; echo
 }</template>
-<tr><td><code>ksecret NAME KEY</code></td><td><button class="fn" data-src="fn33" data-name="ksecret">show code</button></td><td>print decoded value of one secret key<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ksecret db-creds password</span>
+<tr id="n-ksecret"><td><code>ksecret NAME KEY</code></td><td><button class="fn" data-src="fn33" data-name="ksecret">show code</button></td><td>print decoded value of one secret key<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ksecret db-creds password</span>
 s3cret</pre></details></td><td class="muted">needs kubectl</td></tr>
-<template id="fn34">ksh() {
-  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: ksh &lt;pod&gt; [container]&quot; &gt;&amp;2; return 2; }
+<template id="fn34">function kshell {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: kshell &lt;pod&gt; [container]&quot; &gt;&amp;2; return 2; }
   kubectl exec -it &quot;$1&quot; ${2:+-c &quot;$2&quot;} -- sh
 }</template>
-<tr><td><code>ksh POD</code></td><td><button class="fn" data-src="fn34" data-name="ksh">show code</button></td><td>shell into pod (sh)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ksh api-7d9f8b-x2k4</span>
+<tr id="n-kshell"><td><code>kshell POD</code></td><td><button class="fn" data-src="fn34" data-name="kshell">show code</button></td><td>shell into pod (sh)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ kshell api-7d9f8b-x2k4</span>
 /app $</pre></details></td><td class="muted">needs kubectl</td></tr>
-<template id="fn35">krun() { kubectl run &quot;tmp-$$&quot; --rm -it --restart=Never --image=&quot;${1:-busybox:1.36}&quot; -- sh; }</template>
-<tr><td><code>krun [IMAGE]</code></td><td><button class="fn" data-src="fn35" data-name="krun">show code</button></td><td>throwaway debug pod, removed on exit (default busybox)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ krun</span>
+<template id="fn35">function krun { kubectl run &quot;tmp-$$&quot; --rm -it --restart=Never --image=&quot;${1:-busybox:1.36}&quot; -- sh; }</template>
+<tr id="n-krun"><td><code>krun [IMAGE]</code></td><td><button class="fn" data-src="fn35" data-name="krun">show code</button></td><td>throwaway debug pod, removed on exit (default busybox)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ krun</span>
 If you don&#x27;t see a command prompt, try pressing enter.
 / #</pre></details></td><td class="muted">needs kubectl</td></tr>
-<template id="fn36">kuse() {
+<template id="fn36">function kuse {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: kuse &lt;context&gt;&quot; &gt;&amp;2; return 2; }
   kubectl config use-context &quot;$1&quot;
 }</template>
-<tr><td><code>kuse CONTEXT</code></td><td><button class="fn" data-src="fn36" data-name="kuse">show code</button></td><td>switch kubectl context<details class="ex" open><summary>example</summary><pre><span class="cmd">$ kuse prod</span>
+<tr id="n-kuse"><td><code>kuse CONTEXT</code></td><td><button class="fn" data-src="fn36" data-name="kuse">show code</button></td><td>switch kubectl context<details class="ex" open><summary>example</summary><pre><span class="cmd">$ kuse prod</span>
 Switched to context &quot;prod&quot;.</pre></details></td><td class="muted">needs kubectl</td></tr>
-<template id="fn37">knamespace() {
+<template id="fn37">function knamespace {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: knamespace &lt;namespace&gt;&quot; &gt;&amp;2; return 2; }
   kubectl config set-context --current --namespace=&quot;$1&quot;
 }</template>
-<tr><td><code>knamespace NS</code></td><td><button class="fn" data-src="fn37" data-name="knamespace">show code</button></td><td>set namespace for current context<details class="ex" open><summary>example</summary><pre><span class="cmd">$ knamespace payments</span>
+<tr id="n-knamespace"><td><code>knamespace NS</code></td><td><button class="fn" data-src="fn37" data-name="knamespace">show code</button></td><td>set namespace for current context<details class="ex" open><summary>example</summary><pre><span class="cmd">$ knamespace payments</span>
 Context &quot;prod&quot; modified.</pre></details></td><td class="muted">needs kubectl</td></tr>
-<template id="fn38">kpf() {
+<template id="fn38">function kpf {
   [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: kpf &lt;resource&gt; &lt;local:remote&gt;&quot; &gt;&amp;2; return 2; }
   kubectl port-forward &quot;$@&quot;
 }</template>
-<tr><td><code>kpf RESOURCE LOCAL:REMOTE</code></td><td><button class="fn" data-src="fn38" data-name="kpf">show code</button></td><td>port-forward<details class="ex" open><summary>example</summary><pre><span class="cmd">$ kpf svc/api 8080:80</span>
+<tr id="n-kpf"><td><code>kpf RESOURCE LOCAL:REMOTE</code></td><td><button class="fn" data-src="fn38" data-name="kpf">show code</button></td><td>port-forward<details class="ex" open><summary>example</summary><pre><span class="cmd">$ kpf svc/api 8080:80</span>
 Forwarding from 127.0.0.1:8080 -&gt; 80</pre></details></td><td class="muted">needs kubectl</td></tr>
-<template id="fn39">kdebug() {
+<template id="fn39">function kdebug {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: kdebug &lt;pod&gt; [image]&quot; &gt;&amp;2; return 2; }
   kubectl debug -it &quot;$1&quot; --image=&quot;${2:-busybox:1.36}&quot;
 }</template>
-<tr><td><code>kdebug POD [IMAGE]</code></td><td><button class="fn" data-src="fn39" data-name="kdebug">show code</button></td><td>attach debug container (default busybox)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ kdebug api-7d9f8b-x2k4</span>
+<tr id="n-kdebug"><td><code>kdebug POD [IMAGE]</code></td><td><button class="fn" data-src="fn39" data-name="kdebug">show code</button></td><td>attach debug container (default busybox)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ kdebug api-7d9f8b-x2k4</span>
 Defaulting debug container name to debugger-x7k2.
 / #</pre></details></td><td class="muted">needs kubectl</td></tr>
 </table>
 <h2>Helm (prefix hm; h is history)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>hm</code></td><td><code>helm</code></td><td>helm</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmls</code></td><td><code>helm list</code></td><td>releases</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmlsa</code></td><td><code>helm list --all-namespaces</code></td><td>releases, all namespaces</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmrepo</code></td><td><code>helm repo list</code></td><td>chart repositories</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmrepou</code></td><td><code>helm repo update</code></td><td>update chart repositories</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmsearch</code></td><td><code>helm search repo</code></td><td>search charts</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmstatus</code></td><td><code>helm status</code></td><td>release status</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmhistory</code></td><td><code>helm history</code></td><td>release history</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmtemplate</code></td><td><code>helm template</code></td><td>render chart locally</td><td class="muted">needs helm</td></tr>
-<tr><td><code>hmlint</code></td><td><code>helm lint</code></td><td>lint chart</td><td class="muted">needs helm</td></tr>
+<tr id="n-hm"><td><code>hm</code></td><td><code>helm</code></td><td>helm</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmls"><td><code>hmls</code></td><td><code>helm list</code></td><td>releases</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmlsa"><td><code>hmlsa</code></td><td><code>helm list --all-namespaces</code></td><td>releases, all namespaces</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmrepo"><td><code>hmrepo</code></td><td><code>helm repo list</code></td><td>chart repositories</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmrepou"><td><code>hmrepou</code></td><td><code>helm repo update</code></td><td>update chart repositories</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmsearch"><td><code>hmsearch</code></td><td><code>helm search repo</code></td><td>search charts</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmstatus"><td><code>hmstatus</code></td><td><code>helm status</code></td><td>release status</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmhistory"><td><code>hmhistory</code></td><td><code>helm history</code></td><td>release history</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmtemplate"><td><code>hmtemplate</code></td><td><code>helm template</code></td><td>render chart locally</td><td class="muted">needs helm</td></tr>
+<tr id="n-hmlint"><td><code>hmlint</code></td><td><code>helm lint</code></td><td>lint chart</td><td class="muted">needs helm</td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

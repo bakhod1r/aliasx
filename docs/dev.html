@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Development — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -36,100 +39,138 @@
 </nav>
 <main>
 <h1>Development</h1>
-<p>Development: Node, Python, Go, Rust, Java, JSON, TLS.</p>
+<p>Development: Node, Python (uv, poetry), PHP, Ruby, .NET, Go, Rust, Java, TLS.</p>
 <p>File <code>aliases/dev.sh</code>. Disable: <code>export ALIASX_DISABLE="dev"</code></p>
 <h2>npm</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>ni</code></td><td><code>npm install</code></td><td>npm install</td><td class="muted">needs npm</td></tr>
-<tr><td><code>nid</code></td><td><code>npm install --save-dev</code></td><td>npm install dev dependency</td><td class="muted">needs npm</td></tr>
-<tr><td><code>nr</code></td><td><code>npm run</code></td><td>npm run script</td><td class="muted">needs npm</td></tr>
-<tr><td><code>nrd</code></td><td><code>npm run dev</code></td><td>npm run dev</td><td class="muted">needs npm</td></tr>
-<tr><td><code>nrb</code></td><td><code>npm run build</code></td><td>npm run build</td><td class="muted">needs npm</td></tr>
-<tr><td><code>nrt</code></td><td><code>npm test</code></td><td>npm test</td><td class="muted">needs npm</td></tr>
+<tr id="n-ni"><td><code>ni</code></td><td><code>npm install</code></td><td>npm install</td><td class="muted">needs npm</td></tr>
+<tr id="n-nid"><td><code>nid</code></td><td><code>npm install --save-dev</code></td><td>npm install dev dependency</td><td class="muted">needs npm</td></tr>
+<tr id="n-nr"><td><code>nr</code></td><td><code>npm run</code></td><td>npm run script</td><td class="muted">needs npm</td></tr>
+<tr id="n-nrd"><td><code>nrd</code></td><td><code>npm run dev</code></td><td>npm run dev</td><td class="muted">needs npm</td></tr>
+<tr id="n-nrb"><td><code>nrb</code></td><td><code>npm run build</code></td><td>npm run build</td><td class="muted">needs npm</td></tr>
+<tr id="n-nrt"><td><code>nrt</code></td><td><code>npm test</code></td><td>npm test</td><td class="muted">needs npm</td></tr>
 </table>
 <h2>pnpm (pr is coreutils, so pnr)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>pn</code></td><td><code>pnpm</code></td><td>pnpm</td><td class="muted">needs pnpm</td></tr>
-<tr><td><code>pni</code></td><td><code>pnpm install</code></td><td>pnpm install</td><td class="muted">needs pnpm</td></tr>
-<tr><td><code>pna</code></td><td><code>pnpm add</code></td><td>pnpm add</td><td class="muted">needs pnpm</td></tr>
-<tr><td><code>pnr</code></td><td><code>pnpm run</code></td><td>pnpm run script</td><td class="muted">needs pnpm</td></tr>
-<tr><td><code>pnd</code></td><td><code>pnpm dev</code></td><td>pnpm dev</td><td class="muted">needs pnpm</td></tr>
+<tr id="n-pn"><td><code>pn</code></td><td><code>pnpm</code></td><td>pnpm</td><td class="muted">needs pnpm</td></tr>
+<tr id="n-pni"><td><code>pni</code></td><td><code>pnpm install</code></td><td>pnpm install</td><td class="muted">needs pnpm</td></tr>
+<tr id="n-pna"><td><code>pna</code></td><td><code>pnpm add</code></td><td>pnpm add</td><td class="muted">needs pnpm</td></tr>
+<tr id="n-pnr"><td><code>pnr</code></td><td><code>pnpm run</code></td><td>pnpm run script</td><td class="muted">needs pnpm</td></tr>
+<tr id="n-pnd"><td><code>pnd</code></td><td><code>pnpm dev</code></td><td>pnpm dev</td><td class="muted">needs pnpm</td></tr>
 </table>
 <h2>bun</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>buni</code></td><td><code>bun install</code></td><td>bun install</td><td class="muted">needs bun</td></tr>
-<tr><td><code>bunr</code></td><td><code>bun run</code></td><td>bun run script</td><td class="muted">needs bun</td></tr>
-<tr><td><code>bund</code></td><td><code>bun run dev</code></td><td>bun run dev</td><td class="muted">needs bun</td></tr>
+<tr id="n-buni"><td><code>buni</code></td><td><code>bun install</code></td><td>bun install</td><td class="muted">needs bun</td></tr>
+<tr id="n-bunr"><td><code>bunr</code></td><td><code>bun run</code></td><td>bun run script</td><td class="muted">needs bun</td></tr>
+<tr id="n-bund"><td><code>bund</code></td><td><code>bun run dev</code></td><td>bun run dev</td><td class="muted">needs bun</td></tr>
 </table>
 <h2>pm2</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>pm2l</code></td><td><code>pm2 list</code></td><td>running apps</td><td class="muted">needs pm2</td></tr>
-<tr><td><code>pm2logs</code></td><td><code>pm2 logs</code></td><td>follow logs</td><td class="muted">needs pm2</td></tr>
-<tr><td><code>pm2r</code></td><td><code>pm2 restart</code></td><td>restart app</td><td class="muted">needs pm2</td></tr>
+<tr id="n-pm2l"><td><code>pm2l</code></td><td><code>pm2 list</code></td><td>running apps</td><td class="muted">needs pm2</td></tr>
+<tr id="n-pm2logs"><td><code>pm2logs</code></td><td><code>pm2 logs</code></td><td>follow logs</td><td class="muted">needs pm2</td></tr>
+<tr id="n-pm2r"><td><code>pm2r</code></td><td><code>pm2 restart</code></td><td>restart app</td><td class="muted">needs pm2</td></tr>
 </table>
 <h2>Python</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>py</code></td><td><code>python3</code></td><td>python3</td><td class="muted">needs python3</td></tr>
-<tr><td><code>pipi</code></td><td><code>python3 -m pip install</code></td><td>pip install</td><td class="muted">needs python3</td></tr>
-<tr><td><code>pipu</code></td><td><code>python3 -m pip install --upgrade</code></td><td>pip upgrade package</td><td class="muted">needs python3</td></tr>
-<template id="fn21">venv() {
+<tr id="n-py"><td><code>py</code></td><td><code>python3</code></td><td>python3</td><td class="muted">needs python3</td></tr>
+<tr id="n-pipi"><td><code>pipi</code></td><td><code>python3 -m pip install</code></td><td>pip install</td><td class="muted">needs python3</td></tr>
+<tr id="n-pipu"><td><code>pipu</code></td><td><code>python3 -m pip install --upgrade</code></td><td>pip upgrade package</td><td class="muted">needs python3</td></tr>
+<template id="fn21">function venv {
   _d=&quot;${1:-.venv}&quot;
   [ -d &quot;$_d&quot; ] || python3 -m venv &quot;$_d&quot; || { unset _d; return 1; }
   . &quot;$_d/bin/activate&quot;; unset _d
 }</template>
-<tr><td><code>venv [DIR]</code></td><td><button class="fn" data-src="fn21" data-name="venv">show code</button></td><td>create (if missing) and activate virtualenv (default .venv)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ venv</span>
+<tr id="n-venv"><td><code>venv [DIR]</code></td><td><button class="fn" data-src="fn21" data-name="venv">show code</button></td><td>create (if missing) and activate virtualenv (default .venv)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ venv</span>
 (.venv) $</pre></details></td><td class="muted">needs python3</td></tr>
-<template id="fn22">serve() {
+<template id="fn22">function serve {
   echo &quot;Serving ${2:-.} at http://127.0.0.1:${1:-8000}&quot;
   python3 -m http.server &quot;${1:-8000}&quot; --bind 127.0.0.1 --directory &quot;${2:-.}&quot;
 }</template>
-<tr><td><code>serve [PORT] [DIR]</code></td><td><button class="fn" data-src="fn22" data-name="serve">show code</button></td><td>static HTTP server on 127.0.0.1 (default 8000)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ serve 9000</span>
+<tr id="n-serve"><td><code>serve [PORT] [DIR]</code></td><td><button class="fn" data-src="fn22" data-name="serve">show code</button></td><td>static HTTP server on 127.0.0.1 (default 8000)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ serve 9000</span>
 Serving . at http://127.0.0.1:9000</pre></details></td><td class="muted">needs python3</td></tr>
+</table>
+<h2>uv (Python)</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr id="n-uvr"><td><code>uvr</code></td><td><code>uv run</code></td><td>run in project env</td><td class="muted">needs uv</td></tr>
+<tr id="n-uva"><td><code>uva</code></td><td><code>uv add</code></td><td>add dependency</td><td class="muted">needs uv</td></tr>
+<tr id="n-uvs"><td><code>uvs</code></td><td><code>uv sync</code></td><td>install locked dependencies</td><td class="muted">needs uv</td></tr>
+</table>
+<h2>Poetry</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr id="n-poi"><td><code>poi</code></td><td><code>poetry install</code></td><td>install dependencies</td><td class="muted">needs poetry</td></tr>
+<tr id="n-poa"><td><code>poa</code></td><td><code>poetry add</code></td><td>add dependency</td><td class="muted">needs poetry</td></tr>
+<tr id="n-por"><td><code>por</code></td><td><code>poetry run</code></td><td>run in project env</td><td class="muted">needs poetry</td></tr>
+</table>
+<h2>PHP / Laravel</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr id="n-comi"><td><code>comi</code></td><td><code>composer install</code></td><td>install dependencies</td><td class="muted">needs composer</td></tr>
+<tr id="n-comr"><td><code>comr</code></td><td><code>composer require</code></td><td>add dependency</td><td class="muted">needs composer</td></tr>
+<tr id="n-art"><td><code>art</code></td><td><code>php artisan</code></td><td>Laravel artisan</td><td class="muted">needs php</td></tr>
+<tr id="n-artm"><td><code>artm</code></td><td><code>php artisan migrate</code></td><td>run migrations</td><td class="muted">needs php</td></tr>
+<tr id="n-artt"><td><code>artt</code></td><td><code>php artisan test</code></td><td>run tests</td><td class="muted">needs php</td></tr>
+</table>
+<h2>Ruby / Rails</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr id="n-rsrv"><td><code>rsrv</code></td><td><code>rails server</code></td><td>start dev server</td><td class="muted">needs rails</td></tr>
+<tr id="n-rdbm"><td><code>rdbm</code></td><td><code>rails db:migrate</code></td><td>run migrations</td><td class="muted">needs rails</td></tr>
+<tr id="n-be"><td><code>be</code></td><td><code>bundle exec</code></td><td>run with Gemfile versions</td><td class="muted">needs bundle</td></tr>
+</table>
+<h2>.NET</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr id="n-dn"><td><code>dn</code></td><td><code>dotnet</code></td><td>dotnet</td><td class="muted">needs dotnet</td></tr>
+<tr id="n-dnr"><td><code>dnr</code></td><td><code>dotnet run</code></td><td>run project</td><td class="muted">needs dotnet</td></tr>
+<tr id="n-dnt"><td><code>dnt</code></td><td><code>dotnet test</code></td><td>run tests</td><td class="muted">needs dotnet</td></tr>
+<tr id="n-dnb"><td><code>dnb</code></td><td><code>dotnet build</code></td><td>build project</td><td class="muted">needs dotnet</td></tr>
 </table>
 <h2>Go</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>gor</code></td><td><code>go run</code></td><td>go run</td><td class="muted">needs go</td></tr>
-<tr><td><code>gob</code></td><td><code>go build</code></td><td>go build</td><td class="muted">needs go</td></tr>
-<tr><td><code>got</code></td><td><code>go test ./...</code></td><td>go test all packages</td><td class="muted">needs go</td></tr>
-<tr><td><code>gomt</code></td><td><code>go mod tidy</code></td><td>go mod tidy</td><td class="muted">needs go</td></tr>
-<tr><td><code>govet</code></td><td><code>go vet ./...</code></td><td>go vet all packages</td><td class="muted">needs go</td></tr>
+<tr id="n-gor"><td><code>gor</code></td><td><code>go run</code></td><td>go run</td><td class="muted">needs go</td></tr>
+<tr id="n-gob"><td><code>gob</code></td><td><code>go build</code></td><td>go build</td><td class="muted">needs go</td></tr>
+<tr id="n-got"><td><code>got</code></td><td><code>go test ./...</code></td><td>go test all packages</td><td class="muted">needs go</td></tr>
+<tr id="n-gomt"><td><code>gomt</code></td><td><code>go mod tidy</code></td><td>go mod tidy</td><td class="muted">needs go</td></tr>
+<tr id="n-govet"><td><code>govet</code></td><td><code>go vet ./...</code></td><td>go vet all packages</td><td class="muted">needs go</td></tr>
 </table>
 <h2>Rust (cargo- prefix; cc and cb clash with compilers)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>cargo-r</code></td><td><code>cargo run</code></td><td>cargo run</td><td class="muted">needs cargo</td></tr>
-<tr><td><code>cargo-b</code></td><td><code>cargo build</code></td><td>cargo build</td><td class="muted">needs cargo</td></tr>
-<tr><td><code>cargo-br</code></td><td><code>cargo build --release</code></td><td>release build</td><td class="muted">needs cargo</td></tr>
-<tr><td><code>cargo-t</code></td><td><code>cargo test</code></td><td>cargo test</td><td class="muted">needs cargo</td></tr>
-<tr><td><code>cargo-c</code></td><td><code>cargo check</code></td><td>type-check only</td><td class="muted">needs cargo</td></tr>
-<tr><td><code>cargo-l</code></td><td><code>cargo clippy</code></td><td>clippy lints</td><td class="muted">needs cargo</td></tr>
+<tr id="n-cargo-r"><td><code>cargo-r</code></td><td><code>cargo run</code></td><td>cargo run</td><td class="muted">needs cargo</td></tr>
+<tr id="n-cargo-b"><td><code>cargo-b</code></td><td><code>cargo build</code></td><td>cargo build</td><td class="muted">needs cargo</td></tr>
+<tr id="n-cargo-br"><td><code>cargo-br</code></td><td><code>cargo build --release</code></td><td>release build</td><td class="muted">needs cargo</td></tr>
+<tr id="n-cargo-t"><td><code>cargo-t</code></td><td><code>cargo test</code></td><td>cargo test</td><td class="muted">needs cargo</td></tr>
+<tr id="n-cargo-c"><td><code>cargo-c</code></td><td><code>cargo check</code></td><td>type-check only</td><td class="muted">needs cargo</td></tr>
+<tr id="n-cargo-l"><td><code>cargo-l</code></td><td><code>cargo clippy</code></td><td>clippy lints</td><td class="muted">needs cargo</td></tr>
 </table>
 <h2>Maven and Gradle</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>mvnc</code></td><td><code>mvn clean</code></td><td>maven clean</td><td class="muted">needs mvn</td></tr>
-<tr><td><code>mvni</code></td><td><code>mvn install</code></td><td>maven install</td><td class="muted">needs mvn</td></tr>
-<tr><td><code>mvnt</code></td><td><code>mvn test</code></td><td>maven test</td><td class="muted">needs mvn</td></tr>
-<tr><td><code>gradleb</code></td><td><code>gradle build</code></td><td>gradle build</td><td class="muted">needs gradle</td></tr>
-<tr><td><code>gradlet</code></td><td><code>gradle test</code></td><td>gradle test</td><td class="muted">needs gradle</td></tr>
+<tr id="n-mvnc"><td><code>mvnc</code></td><td><code>mvn clean</code></td><td>maven clean</td><td class="muted">needs mvn</td></tr>
+<tr id="n-mvni"><td><code>mvni</code></td><td><code>mvn install</code></td><td>maven install</td><td class="muted">needs mvn</td></tr>
+<tr id="n-mvnt"><td><code>mvnt</code></td><td><code>mvn test</code></td><td>maven test</td><td class="muted">needs mvn</td></tr>
+<tr id="n-gradleb"><td><code>gradleb</code></td><td><code>gradle build</code></td><td>gradle build</td><td class="muted">needs gradle</td></tr>
+<tr id="n-gradlet"><td><code>gradlet</code></td><td><code>gradle test</code></td><td>gradle test</td><td class="muted">needs gradle</td></tr>
 </table>
 <h2>TLS</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn39">tlscheck() {
+<template id="fn57">function tlscheck {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: tlscheck &lt;host[:port]&gt;&quot; &gt;&amp;2; return 2; }
   _h=&quot;${1%%:*}&quot;; _p=&quot;${1##*:}&quot;; [ &quot;$_h&quot; = &quot;$_p&quot; ] &amp;&amp; _p=443
   openssl s_client -connect &quot;$_h:$_p&quot; -servername &quot;$_h&quot; &lt;/dev/null 2&gt;/dev/null |
     openssl x509 -noout -subject -issuer -dates
   unset _h _p
 }</template>
-<tr><td><code>tlscheck HOST[:PORT]</code></td><td><button class="fn" data-src="fn39" data-name="tlscheck">show code</button></td><td>show certificate subject, issuer, dates<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tlscheck example.com</span>
+<tr id="n-tlscheck"><td><code>tlscheck HOST[:PORT]</code></td><td><button class="fn" data-src="fn57" data-name="tlscheck">show code</button></td><td>show certificate subject, issuer, dates<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tlscheck example.com</span>
 subject=CN=example.com
 issuer=C=US, O=DigiCert Inc, CN=DigiCert Global G3 TLS ECC SHA384 2020 CA1
 notBefore=Jan 15 00:00:00 2026 GMT
@@ -139,6 +180,30 @@ notAfter=Jan 15 23:59:59 2027 GMT</pre></details></td><td class="muted"></td></t
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

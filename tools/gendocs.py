@@ -10,6 +10,7 @@ Conventions read from module files:
   if [ "$ALIASX_OS" = macos ] rows get a macOS / Linux note
 """
 import html
+import json
 import re
 from pathlib import Path
 
@@ -19,6 +20,7 @@ DOCS = ROOT / "docs"
 PAGES = [  # (file stem, folder, page title)
     ("core", "aliases", "Core"),
     ("hints", "aliases", "Hints"),
+    ("completion", "aliases", "Completion"),
     ("nav", "aliases", "Navigation"),
     ("files", "aliases", "Files"),
     ("git", "aliases", "Git"),
@@ -45,7 +47,7 @@ PAGES = [  # (file stem, folder, page title)
 
 ALIAS = re.compile(r"""alias (?:-- )?([^=\s]+)=(['"])(.*?)\2(?:\s+# (.*))?$""")
 FUNC_DOC = re.compile(r"^# ([A-Za-z_][\w-]*)((?: [^—]*)?) — (.+)$")
-FUNC_DEF = re.compile(r"^([A-Za-z_][\w-]*)\(\)")
+FUNC_DEF = re.compile(r"^(?:function )?([A-Za-z_][\w-]*)(?:\(\)| \{)")
 HAS = re.compile(r"\bhas ([\w-]+)")
 
 
@@ -128,7 +130,9 @@ def nav(active):
         label = title + (" ·opt-in" if folder == "optional" else "")
         on = ' class="on"' if stem == active else ""
         items.append('<a href="%s.html"%s>%s</a>' % (stem, on, html.escape(label)))
-    return "<nav>\n  <b>aliasx</b>\n  " + "\n  ".join(items) + "\n</nav>"
+    search = ('<div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" '
+              'autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>')
+    return "<nav>\n  <b>aliasx</b>\n  " + search + "\n  " + "\n  ".join(items) + "\n</nav>"
 
 
 def page(active, title, body):
@@ -138,6 +142,7 @@ def page(active, title, body):
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 {nav(active)}
@@ -147,6 +152,30 @@ def page(active, title, body):
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {{
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) {{ return t.replace(/[&<>"]/g, function (c) {{ return {{"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}}[c]; }}); }}
+  function search() {{
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) {{ res.hidden = true; return; }}
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) {{ return e[0].toLowerCase().indexOf(w) >= 0; }})
+      .concat(idx.filter(function (e) {{ return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }}))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {{
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }}).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }}
+  if (q) {{
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {{
+      if (e.key === "Enter") {{ var a = res.querySelector("a"); if (a) location.href = a.href; }}
+      if (e.key === "Escape") {{ q.value = ""; res.hidden = true; }}
+    }});
+    document.addEventListener("keydown", function (e) {{
+      if (e.key === "/" && document.activeElement !== q) {{ e.preventDefault(); q.focus(); }}
+    }});
+  }}
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");
@@ -197,7 +226,9 @@ def module_page(stem, folder, title):
                 shown = f'<span class="cmd">{html.escape(first)}</span>' + ("\n" + html.escape(rest) if rest else "")
                 run += f'<details class="ex" open><summary>example</summary><pre>{shown}</pre></details>'
             note = html.escape(", ".join(dict.fromkeys(notes)))
-            out.append(f"<tr><td><code>{html.escape(name)}</code></td><td>{run}</td><td class=\"muted\">{note}</td></tr>")
+            key = name.split()[0]
+            SEARCH.append([key, name, cmd, desc, stem])
+            out.append(f"<tr id=\"n-{html.escape(key)}\"><td><code>{html.escape(name)}</code></td><td>{run}</td><td class=\"muted\">{note}</td></tr>")
         out.append("</table>")
     return page(stem, f"{title} — aliasx", "\n".join(out)), count
 
@@ -211,6 +242,16 @@ INDEX = """<h1>aliasx</h1>
 <p><code>install.sh</code> adds one line to <code>~/.bashrc</code> and <code>~/.zshrc</code>. Running it again changes nothing. Open a new shell.</p>
 <p>oh-my-zsh: clone into <code>$ZSH_CUSTOM/plugins/aliasx</code> and add <code>aliasx</code> to <code>plugins=(...)</code>.</p>
 
+<h2>Profiles</h2>
+<pre>export ALIASX_PROFILE=backend     # devops, sysadmin, minimal; combine: "backend devops"
+aliasx profiles                   # what each profile loads</pre>
+
+<h2>Your own aliases</h2>
+<pre>aliasx add deploy './scripts/deploy.sh --prod' "deploy to production"
+aliasx mine
+aliasx rm deploy</pre>
+<p>Saved in <code>~/.aliasx.local.sh</code>, loaded last, with hints and search like built-in ones.</p>
+
 <h2>Configure</h2>
 <pre>export ALIASX_DISABLE="docker k8s"      # skip default modules
 export ALIASX_ENABLE="modern dangerous"  # load opt-in modules</pre>
@@ -220,6 +261,7 @@ export ALIASX_ENABLE="modern dangerous"  # load opt-in modules</pre>
 <pre>aliasx modules          # list modules
 aliasx list git         # aliases in one module
 aliasx check gs k tf    # is a name taken?
+aliasx conflicts        # names that hide programs or clash with your rc files
 aliasx why lni          # lni → ln -i · link, ask before overwriting</pre>
 
 <h2>Hints</h2>
@@ -261,6 +303,9 @@ export ALIASX_MODE=safe   # keep it on (put in rc before aliasx)</pre>
 """
 
 
+SEARCH = []
+
+
 def main():
     rows, total = [], 0
     for stem, folder, title in PAGES:
@@ -272,6 +317,7 @@ def main():
         rows.append(f'<tr><td><a href="{stem}.html">{html.escape(title)}</a>{tag}</td><td>{html.escape(head)}</td><td>{count}</td></tr>')
     body = INDEX.format(total=total, mods=len(PAGES), rows="\n".join(rows))
     (DOCS / "index.html").write_text(page("index", "aliasx", body))
+    (DOCS / "search.js").write_text("window.ALIASX_INDEX=" + json.dumps(SEARCH, ensure_ascii=False) + ";\n")
     print(f"docs: {len(PAGES) + 1} pages, {total} entries")
 
 

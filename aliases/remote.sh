@@ -10,7 +10,7 @@ if has ssh; then
   #   $ sshgen work
   #   Generating public/private ed25519 key pair.
   #   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... ali@laptop
-  sshgen() {
+  function sshgen {
     _k="$HOME/.ssh/${1:-id_ed25519}"
     [ -e "$_k" ] && { echo "sshgen: $_k already exists" >&2; unset _k; return 1; }
     ssh-keygen -t ed25519 -f "$_k" && cat "$_k.pub"
@@ -20,7 +20,7 @@ if has ssh; then
   # sshcopy USER@HOST — install your public key on a server
   #   $ sshcopy deploy@203.0.113.10
   #   Number of key(s) added: 1
-  sshcopy() {
+  function sshcopy {
     [ "$#" -ge 1 ] || { echo "Usage: sshcopy <user@host> [ssh-copy-id options]" >&2; return 2; }
     ssh-copy-id "$@"
   }
@@ -35,7 +35,7 @@ if has tmux; then
   # tk SESSION — kill a tmux session after y/N
   #   $ tk old
   #   Kill tmux session 'old'? [y/N] y
-  tk() {
+  function tk {
     [ "$#" -eq 1 ] || { echo "Usage: tk <session>" >&2; return 2; }
     yesno "Kill tmux session '$1'?" && tmux kill-session -t "$1"
   }

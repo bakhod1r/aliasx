@@ -9,7 +9,7 @@ alias dns='cat /etc/resolv.conf'  # show DNS resolvers
 # myip — public IP (api.ipify.org)
 #   $ myip
 #   203.0.113.42
-myip() {
+function myip {
   if has curl; then curl -fsS https://api.ipify.org; echo
   else wget -qO- https://api.ipify.org; echo; fi
 }
@@ -17,7 +17,7 @@ myip() {
 # lanip — local network IP
 #   $ lanip
 #   192.168.1.23
-lanip() {
+function lanip {
   if [ "$ALIASX_OS" = macos ]; then
     ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1
   else
@@ -30,7 +30,7 @@ lanip() {
 #   $ ports 3000
 #   COMMAND  PID  USER  FD  TYPE  DEVICE  NODE NAME
 #   node    4123  ali   23u IPv4  0x...   TCP *:3000 (LISTEN)
-ports() {
+function ports {
   if [ "$#" -eq 0 ]; then lsof -nP -iTCP -sTCP:LISTEN
   else lsof -nP -iTCP:"$1" -sTCP:LISTEN; fi
 }
@@ -39,7 +39,7 @@ ports() {
 #   $ freeport 3000
 #   node    4123  ali   23u IPv4  TCP *:3000 (LISTEN)
 #   Kill these processes? [y/N] y
-freeport() {
+function freeport {
   [ "$#" -eq 1 ] || { echo "Usage: freeport <port>" >&2; return 2; }
   _pids="$(lsof -tiTCP:"$1" -sTCP:LISTEN)"
   [ -n "$_pids" ] || { echo "Nothing listens on port $1."; unset _pids; return 0; }

@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>System — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,124 +44,148 @@
 <h2>Processes</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>kernel</code></td><td><code>uname -a</code></td><td>kernel and OS info</td><td class="muted"></td></tr>
-<tr><td><code>load</code></td><td><code>uptime</code></td><td>uptime and load</td><td class="muted"></td></tr>
-<tr><td><code>mem</code></td><td><code>vm_stat</code></td><td>memory usage</td><td class="muted">macOS</td></tr>
-<tr><td><code>psmem</code></td><td><code>ps aux | sort -nrk 4 | head -11</code></td><td>top 10 by memory</td><td class="muted">macOS</td></tr>
-<tr><td><code>pscpu</code></td><td><code>ps aux | sort -nrk 3 | head -11</code></td><td>top 10 by CPU</td><td class="muted">macOS</td></tr>
-<tr><td><code>mem</code></td><td><code>free -h</code></td><td>memory usage</td><td class="muted">Linux</td></tr>
-<tr><td><code>psmem</code></td><td><code>ps aux --sort=-%mem | head -11</code></td><td>top 10 by memory</td><td class="muted">Linux</td></tr>
-<tr><td><code>pscpu</code></td><td><code>ps aux --sort=-%cpu | head -11</code></td><td>top 10 by CPU</td><td class="muted">Linux</td></tr>
-<tr><td><code>please</code></td><td><code>eval &quot;sudo $(fc -ln -1)&quot;</code></td><td>rerun last command with sudo</td><td class="muted"></td></tr>
-<template id="fn10">psgrep() {
+<tr id="n-kernel"><td><code>kernel</code></td><td><code>uname -a</code></td><td>kernel and OS info</td><td class="muted"></td></tr>
+<tr id="n-load"><td><code>load</code></td><td><code>uptime</code></td><td>uptime and load</td><td class="muted"></td></tr>
+<tr id="n-mem"><td><code>mem</code></td><td><code>vm_stat</code></td><td>memory usage</td><td class="muted">macOS</td></tr>
+<tr id="n-psmem"><td><code>psmem</code></td><td><code>ps aux | sort -nrk 4 | head -11</code></td><td>top 10 by memory</td><td class="muted">macOS</td></tr>
+<tr id="n-pscpu"><td><code>pscpu</code></td><td><code>ps aux | sort -nrk 3 | head -11</code></td><td>top 10 by CPU</td><td class="muted">macOS</td></tr>
+<tr id="n-mem"><td><code>mem</code></td><td><code>free -h</code></td><td>memory usage</td><td class="muted">Linux</td></tr>
+<tr id="n-psmem"><td><code>psmem</code></td><td><code>ps aux --sort=-%mem | head -11</code></td><td>top 10 by memory</td><td class="muted">Linux</td></tr>
+<tr id="n-pscpu"><td><code>pscpu</code></td><td><code>ps aux --sort=-%cpu | head -11</code></td><td>top 10 by CPU</td><td class="muted">Linux</td></tr>
+<tr id="n-please"><td><code>please</code></td><td><code>eval &quot;sudo $(fc -ln -1)&quot;</code></td><td>rerun last command with sudo</td><td class="muted"></td></tr>
+<template id="fn10">function psgrep {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: psgrep &lt;pattern&gt;&quot; &gt;&amp;2; return 2; }
   ps aux | grep -i -- &quot;$*&quot; | grep -v grep
 }</template>
-<tr><td><code>psgrep PATTERN</code></td><td><button class="fn" data-src="fn10" data-name="psgrep">show code</button></td><td>find processes by name<details class="ex" open><summary>example</summary><pre><span class="cmd">$ psgrep nginx</span>
+<tr id="n-psgrep"><td><code>psgrep PATTERN</code></td><td><button class="fn" data-src="fn10" data-name="psgrep">show code</button></td><td>find processes by name<details class="ex" open><summary>example</summary><pre><span class="cmd">$ psgrep nginx</span>
 root   812  0.0  0.1  nginx: master process
 www    813  0.0  0.2  nginx: worker process</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Linux hardware</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>disks</code></td><td><code>lsblk -f</code></td><td>block devices and filesystems</td><td class="muted">Linux</td></tr>
-<tr><td><code>mounts</code></td><td><code>findmnt</code></td><td>mounted filesystems</td><td class="muted">Linux</td></tr>
-<tr><td><code>gpuinfo</code></td><td><code>nvidia-smi</code></td><td>NVIDIA GPU status</td><td class="muted">needs nvidia-smi</td></tr>
+<tr id="n-disks"><td><code>disks</code></td><td><code>lsblk -f</code></td><td>block devices and filesystems</td><td class="muted">Linux</td></tr>
+<tr id="n-mounts"><td><code>mounts</code></td><td><code>findmnt</code></td><td>mounted filesystems</td><td class="muted">Linux</td></tr>
+<tr id="n-gpuinfo"><td><code>gpuinfo</code></td><td><code>nvidia-smi</code></td><td>NVIDIA GPU status</td><td class="muted">needs nvidia-smi</td></tr>
 </table>
 <h2>systemd and logs</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>sc</code></td><td><code>systemctl</code></td><td>systemctl</td><td class="muted">needs systemctl</td></tr>
-<tr><td><code>scu</code></td><td><code>systemctl --user</code></td><td>systemctl for user</td><td class="muted">needs systemctl</td></tr>
-<tr><td><code>scfailed</code></td><td><code>systemctl --failed</code></td><td>failed units</td><td class="muted">needs systemctl</td></tr>
-<tr><td><code>jc</code></td><td><code>journalctl</code></td><td>journalctl</td><td class="muted">needs systemctl</td></tr>
-<tr><td><code>jcf</code></td><td><code>journalctl --follow</code></td><td>follow journal</td><td class="muted">needs systemctl</td></tr>
-<tr><td><code>jcxe</code></td><td><code>journalctl -xe</code></td><td>recent journal with explanations</td><td class="muted">needs systemctl</td></tr>
-<tr><td><code>jcerr</code></td><td><code>journalctl -p err..alert -b</code></td><td>errors since boot</td><td class="muted">needs systemctl</td></tr>
-<template id="fn21">svclogs() {
+<tr id="n-sc"><td><code>sc</code></td><td><code>systemctl</code></td><td>systemctl</td><td class="muted">needs systemctl</td></tr>
+<tr id="n-scu"><td><code>scu</code></td><td><code>systemctl --user</code></td><td>systemctl for user</td><td class="muted">needs systemctl</td></tr>
+<tr id="n-scfailed"><td><code>scfailed</code></td><td><code>systemctl --failed</code></td><td>failed units</td><td class="muted">needs systemctl</td></tr>
+<tr id="n-jc"><td><code>jc</code></td><td><code>journalctl</code></td><td>journalctl</td><td class="muted">needs systemctl</td></tr>
+<tr id="n-jcf"><td><code>jcf</code></td><td><code>journalctl --follow</code></td><td>follow journal</td><td class="muted">needs systemctl</td></tr>
+<tr id="n-jcxe"><td><code>jcxe</code></td><td><code>journalctl -xe</code></td><td>recent journal with explanations</td><td class="muted">needs systemctl</td></tr>
+<tr id="n-jcerr"><td><code>jcerr</code></td><td><code>journalctl -p err..alert -b</code></td><td>errors since boot</td><td class="muted">needs systemctl</td></tr>
+<template id="fn21">function svclogs {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: svclogs &lt;service&gt; [journalctl options]&quot; &gt;&amp;2; return 2; }
   _s=&quot;$1&quot;; shift; journalctl -u &quot;$_s&quot; &quot;$@&quot;; unset _s
 }</template>
-<tr><td><code>svclogs SERVICE [OPTS]</code></td><td><button class="fn" data-src="fn21" data-name="svclogs">show code</button></td><td>journal for one service<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svclogs nginx -n 5</span>
+<tr id="n-svclogs"><td><code>svclogs SERVICE [OPTS]</code></td><td><button class="fn" data-src="fn21" data-name="svclogs">show code</button></td><td>journal for one service<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svclogs nginx -n 5</span>
 Oct 02 10:31:07 web1 nginx[812]: started</pre></details></td><td class="muted">needs systemctl</td></tr>
 </table>
 <h2>Firewall (ufw)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>ufws</code></td><td><code>sudo ufw status verbose</code></td><td>firewall rules</td><td class="muted">needs ufw</td></tr>
-<tr><td><code>ufwa</code></td><td><code>sudo ufw allow</code></td><td>allow port or service</td><td class="muted">needs ufw</td></tr>
-<tr><td><code>ufwd</code></td><td><code>sudo ufw deny</code></td><td>deny port or service</td><td class="muted">needs ufw</td></tr>
+<tr id="n-ufws"><td><code>ufws</code></td><td><code>sudo ufw status verbose</code></td><td>firewall rules</td><td class="muted">needs ufw</td></tr>
+<tr id="n-ufwa"><td><code>ufwa</code></td><td><code>sudo ufw allow</code></td><td>allow port or service</td><td class="muted">needs ufw</td></tr>
+<tr id="n-ufwd"><td><code>ufwd</code></td><td><code>sudo ufw deny</code></td><td>deny port or service</td><td class="muted">needs ufw</td></tr>
 </table>
 <h2>Packages</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>aptup</code></td><td><code>sudo apt update &amp;&amp; sudo apt upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apt</td></tr>
-<tr><td><code>apti</code></td><td><code>sudo apt install</code></td><td>install package</td><td class="muted">needs apt</td></tr>
-<tr><td><code>aptr</code></td><td><code>sudo apt remove</code></td><td>remove package</td><td class="muted">needs apt</td></tr>
-<tr><td><code>apts</code></td><td><code>apt search</code></td><td>search packages</td><td class="muted">needs apt</td></tr>
-<tr><td><code>aptclean</code></td><td><code>sudo apt autoremove</code></td><td>remove unused packages</td><td class="muted">needs apt</td></tr>
-<tr><td><code>dnfup</code></td><td><code>sudo dnf upgrade --refresh</code></td><td>upgrade packages</td><td class="muted">needs dnf</td></tr>
-<tr><td><code>dnfi</code></td><td><code>sudo dnf install</code></td><td>install package</td><td class="muted">needs dnf</td></tr>
-<tr><td><code>dnfr</code></td><td><code>sudo dnf remove</code></td><td>remove package</td><td class="muted">needs dnf</td></tr>
-<tr><td><code>dnfs</code></td><td><code>dnf search</code></td><td>search packages</td><td class="muted">needs dnf</td></tr>
-<tr><td><code>pacup</code></td><td><code>sudo pacman -Syu</code></td><td>sync and upgrade packages</td><td class="muted">needs pacman</td></tr>
-<tr><td><code>paci</code></td><td><code>sudo pacman -S</code></td><td>install package</td><td class="muted">needs pacman</td></tr>
-<tr><td><code>pacr</code></td><td><code>sudo pacman -Rns</code></td><td>remove package and deps</td><td class="muted">needs pacman</td></tr>
-<tr><td><code>pacs</code></td><td><code>pacman -Ss</code></td><td>search packages</td><td class="muted">needs pacman</td></tr>
-<tr><td><code>apkup</code></td><td><code>sudo apk update &amp;&amp; sudo apk upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apk</td></tr>
-<tr><td><code>apki</code></td><td><code>sudo apk add</code></td><td>install package</td><td class="muted">needs apk</td></tr>
-<tr><td><code>apkr</code></td><td><code>sudo apk del</code></td><td>remove package</td><td class="muted">needs apk</td></tr>
-<tr><td><code>brewup</code></td><td><code>brew update &amp;&amp; brew upgrade</code></td><td>update and upgrade formulae</td><td class="muted">needs brew</td></tr>
-<tr><td><code>brewi</code></td><td><code>brew install</code></td><td>install formula</td><td class="muted">needs brew</td></tr>
-<tr><td><code>brewr</code></td><td><code>brew uninstall</code></td><td>uninstall formula</td><td class="muted">needs brew</td></tr>
-<tr><td><code>brews</code></td><td><code>brew search</code></td><td>search formulae</td><td class="muted">needs brew</td></tr>
-<tr><td><code>brewclean</code></td><td><code>brew cleanup</code></td><td>remove old versions</td><td class="muted">needs brew</td></tr>
+<tr id="n-aptup"><td><code>aptup</code></td><td><code>sudo apt update &amp;&amp; sudo apt upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apt</td></tr>
+<tr id="n-apti"><td><code>apti</code></td><td><code>sudo apt install</code></td><td>install package</td><td class="muted">needs apt</td></tr>
+<tr id="n-aptr"><td><code>aptr</code></td><td><code>sudo apt remove</code></td><td>remove package</td><td class="muted">needs apt</td></tr>
+<tr id="n-apts"><td><code>apts</code></td><td><code>apt search</code></td><td>search packages</td><td class="muted">needs apt</td></tr>
+<tr id="n-aptclean"><td><code>aptclean</code></td><td><code>sudo apt autoremove</code></td><td>remove unused packages</td><td class="muted">needs apt</td></tr>
+<tr id="n-dnfup"><td><code>dnfup</code></td><td><code>sudo dnf upgrade --refresh</code></td><td>upgrade packages</td><td class="muted">needs dnf</td></tr>
+<tr id="n-dnfi"><td><code>dnfi</code></td><td><code>sudo dnf install</code></td><td>install package</td><td class="muted">needs dnf</td></tr>
+<tr id="n-dnfr"><td><code>dnfr</code></td><td><code>sudo dnf remove</code></td><td>remove package</td><td class="muted">needs dnf</td></tr>
+<tr id="n-dnfs"><td><code>dnfs</code></td><td><code>dnf search</code></td><td>search packages</td><td class="muted">needs dnf</td></tr>
+<tr id="n-pacup"><td><code>pacup</code></td><td><code>sudo pacman -Syu</code></td><td>sync and upgrade packages</td><td class="muted">needs pacman</td></tr>
+<tr id="n-paci"><td><code>paci</code></td><td><code>sudo pacman -S</code></td><td>install package</td><td class="muted">needs pacman</td></tr>
+<tr id="n-pacr"><td><code>pacr</code></td><td><code>sudo pacman -Rns</code></td><td>remove package and deps</td><td class="muted">needs pacman</td></tr>
+<tr id="n-pacs"><td><code>pacs</code></td><td><code>pacman -Ss</code></td><td>search packages</td><td class="muted">needs pacman</td></tr>
+<tr id="n-apkup"><td><code>apkup</code></td><td><code>sudo apk update &amp;&amp; sudo apk upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apk</td></tr>
+<tr id="n-apki"><td><code>apki</code></td><td><code>sudo apk add</code></td><td>install package</td><td class="muted">needs apk</td></tr>
+<tr id="n-apkr"><td><code>apkr</code></td><td><code>sudo apk del</code></td><td>remove package</td><td class="muted">needs apk</td></tr>
+<tr id="n-brewup"><td><code>brewup</code></td><td><code>brew update &amp;&amp; brew upgrade</code></td><td>update and upgrade formulae</td><td class="muted">needs brew</td></tr>
+<tr id="n-brewi"><td><code>brewi</code></td><td><code>brew install</code></td><td>install formula</td><td class="muted">needs brew</td></tr>
+<tr id="n-brewr"><td><code>brewr</code></td><td><code>brew uninstall</code></td><td>uninstall formula</td><td class="muted">needs brew</td></tr>
+<tr id="n-brews"><td><code>brews</code></td><td><code>brew search</code></td><td>search formulae</td><td class="muted">needs brew</td></tr>
+<tr id="n-brewclean"><td><code>brewclean</code></td><td><code>brew cleanup</code></td><td>remove old versions</td><td class="muted">needs brew</td></tr>
 </table>
 <h2>Power (Linux)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn46">sys-reboot() { yesno &quot;Reboot $(hostname) now?&quot; &amp;&amp; sudo systemctl reboot; }</template>
-<tr><td><code>sys-reboot</code></td><td><button class="fn" data-src="fn46" data-name="sys-reboot">show code</button></td><td>reboot machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-reboot</span>
+<template id="fn46">function sys-reboot { yesno &quot;Reboot $(hostname) now?&quot; &amp;&amp; sudo systemctl reboot; }</template>
+<tr id="n-sys-reboot"><td><code>sys-reboot</code></td><td><button class="fn" data-src="fn46" data-name="sys-reboot">show code</button></td><td>reboot machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-reboot</span>
 Reboot web1 now? [y/N] n
 Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
-<template id="fn47">sys-poweroff() { yesno &quot;Power off $(hostname) now?&quot; &amp;&amp; sudo systemctl poweroff; }</template>
-<tr><td><code>sys-poweroff</code></td><td><button class="fn" data-src="fn47" data-name="sys-poweroff">show code</button></td><td>power off machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-poweroff</span>
+<template id="fn47">function sys-poweroff { yesno &quot;Power off $(hostname) now?&quot; &amp;&amp; sudo systemctl poweroff; }</template>
+<tr id="n-sys-poweroff"><td><code>sys-poweroff</code></td><td><button class="fn" data-src="fn47" data-name="sys-poweroff">show code</button></td><td>power off machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-poweroff</span>
 Power off web1 now? [y/N] n
 Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
-<template id="fn48">sys-suspend() { yesno &quot;Suspend $(hostname) now?&quot; &amp;&amp; sudo systemctl suspend; }</template>
-<tr><td><code>sys-suspend</code></td><td><button class="fn" data-src="fn48" data-name="sys-suspend">show code</button></td><td>suspend machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-suspend</span>
+<template id="fn48">function sys-suspend { yesno &quot;Suspend $(hostname) now?&quot; &amp;&amp; sudo systemctl suspend; }</template>
+<tr id="n-sys-suspend"><td><code>sys-suspend</code></td><td><button class="fn" data-src="fn48" data-name="sys-suspend">show code</button></td><td>suspend machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-suspend</span>
 Suspend laptop now? [y/N] y</pre></details></td><td class="muted">needs systemctl</td></tr>
 </table>
 <h2>macOS</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>flushdns</code></td><td><code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></td><td>flush DNS cache</td><td class="muted">macOS</td></tr>
-<tr><td><code>showfiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool true; killall Finder</code></td><td>show hidden files in Finder</td><td class="muted">macOS</td></tr>
-<tr><td><code>hidefiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool false; killall Finder</code></td><td>hide hidden files in Finder</td><td class="muted">macOS</td></tr>
-<template id="fn52">sleepnow() { yesno &quot;Sleep now?&quot; &amp;&amp; pmset sleepnow; }</template>
-<tr><td><code>sleepnow</code></td><td><button class="fn" data-src="fn52" data-name="sleepnow">show code</button></td><td>put the Mac to sleep after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sleepnow</span>
+<tr id="n-flushdns"><td><code>flushdns</code></td><td><code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></td><td>flush DNS cache</td><td class="muted">macOS</td></tr>
+<tr id="n-showfiles"><td><code>showfiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool true; killall Finder</code></td><td>show hidden files in Finder</td><td class="muted">macOS</td></tr>
+<tr id="n-hidefiles"><td><code>hidefiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool false; killall Finder</code></td><td>hide hidden files in Finder</td><td class="muted">macOS</td></tr>
+<template id="fn52">function sleepnow { yesno &quot;Sleep now?&quot; &amp;&amp; pmset sleepnow; }</template>
+<tr id="n-sleepnow"><td><code>sleepnow</code></td><td><button class="fn" data-src="fn52" data-name="sleepnow">show code</button></td><td>put the Mac to sleep after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sleepnow</span>
 Sleep now? [y/N] y</pre></details></td><td class="muted">macOS</td></tr>
-<template id="fn53">clipcopy() {
+<template id="fn53">function clipcopy {
   if has pbcopy; then pbcopy
   elif has wl-copy; then wl-copy
   elif has xclip; then xclip -selection clipboard
   else echo &quot;clipcopy: install xclip or wl-clipboard&quot; &gt;&amp;2; return 1; fi
 }</template>
-<tr><td><code>clipcopy</code></td><td><button class="fn" data-src="fn53" data-name="clipcopy">show code</button></td><td>stdin to clipboard (pbcopy, wl-copy or xclip)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ cat id_ed25519.pub | clipcopy</span>
+<tr id="n-clipcopy"><td><code>clipcopy</code></td><td><button class="fn" data-src="fn53" data-name="clipcopy">show code</button></td><td>stdin to clipboard (pbcopy, wl-copy or xclip)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ cat id_ed25519.pub | clipcopy</span>
 (public key copied to clipboard)</pre></details></td><td class="muted"></td></tr>
-<template id="fn54">clippaste() {
+<template id="fn54">function clippaste {
   if has pbpaste; then pbpaste
   elif has wl-paste; then wl-paste
   elif has xclip; then xclip -selection clipboard -o
   else echo &quot;clippaste: install xclip or wl-clipboard&quot; &gt;&amp;2; return 1; fi
 }</template>
-<tr><td><code>clippaste</code></td><td><button class="fn" data-src="fn54" data-name="clippaste">show code</button></td><td>clipboard to stdout<details class="ex" open><summary>example</summary><pre><span class="cmd">$ clippaste &gt; note.txt</span>
+<tr id="n-clippaste"><td><code>clippaste</code></td><td><button class="fn" data-src="fn54" data-name="clippaste">show code</button></td><td>clipboard to stdout<details class="ex" open><summary>example</summary><pre><span class="cmd">$ clippaste &gt; note.txt</span>
 (clipboard saved to note.txt)</pre></details></td><td class="muted"></td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

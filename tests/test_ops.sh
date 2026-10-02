@@ -11,7 +11,7 @@ PATH="$stubs:$PATH"
 
 for f in retry every tunnel certexp certfile dnscheck logsize; do assert_function "$f"; done
 for a in crons tfpo tfao kbad kimages kgall; do assert_alias "$a"; done
-for f in ksecret ksh krun; do assert_function "$f"; done
+for f in ksecret kshell krun; do assert_function "$f"; done
 
 # retry: succeeds on 3rd try
 c="$stubs/count"; echo 0 > "$c"

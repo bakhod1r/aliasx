@@ -1,0 +1,12 @@
+# Files are sourced into bash and zsh, not executed.
+shell=bash
+# Modules are sourced from a computed $ALIASX_ROOT path.
+disable=SC1090,SC1091
+# Aliases expand variables on purpose when defined ($_aliasx_ls, $_aliasx_ngsudo).
+disable=SC2139
+# zsh-only names inside ZSH_VERSION branches ($functions, compdef).
+disable=SC2154
+# ls/ps output is for humans here, not parsed for filenames.
+disable=SC2009,SC2012
+# Tests set ALIASX_* config read by the sourced loader.
+disable=SC2034

@@ -19,7 +19,7 @@ alias ddf='docker system df'  # docker disk usage
 # dsh CONTAINER [CMD] — shell into container (bash, else sh)
 #   $ dsh api
 #   root@4f2a9c1b:/app#
-dsh() {
+function dsh {
   [ "$#" -ge 1 ] || { echo "Usage: dsh <container> [command]" >&2; return 2; }
   _c="$1"; shift
   if [ "$#" -gt 0 ]; then docker exec -it "$_c" "$@"
@@ -31,7 +31,7 @@ dsh() {
 # drun IMAGE [CMD] — run throwaway interactive container
 #   $ drun alpine
 #   / #
-drun() {
+function drun {
   [ "$#" -ge 1 ] || { echo "Usage: drun <image> [command]" >&2; return 2; }
   docker run --rm -it "$@"
 }
@@ -39,7 +39,7 @@ drun() {
 # dip CONTAINER — print container IP
 #   $ dip api
 #   172.18.0.3
-dip() {
+function dip {
   [ "$#" -eq 1 ] || { echo "Usage: dip <container>" >&2; return 2; }
   docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$1"
 }
@@ -50,12 +50,12 @@ dip() {
 #   4f2a9c1b       api:dev    api
 #   Stop all running containers? [y/N] n
 #   Cancelled.
-dstop-all() {
+function dstop-all {
   _ids="$(docker ps -q)"
   [ -n "$_ids" ] || { echo "No running containers."; return 0; }
   docker ps
   printf 'Stop all running containers? [y/N] '; read -r _a
-  case "$_a" in y|Y|yes) docker stop $(docker ps -q) ;; *) echo "Cancelled." ;; esac
+  case "$_a" in y|Y|yes) echo "$_ids" | xargs docker stop ;; *) echo "Cancelled." ;; esac
   unset _ids _a
 }
 
@@ -65,7 +65,7 @@ dstop-all() {
 #   Images          14        3.2GB (61%)
 #   Prune unused Docker data? [y/N] n
 #   Cancelled.
-dprune() {
+function dprune {
   docker system df
   printf 'Prune unused Docker data? [y/N] '; read -r _a
   case "$_a" in y|Y|yes) docker system prune ;; *) echo "Cancelled." ;; esac # allow-destructive

@@ -4,7 +4,7 @@
 # envset KEY=VALUE [FILE] — insert or update KEY in .env
 #   $ envset DB_HOST=localhost
 #   updated DB_HOST in .env
-envset() {
+function envset {
   case "${1:-}" in
     [A-Za-z_]*=*) ;;
     *) echo "Usage: envset KEY=VALUE [file]" >&2; return 2 ;;
@@ -33,7 +33,7 @@ envset() {
 # envget KEY [FILE] — print value of KEY from .env
 #   $ envget DB_HOST
 #   localhost
-envget() {
+function envget {
   [ "$#" -ge 1 ] || { echo "Usage: envget KEY [file]" >&2; return 2; }
   ALIASX_K="$1" awk '
     { m = $0; sub(/^export[ \t]+/, "", m) }
@@ -44,7 +44,7 @@ envget() {
 # envdel KEY [FILE] — remove KEY from .env
 #   $ envdel DB_HOST
 #   removed DB_HOST from .env
-envdel() {
+function envdel {
   [ "$#" -ge 1 ] || { echo "Usage: envdel KEY [file]" >&2; return 2; }
   _f="${2:-.env}"; _t="$(mktemp)" || return 1
   ALIASX_K="$1" awk '{ m = $0; sub(/^export[ \t]+/, "", m) } index(m, ENVIRON["ALIASX_K"] "=") != 1' "$_f" > "$_t" &&
@@ -57,4 +57,4 @@ envdel() {
 #   DB_HOST
 #   DB_PORT
 #   JWT_SECRET
-envls() { sed -n -E 's/^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=.*/\2/p' "${1:-.env}"; }
+function envls { sed -n -E 's/^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=.*/\2/p' "${1:-.env}"; }

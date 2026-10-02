@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sysadmin — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,77 +44,104 @@
 <h2>Users and logins</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>logins</code></td><td><code>last -n 20</code></td><td>last 20 logins</td><td class="muted"></td></tr>
-<tr><td><code>reboots</code></td><td><code>last reboot | head</code></td><td>reboot history</td><td class="muted"></td></tr>
-<template id="fn3">userinfo() {
+<tr id="n-logins"><td><code>logins</code></td><td><code>last -n 20</code></td><td>last 20 logins</td><td class="muted"></td></tr>
+<tr id="n-reboots"><td><code>reboots</code></td><td><code>last reboot | head</code></td><td>reboot history</td><td class="muted"></td></tr>
+<template id="fn3">function userinfo {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: userinfo &lt;user&gt;&quot; &gt;&amp;2; return 2; }
   id &quot;$1&quot; 2&gt;/dev/null || { echo &quot;userinfo: no user &#x27;$1&#x27;&quot; &gt;&amp;2; return 1; }
   if [ &quot;$ALIASX_OS&quot; = linux ]; then getent passwd &quot;$1&quot; | awk -F: &#x27;{print &quot;home=&quot; $6 &quot; shell=&quot; $7}&#x27;
   else dscl . -read &quot;/Users/$1&quot; NFSHomeDirectory UserShell 2&gt;/dev/null | tr &#x27;\n&#x27; &#x27; &#x27;; echo; fi
   last -n 1 &quot;$1&quot; 2&gt;/dev/null | head -1
 }</template>
-<tr><td><code>userinfo USER</code></td><td><button class="fn" data-src="fn3" data-name="userinfo">show code</button></td><td>id, groups, shell, home and last login<details class="ex" open><summary>example</summary><pre><span class="cmd">$ userinfo deploy</span>
+<tr id="n-userinfo"><td><code>userinfo USER</code></td><td><button class="fn" data-src="fn3" data-name="userinfo">show code</button></td><td>id, groups, shell, home and last login<details class="ex" open><summary>example</summary><pre><span class="cmd">$ userinfo deploy</span>
 uid=1001(deploy) gid=1001(deploy) groups=1001(deploy),27(sudo),998(docker)
 home=/home/deploy shell=/bin/bash
 deploy   pts/0   10.0.0.5   Thu Oct  1 09:12   still logged in</pre></details></td><td class="muted"></td></tr>
-<template id="fn4">failedlogins() {
+<template id="fn4">function failedlogins {
   if has journalctl; then journalctl -u ssh -u sshd --since &quot;24 hours ago&quot; --no-pager 2&gt;/dev/null | grep -i &quot;failed password&quot;
   elif [ -f /var/log/auth.log ]; then grep -i &quot;failed password&quot; /var/log/auth.log | tail -40
   else log show --last 24h --predicate &#x27;process == &quot;sshd&quot;&#x27; 2&gt;/dev/null | grep -i fail; fi
 }</template>
-<tr><td><code>failedlogins</code></td><td><button class="fn" data-src="fn4" data-name="failedlogins">show code</button></td><td>recent failed SSH logins<details class="ex" open><summary>example</summary><pre><span class="cmd">$ failedlogins</span>
+<tr id="n-failedlogins"><td><code>failedlogins</code></td><td><button class="fn" data-src="fn4" data-name="failedlogins">show code</button></td><td>recent failed SSH logins<details class="ex" open><summary>example</summary><pre><span class="cmd">$ failedlogins</span>
 Oct 02 03:14:07 web1 sshd[9120]: Failed password for root from 203.0.113.9 port 51022 ssh2
 Oct 02 03:14:11 web1 sshd[9120]: Failed password for root from 203.0.113.9 port 51022 ssh2</pre></details></td><td class="muted"></td></tr>
-<tr><td><code>humans</code></td><td><code>awk -F: &#x27;\$3&gt;=1000 &amp;&amp; \$3&lt;65534 {print \$1}&#x27; /etc/passwd</code></td><td>real user accounts</td><td class="muted">Linux</td></tr>
+<template id="fn5">function humans { awk -F: &#x27;$3 &gt;= 1000 &amp;&amp; $3 &lt; 65534 {print $1}&#x27; /etc/passwd; }</template>
+<tr id="n-humans"><td><code>humans</code></td><td><button class="fn" data-src="fn5" data-name="humans">show code</button></td><td>real user accounts (uid 1000+)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ humans</span>
+ali
+deploy</pre></details></td><td class="muted">Linux</td></tr>
 </table>
 <h2>Services (systemd)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>enabled</code></td><td><code>systemctl list-unit-files --state=enabled</code></td><td>services that start at boot</td><td class="muted">needs systemctl</td></tr>
-<template id="fn7">svc() {
+<tr id="n-enabled"><td><code>enabled</code></td><td><code>systemctl list-unit-files --state=enabled</code></td><td>services that start at boot</td><td class="muted">needs systemctl</td></tr>
+<template id="fn7">function svc {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: svc &lt;service&gt;&quot; &gt;&amp;2; return 2; }
   systemctl status &quot;$1&quot; --no-pager -n 20
 }</template>
-<tr><td><code>svc NAME</code></td><td><button class="fn" data-src="fn7" data-name="svc">show code</button></td><td>status and last 20 log lines of a service<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svc nginx</span>
+<tr id="n-svc"><td><code>svc NAME</code></td><td><button class="fn" data-src="fn7" data-name="svc">show code</button></td><td>status and last 20 log lines of a service<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svc nginx</span>
 ● nginx.service - A high performance web server
      Active: active (running) since Thu 2026-10-01 08:00:12 UTC; 1 day ago
    Main PID: 812 (nginx)</pre></details></td><td class="muted">needs systemctl</td></tr>
-<template id="fn8">svcr() {
+<template id="fn8">function svcr {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: svcr &lt;service&gt;&quot; &gt;&amp;2; return 2; }
   yesno &quot;Restart $1?&quot; &amp;&amp; sudo systemctl restart &quot;$1&quot;
 }</template>
-<tr><td><code>svcr NAME</code></td><td><button class="fn" data-src="fn8" data-name="svcr">show code</button></td><td>restart a service after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svcr nginx</span>
+<tr id="n-svcr"><td><code>svcr NAME</code></td><td><button class="fn" data-src="fn8" data-name="svcr">show code</button></td><td>restart a service after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svcr nginx</span>
 Restart nginx? [y/N] y</pre></details></td><td class="muted">needs systemctl</td></tr>
-<template id="fn9">svcstop() {
+<template id="fn9">function svcstop {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: svcstop &lt;service&gt;&quot; &gt;&amp;2; return 2; }
   yesno &quot;Stop $1?&quot; &amp;&amp; sudo systemctl stop &quot;$1&quot;
 }</template>
-<tr><td><code>svcstop NAME</code></td><td><button class="fn" data-src="fn9" data-name="svcstop">show code</button></td><td>stop a service after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svcstop nginx</span>
+<tr id="n-svcstop"><td><code>svcstop NAME</code></td><td><button class="fn" data-src="fn9" data-name="svcstop">show code</button></td><td>stop a service after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svcstop nginx</span>
 Stop nginx? [y/N] n
 Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
 </table>
 <h2>Disk</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>deleted</code></td><td><code>lsof +L1</code></td><td>deleted files still holding disk space</td><td class="muted"></td></tr>
-<template id="fn11">bigfiles() {
+<tr id="n-deleted"><td><code>deleted</code></td><td><code>lsof +L1</code></td><td>deleted files still holding disk space</td><td class="muted"></td></tr>
+<template id="fn11">function bigfiles {
   find &quot;${1:-.}&quot; -xdev -type f -size +&quot;${2:-100M}&quot; -exec du -h {} + 2&gt;/dev/null | sort -rh | head -20
 }</template>
-<tr><td><code>bigfiles [DIR] [SIZE]</code></td><td><button class="fn" data-src="fn11" data-name="bigfiles">show code</button></td><td>files bigger than SIZE (default . 100M)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ bigfiles /var 500M</span>
+<tr id="n-bigfiles"><td><code>bigfiles [DIR] [SIZE]</code></td><td><button class="fn" data-src="fn11" data-name="bigfiles">show code</button></td><td>files bigger than SIZE (default . 100M)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ bigfiles /var 500M</span>
 2.1G	/var/lib/docker/overlay2/3f1c.../layer.tar
 812M	/var/log/journal/system@0001.journal</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Kernel</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>kmsg</code></td><td><code>sudo dmesg -T | tail -40</code></td><td>last kernel messages</td><td class="muted">Linux</td></tr>
-<tr><td><code>oom</code></td><td><code>journalctl -k | grep -i &quot;out of memory&quot;</code></td><td>out-of-memory kills</td><td class="muted">Linux</td></tr>
-<tr><td><code>timesync</code></td><td><code>timedatectl</code></td><td>clock and NTP status</td><td class="muted">Linux</td></tr>
+<tr id="n-kmsg"><td><code>kmsg</code></td><td><code>sudo dmesg -T | tail -40</code></td><td>last kernel messages</td><td class="muted">Linux</td></tr>
+<tr id="n-oom"><td><code>oom</code></td><td><code>journalctl -k | grep -i &quot;out of memory&quot;</code></td><td>out-of-memory kills</td><td class="muted">Linux</td></tr>
+<tr id="n-timesync"><td><code>timesync</code></td><td><code>timedatectl</code></td><td>clock and NTP status</td><td class="muted">Linux</td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

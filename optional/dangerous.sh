@@ -4,7 +4,7 @@
 # confirm PROMPT PHRASE — true only if user types PHRASE
 #   $ confirm 'Wipe cache?' WIPE && rm -r cache
 #   Wipe cache? Type WIPE to continue: WIPE
-confirm() {
+function confirm {
   printf '%s Type %s to continue: ' "$1" "$2"
   read -r _a
   [ "$_a" = "$2" ]; _rc=$?; unset _a; return $_rc
@@ -16,7 +16,7 @@ confirm() {
 #   CONTAINER ID  STATUS
 #   9a1b...       Exited (0)
 #   Remove every stopped container? Type REMOVE-STOPPED to continue:
-docker-rm-stopped() {
+function docker-rm-stopped {
   docker ps --all --filter status=exited
   confirm "Remove every stopped container?" REMOVE-STOPPED || return 1
   docker ps --quiet --all --filter status=exited | xargs docker rm # allow-destructive
@@ -25,7 +25,7 @@ docker-rm-stopped() {
 # docker-prune-all — remove all unused data including images
 #   $ docker-prune-all
 #   Remove all unused Docker data, including images? Type PRUNE-DOCKER to continue:
-docker-prune-all() {
+function docker-prune-all {
   docker system df
   confirm "Remove all unused Docker data, including images?" PRUNE-DOCKER || return 1
   docker system prune --all # allow-destructive
@@ -36,7 +36,7 @@ docker-prune-all() {
 #   $ redis-flush
 #   (integer) 1520
 #   Delete every key in this Redis database? Type FLUSH-REDIS to continue:
-redis-flush() {
+function redis-flush {
   redis-cli dbsize
   confirm "Delete every key in this Redis database?" FLUSH-REDIS || return 1
   redis-cli flushdb # allow-destructive
@@ -45,7 +45,7 @@ redis-flush() {
 # pg-dropdb DB — drop a PostgreSQL database (type its name to confirm)
 #   $ pg-dropdb shop_copy
 #   Drop database shop_copy permanently? Type shop_copy to continue:
-pg-dropdb() {
+function pg-dropdb {
   [ "$#" -eq 1 ] || { echo "Usage: pg-dropdb <database>" >&2; return 2; }
   confirm "Drop database $1 permanently?" "$1" || return 1
   dropdb "$1" # allow-destructive

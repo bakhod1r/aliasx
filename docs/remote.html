@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SSH &amp; tmux — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -41,42 +44,66 @@
 <h2>SSH</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>sshkeys</code></td><td><code>ls -l ~/.ssh/*.pub</code></td><td>your public keys</td><td class="muted">needs ssh</td></tr>
-<tr><td><code>sshconf</code></td><td><code>${EDITOR:-vi} ~/.ssh/config</code></td><td>edit ssh config</td><td class="muted">needs ssh</td></tr>
-<tr><td><code>sshagent</code></td><td><code>ssh-add -l</code></td><td>keys loaded in agent</td><td class="muted">needs ssh</td></tr>
-<template id="fn4">sshgen() {
+<tr id="n-sshkeys"><td><code>sshkeys</code></td><td><code>ls -l ~/.ssh/*.pub</code></td><td>your public keys</td><td class="muted">needs ssh</td></tr>
+<tr id="n-sshconf"><td><code>sshconf</code></td><td><code>${EDITOR:-vi} ~/.ssh/config</code></td><td>edit ssh config</td><td class="muted">needs ssh</td></tr>
+<tr id="n-sshagent"><td><code>sshagent</code></td><td><code>ssh-add -l</code></td><td>keys loaded in agent</td><td class="muted">needs ssh</td></tr>
+<template id="fn4">function sshgen {
   _k=&quot;$HOME/.ssh/${1:-id_ed25519}&quot;
   [ -e &quot;$_k&quot; ] &amp;&amp; { echo &quot;sshgen: $_k already exists&quot; &gt;&amp;2; unset _k; return 1; }
   ssh-keygen -t ed25519 -f &quot;$_k&quot; &amp;&amp; cat &quot;$_k.pub&quot;
   unset _k
 }</template>
-<tr><td><code>sshgen [NAME]</code></td><td><button class="fn" data-src="fn4" data-name="sshgen">show code</button></td><td>new ed25519 key at ~/.ssh/NAME (default id_ed25519)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sshgen work</span>
+<tr id="n-sshgen"><td><code>sshgen [NAME]</code></td><td><button class="fn" data-src="fn4" data-name="sshgen">show code</button></td><td>new ed25519 key at ~/.ssh/NAME (default id_ed25519)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sshgen work</span>
 Generating public/private ed25519 key pair.
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... ali@laptop</pre></details></td><td class="muted">needs ssh</td></tr>
-<template id="fn5">sshcopy() {
+<template id="fn5">function sshcopy {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: sshcopy &lt;user@host&gt; [ssh-copy-id options]&quot; &gt;&amp;2; return 2; }
   ssh-copy-id &quot;$@&quot;
 }</template>
-<tr><td><code>sshcopy USER@HOST</code></td><td><button class="fn" data-src="fn5" data-name="sshcopy">show code</button></td><td>install your public key on a server<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sshcopy deploy@203.0.113.10</span>
+<tr id="n-sshcopy"><td><code>sshcopy USER@HOST</code></td><td><button class="fn" data-src="fn5" data-name="sshcopy">show code</button></td><td>install your public key on a server<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sshcopy deploy@203.0.113.10</span>
 Number of key(s) added: 1</pre></details></td><td class="muted">needs ssh</td></tr>
 </table>
 <h2>tmux</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>tl</code></td><td><code>tmux ls</code></td><td>list sessions</td><td class="muted">needs tmux</td></tr>
-<tr><td><code>ta</code></td><td><code>tmux attach -t</code></td><td>attach to session</td><td class="muted">needs tmux</td></tr>
-<tr><td><code>tn</code></td><td><code>tmux new -s</code></td><td>new named session</td><td class="muted">needs tmux</td></tr>
-<template id="fn9">tk() {
+<tr id="n-tl"><td><code>tl</code></td><td><code>tmux ls</code></td><td>list sessions</td><td class="muted">needs tmux</td></tr>
+<tr id="n-ta"><td><code>ta</code></td><td><code>tmux attach -t</code></td><td>attach to session</td><td class="muted">needs tmux</td></tr>
+<tr id="n-tn"><td><code>tn</code></td><td><code>tmux new -s</code></td><td>new named session</td><td class="muted">needs tmux</td></tr>
+<template id="fn9">function tk {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: tk &lt;session&gt;&quot; &gt;&amp;2; return 2; }
   yesno &quot;Kill tmux session &#x27;$1&#x27;?&quot; &amp;&amp; tmux kill-session -t &quot;$1&quot;
 }</template>
-<tr><td><code>tk SESSION</code></td><td><button class="fn" data-src="fn9" data-name="tk">show code</button></td><td>kill a tmux session after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tk old</span>
+<tr id="n-tk"><td><code>tk SESSION</code></td><td><button class="fn" data-src="fn9" data-name="tk">show code</button></td><td>kill a tmux session after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tk old</span>
 Kill tmux session &#x27;old&#x27;? [y/N] y</pre></details></td><td class="muted">needs tmux</td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

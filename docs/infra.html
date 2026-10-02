@@ -4,13 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Infrastructure — aliasx</title>
 <link rel="stylesheet" href="style.css">
+<script src="search.js" defer></script>
 </head>
 <body>
 <nav>
   <b>aliasx</b>
+  <div class="search"><input id="q" type="search" placeholder="Search: port, git, logs…" autocomplete="off" aria-label="Search commands"><div id="results" hidden></div></div>
   <a href="index.html">Getting started</a>
   <a href="core.html">Core</a>
   <a href="hints.html">Hints</a>
+  <a href="completion.html">Completion</a>
   <a href="nav.html">Navigation</a>
   <a href="files.html">Files</a>
   <a href="git.html">Git</a>
@@ -42,40 +45,64 @@
 <h2>Terraform</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>tf</code></td><td><code>terraform</code></td><td>terraform</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfi</code></td><td><code>terraform init</code></td><td>init</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tff</code></td><td><code>terraform fmt -recursive</code></td><td>format all files</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfv</code></td><td><code>terraform validate</code></td><td>validate</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfp</code></td><td><code>terraform plan</code></td><td>plan</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfa</code></td><td><code>terraform apply</code></td><td>apply (asks to confirm)</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfpo</code></td><td><code>terraform plan -out=tfplan</code></td><td>plan and save to tfplan</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfao</code></td><td><code>terraform apply tfplan</code></td><td>apply exactly the saved plan</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfo</code></td><td><code>terraform output</code></td><td>outputs</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfs</code></td><td><code>terraform show</code></td><td>show state or plan</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfwl</code></td><td><code>terraform workspace list</code></td><td>list workspaces</td><td class="muted">needs terraform</td></tr>
-<tr><td><code>tfstate</code></td><td><code>terraform state list</code></td><td>list state resources</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tf"><td><code>tf</code></td><td><code>terraform</code></td><td>terraform</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfi"><td><code>tfi</code></td><td><code>terraform init</code></td><td>init</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tff"><td><code>tff</code></td><td><code>terraform fmt -recursive</code></td><td>format all files</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfv"><td><code>tfv</code></td><td><code>terraform validate</code></td><td>validate</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfp"><td><code>tfp</code></td><td><code>terraform plan</code></td><td>plan</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfa"><td><code>tfa</code></td><td><code>terraform apply</code></td><td>apply (asks to confirm)</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfpo"><td><code>tfpo</code></td><td><code>terraform plan -out=tfplan</code></td><td>plan and save to tfplan</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfao"><td><code>tfao</code></td><td><code>terraform apply tfplan</code></td><td>apply exactly the saved plan</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfo"><td><code>tfo</code></td><td><code>terraform output</code></td><td>outputs</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfs"><td><code>tfs</code></td><td><code>terraform show</code></td><td>show state or plan</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfwl"><td><code>tfwl</code></td><td><code>terraform workspace list</code></td><td>list workspaces</td><td class="muted">needs terraform</td></tr>
+<tr id="n-tfstate"><td><code>tfstate</code></td><td><code>terraform state list</code></td><td>list state resources</td><td class="muted">needs terraform</td></tr>
 </table>
 <h2>OpenTofu</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>tofui</code></td><td><code>tofu init</code></td><td>tofu init</td><td class="muted">needs tofu</td></tr>
-<tr><td><code>tofuf</code></td><td><code>tofu fmt -recursive</code></td><td>tofu format all files</td><td class="muted">needs tofu</td></tr>
-<tr><td><code>tofuv</code></td><td><code>tofu validate</code></td><td>tofu validate</td><td class="muted">needs tofu</td></tr>
-<tr><td><code>tofup</code></td><td><code>tofu plan</code></td><td>tofu plan</td><td class="muted">needs tofu</td></tr>
-<tr><td><code>tofua</code></td><td><code>tofu apply</code></td><td>tofu apply (asks to confirm)</td><td class="muted">needs tofu</td></tr>
+<tr id="n-tofui"><td><code>tofui</code></td><td><code>tofu init</code></td><td>tofu init</td><td class="muted">needs tofu</td></tr>
+<tr id="n-tofuf"><td><code>tofuf</code></td><td><code>tofu fmt -recursive</code></td><td>tofu format all files</td><td class="muted">needs tofu</td></tr>
+<tr id="n-tofuv"><td><code>tofuv</code></td><td><code>tofu validate</code></td><td>tofu validate</td><td class="muted">needs tofu</td></tr>
+<tr id="n-tofup"><td><code>tofup</code></td><td><code>tofu plan</code></td><td>tofu plan</td><td class="muted">needs tofu</td></tr>
+<tr id="n-tofua"><td><code>tofua</code></td><td><code>tofu apply</code></td><td>tofu apply (asks to confirm)</td><td class="muted">needs tofu</td></tr>
 </table>
 <h2>Ansible</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr><td><code>ap</code></td><td><code>ansible-playbook</code></td><td>run playbook</td><td class="muted">needs ansible</td></tr>
-<tr><td><code>apcheck</code></td><td><code>ansible-playbook --check --diff</code></td><td>dry-run playbook with diff</td><td class="muted">needs ansible</td></tr>
-<tr><td><code>ainv</code></td><td><code>ansible-inventory --graph</code></td><td>inventory graph</td><td class="muted">needs ansible</td></tr>
-<tr><td><code>alint</code></td><td><code>ansible-lint</code></td><td>lint playbooks</td><td class="muted">needs ansible</td></tr>
+<tr id="n-ap"><td><code>ap</code></td><td><code>ansible-playbook</code></td><td>run playbook</td><td class="muted">needs ansible</td></tr>
+<tr id="n-apcheck"><td><code>apcheck</code></td><td><code>ansible-playbook --check --diff</code></td><td>dry-run playbook with diff</td><td class="muted">needs ansible</td></tr>
+<tr id="n-ainv"><td><code>ainv</code></td><td><code>ansible-inventory --graph</code></td><td>inventory graph</td><td class="muted">needs ansible</td></tr>
+<tr id="n-alint"><td><code>alint</code></td><td><code>ansible-lint</code></td><td>lint playbooks</td><td class="muted">needs ansible</td></tr>
 </table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>
 (function () {
+  var q = document.getElementById("q"), res = document.getElementById("results");
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function search() {
+    var w = q.value.trim().toLowerCase(), idx = window.ALIASX_INDEX || [];
+    if (!w) { res.hidden = true; return; }
+    var word = new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9_-]/g, ""), "i");
+    var hits = idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) >= 0; })
+      .concat(idx.filter(function (e) { return e[0].toLowerCase().indexOf(w) < 0 && word.test(e[1] + " " + e[2] + " " + e[3]); }))
+      .slice(0, 30);
+    res.innerHTML = hits.length ? hits.map(function (e) {
+      return '<a href="' + e[4] + '.html#n-' + encodeURIComponent(e[0]) + '"><code>' + esc(e[1]) + '</code><span>' + esc(e[3] || e[2]) + '</span></a>';
+    }).join("") : '<p class="muted">No match</p>';
+    res.hidden = false;
+  }
+  if (q) {
+    q.addEventListener("input", search);
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { var a = res.querySelector("a"); if (a) location.href = a.href; }
+      if (e.key === "Escape") { q.value = ""; res.hidden = true; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    });
+  }
   var on = document.querySelector("nav a.on");
   if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
   var d = document.getElementById("code"), body = document.getElementById("code-body");

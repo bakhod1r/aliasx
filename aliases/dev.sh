@@ -1,4 +1,4 @@
-# Development: Node, Python, Go, Rust, Java, JSON, TLS.
+# Development: Node, Python (uv, poetry), PHP, Ruby, .NET, Go, Rust, Java, TLS.
 
 if has npm; then
   # == npm
@@ -40,7 +40,7 @@ if has python3; then
   # venv [DIR] — create (if missing) and activate virtualenv (default .venv)
   #   $ venv
   #   (.venv) $
-  venv() {
+  function venv {
     _d="${1:-.venv}"
     [ -d "$_d" ] || python3 -m venv "$_d" || { unset _d; return 1; }
     . "$_d/bin/activate"; unset _d
@@ -49,10 +49,49 @@ if has python3; then
   # serve [PORT] [DIR] — static HTTP server on 127.0.0.1 (default 8000)
   #   $ serve 9000
   #   Serving . at http://127.0.0.1:9000
-  serve() {
+  function serve {
     echo "Serving ${2:-.} at http://127.0.0.1:${1:-8000}"
     python3 -m http.server "${1:-8000}" --bind 127.0.0.1 --directory "${2:-.}"
   }
+fi
+
+if has uv; then
+  # == uv (Python)
+  alias uvr='uv run'  # run in project env
+  alias uva='uv add'  # add dependency
+  alias uvs='uv sync'  # install locked dependencies
+fi
+if has poetry; then
+  # == Poetry
+  alias poi='poetry install'  # install dependencies
+  alias poa='poetry add'  # add dependency
+  alias por='poetry run'  # run in project env
+fi
+
+if has composer; then
+  # == PHP / Laravel
+  alias comi='composer install'  # install dependencies
+  alias comr='composer require'  # add dependency
+fi
+if has php; then
+  alias art='php artisan'  # Laravel artisan
+  alias artm='php artisan migrate'  # run migrations
+  alias artt='php artisan test'  # run tests
+fi
+
+if has rails; then
+  # == Ruby / Rails
+  alias rsrv='rails server'  # start dev server
+  alias rdbm='rails db:migrate'  # run migrations
+fi
+has bundle && alias be='bundle exec'  # run with Gemfile versions
+
+if has dotnet; then
+  # == .NET
+  alias dn='dotnet'  # dotnet
+  alias dnr='dotnet run'  # run project
+  alias dnt='dotnet test'  # run tests
+  alias dnb='dotnet build'  # build project
 fi
 
 if has go; then
@@ -94,7 +133,7 @@ fi
 #   issuer=C=US, O=DigiCert Inc, CN=DigiCert Global G3 TLS ECC SHA384 2020 CA1
 #   notBefore=Jan 15 00:00:00 2026 GMT
 #   notAfter=Jan 15 23:59:59 2027 GMT
-tlscheck() {
+function tlscheck {
   [ "$#" -eq 1 ] || { echo "Usage: tlscheck <host[:port]>" >&2; return 2; }
   _h="${1%%:*}"; _p="${1##*:}"; [ "$_h" = "$_p" ] && _p=443
   openssl s_client -connect "$_h:$_p" -servername "$_h" </dev/null 2>/dev/null |

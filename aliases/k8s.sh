@@ -48,16 +48,16 @@ if has kubectl; then
   # ksecret NAME KEY — print decoded value of one secret key
   #   $ ksecret db-creds password
   #   s3cret
-  ksecret() {
+  function ksecret {
     [ "$#" -eq 2 ] || { echo "Usage: ksecret <secret> <key>" >&2; return 2; }
     kubectl get secret "$1" -o jsonpath="{.data.$2}" | base64 --decode; echo
   }
 
-  # ksh POD — shell into pod (sh)
-  #   $ ksh api-7d9f8b-x2k4
+  # kshell POD — shell into pod (sh)
+  #   $ kshell api-7d9f8b-x2k4
   #   /app $
-  ksh() {
-    [ "$#" -ge 1 ] || { echo "Usage: ksh <pod> [container]" >&2; return 2; }
+  function kshell {
+    [ "$#" -ge 1 ] || { echo "Usage: kshell <pod> [container]" >&2; return 2; }
     kubectl exec -it "$1" ${2:+-c "$2"} -- sh
   }
 
@@ -65,12 +65,12 @@ if has kubectl; then
   #   $ krun
   #   If you don't see a command prompt, try pressing enter.
   #   / #
-  krun() { kubectl run "tmp-$$" --rm -it --restart=Never --image="${1:-busybox:1.36}" -- sh; }
+  function krun { kubectl run "tmp-$$" --rm -it --restart=Never --image="${1:-busybox:1.36}" -- sh; }
 
   # kuse CONTEXT — switch kubectl context
   #   $ kuse prod
   #   Switched to context "prod".
-  kuse() {
+  function kuse {
     [ "$#" -eq 1 ] || { echo "Usage: kuse <context>" >&2; return 2; }
     kubectl config use-context "$1"
   }
@@ -78,7 +78,7 @@ if has kubectl; then
   # knamespace NS — set namespace for current context
   #   $ knamespace payments
   #   Context "prod" modified.
-  knamespace() {
+  function knamespace {
     [ "$#" -eq 1 ] || { echo "Usage: knamespace <namespace>" >&2; return 2; }
     kubectl config set-context --current --namespace="$1"
   }
@@ -86,7 +86,7 @@ if has kubectl; then
   # kpf RESOURCE LOCAL:REMOTE — port-forward
   #   $ kpf svc/api 8080:80
   #   Forwarding from 127.0.0.1:8080 -> 80
-  kpf() {
+  function kpf {
     [ "$#" -ge 2 ] || { echo "Usage: kpf <resource> <local:remote>" >&2; return 2; }
     kubectl port-forward "$@"
   }
@@ -95,7 +95,7 @@ if has kubectl; then
   #   $ kdebug api-7d9f8b-x2k4
   #   Defaulting debug container name to debugger-x7k2.
   #   / #
-  kdebug() {
+  function kdebug {
     [ "$#" -ge 1 ] || { echo "Usage: kdebug <pod> [image]" >&2; return 2; }
     kubectl debug -it "$1" --image="${2:-busybox:1.36}"
   }
