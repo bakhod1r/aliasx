@@ -74,7 +74,7 @@ assert_eq "$(typeset -f docker-prune-all >/dev/null 2>&1 && echo yes)" "" "dange
 rm -rf "$stubs"
 hash -r
 unalias k d tf 2>/dev/null
-PATH="/usr/bin:/bin" . "$ALIASX_ROOT/aliasx.sh"
+PATH="$(isolated_path)" . "$ALIASX_ROOT/aliasx.sh"
 refute_alias k
 refute_alias d
 refute_alias tf

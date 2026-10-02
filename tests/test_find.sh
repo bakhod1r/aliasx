@@ -16,8 +16,8 @@ case "$(aliasx_find CLIPBOARD)" in *clipcopy*) ;; *) echo "  case-insensitive de
 case "$(aliasx_find http)" in *_aliasx*) echo "  internal helper listed"; _failures=$((_failures + 1)) ;; esac
 
 # not-loaded commands are not listed (no kubectl here)
-PATH=/usr/bin:/bin
-case "$(aliasx_find pod)" in *kgp*) echo "  listed unloaded kgp"; _failures=$((_failures + 1)) ;; esac
+out="$(PATH="$(isolated_path)"; unalias -a; . "$ALIASX_ROOT/aliasx.sh"; aliasx_find pod)"
+case "$out" in *kgp*) echo "  listed unloaded kgp"; _failures=$((_failures + 1)) ;; esac
 
 # aliases show the command they run
 case "$(aliasx_find header)" in *"curlh → curl --head · response headers only"*) ;; *) echo "  alias line lacks command"; _failures=$((_failures + 1)) ;; esac

@@ -43,7 +43,7 @@ assert_eq "$(ftext needle)" "./found.txt:1:needle" "ftext"
 
 # tmpd creates and enters a temp dir
 before="$(pwd -P)"; tmpd >/dev/null
-[ "$(pwd -P)" != "$before" ] && [ -d "$(pwd -P)" ] || { echo "  tmpd"; _failures=$((_failures + 1)); }
+if [ "$(pwd -P)" = "$before" ] || [ ! -d "$(pwd -P)" ]; then echo "  tmpd"; _failures=$((_failures + 1)); fi
 cd "$real" || exit 1
 
 # usage errors

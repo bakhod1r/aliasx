@@ -202,7 +202,7 @@ function aliasx {
     list)
       _f="$ALIASX_ROOT/aliases/${2:-}.sh"
       [ -f "$_f" ] || _f="$ALIASX_ROOT/optional/${2:-}.sh"
-      [ -n "${2:-}" ] && [ -f "$_f" ] || { echo "Usage: aliasx list <module>" >&2; return 2; }
+      if [ -z "${2:-}" ] || [ ! -f "$_f" ]; then echo "Usage: aliasx list <module>" >&2; return 2; fi
       grep -E '^[[:space:]]*(alias |# [a-z][a-z0-9_-]* ?.*— )' "$_f" | sed 's/^[[:space:]]*//'
       unset _f ;;
     check)

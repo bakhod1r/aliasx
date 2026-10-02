@@ -25,4 +25,15 @@ assert_eq() {
   fi
 }
 
+# isolated_path — PATH with only basic tools, so docker/kubectl/... look missing
+# even on CI runners that have them preinstalled.
+isolated_path() {
+  _ip="$(mktemp -d)"
+  for _c in sh bash zsh awk sed grep sort uniq cat tr head tail cut wc date mktemp rm mkdir ls \
+            basename dirname uname env touch cp mv chmod id find xargs printf tee; do
+    _p="$(command -v "$_c" 2>/dev/null)" && case "$_p" in /*) ln -s "$_p" "$_ip/$_c" ;; esac
+  done
+  echo "$_ip"; unset _c _p _ip
+}
+
 finish() { [ "$_failures" -eq 0 ]; exit $?; }

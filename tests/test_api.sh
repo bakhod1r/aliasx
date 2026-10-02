@@ -43,7 +43,7 @@ waitport 127.0.0.1 1 1 >/dev/null 2>&1; assert_eq "$?" "1" "waitport timeout"
 # selfcert writes cert and key
 tmp="$(mktemp -d)"; cd "$tmp" || exit 1
 selfcert dev.local >/dev/null 2>&1
-[ -f dev.local.crt ] && [ -f dev.local.key ] || { echo "  selfcert files"; _failures=$((_failures + 1)); }
+if [ ! -f dev.local.crt ] || [ ! -f dev.local.key ]; then echo "  selfcert files"; _failures=$((_failures + 1)); fi
 openssl x509 -in dev.local.crt -noout -subject 2>/dev/null | grep -q dev.local || { echo "  selfcert subject"; _failures=$((_failures + 1)); }
 cd /; command rm -r "$tmp" "$stubs"
 finish
