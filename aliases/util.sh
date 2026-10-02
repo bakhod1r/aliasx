@@ -4,7 +4,14 @@
 # genpass [N] — random password, N chars (default 20)
 #   $ genpass 16
 #   q7K#m2Rx_9vT!pLz
-function genpass { LC_ALL=C tr -dc 'A-Za-z0-9!@#%^_+=-' </dev/urandom | head -c "${1:-20}"; echo; }
+function genpass {
+  # Read bounded chunks: an endless `tr </dev/urandom | head` hangs where SIGPIPE is ignored.
+  _n="${1:-20}"; _o=""
+  while [ "${#_o}" -lt "$_n" ]; do
+    _o="$_o$(head -c 512 /dev/urandom | LC_ALL=C tr -dc 'A-Za-z0-9!@#%^_+=-')"
+  done
+  printf '%s\n' "$_o" | cut -c "1-$_n"; unset _n _o
+}
 
 # newuuid — random UUID (lowercase)
 #   $ newuuid

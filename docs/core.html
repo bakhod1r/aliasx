@@ -150,7 +150,7 @@ Deploy? [y/N] y</pre></details></td><td class="muted"></td></tr>
     list)
       _f=&quot;$ALIASX_ROOT/aliases/${2:-}.sh&quot;
       [ -f &quot;$_f&quot; ] || _f=&quot;$ALIASX_ROOT/optional/${2:-}.sh&quot;
-      [ -n &quot;${2:-}&quot; ] &amp;&amp; [ -f &quot;$_f&quot; ] || { echo &quot;Usage: aliasx list &lt;module&gt;&quot; &gt;&amp;2; return 2; }
+      if [ -z &quot;${2:-}&quot; ] || [ ! -f &quot;$_f&quot; ]; then echo &quot;Usage: aliasx list &lt;module&gt;&quot; &gt;&amp;2; return 2; fi
       grep -E &#x27;^[[:space:]]*(alias |# [a-z][a-z0-9_-]* ?.*— )&#x27; &quot;$_f&quot; | sed &#x27;s/^[[:space:]]*//&#x27;
       unset _f ;;
     check)

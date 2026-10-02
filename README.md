@@ -15,6 +15,17 @@ git clone https://github.com/bakhod1r/aliasx ~/.aliasx
 
 oh-my-zsh: clone into `$ZSH_CUSTOM/plugins/aliasx` and add `aliasx` to `plugins=(...)`.
 
+### New machine: full zsh setup
+
+```sh
+git clone https://github.com/bakhod1r/aliasx ~/.aliasx
+~/.aliasx/setup/zsh-setup.sh        # options: --no-chsh --no-font --no-aliasx
+```
+
+Installs zsh, oh-my-zsh, powerlevel10k with the layout in `setup/p10k.zsh`,
+plugins (autosuggestions, syntax highlighting, fast-syntax-highlighting, autocomplete),
+the MesloLGS NF font and aliasx. `~/.zshrc` is backed up; only a marked block is managed.
+
 ## Profiles
 
 Load only what your role needs:

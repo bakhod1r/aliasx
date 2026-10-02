@@ -44,7 +44,14 @@
 <h2>Generate</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn1">function genpass { LC_ALL=C tr -dc &#x27;A-Za-z0-9!@#%^_+=-&#x27; &lt;/dev/urandom | head -c &quot;${1:-20}&quot;; echo; }</template>
+<template id="fn1">function genpass {
+  # Read bounded chunks: an endless `tr &lt;/dev/urandom | head` hangs where SIGPIPE is ignored.
+  _n=&quot;${1:-20}&quot;; _o=&quot;&quot;
+  while [ &quot;${#_o}&quot; -lt &quot;$_n&quot; ]; do
+    _o=&quot;$_o$(head -c 512 /dev/urandom | LC_ALL=C tr -dc &#x27;A-Za-z0-9!@#%^_+=-&#x27;)&quot;
+  done
+  printf &#x27;%s\n&#x27; &quot;$_o&quot; | cut -c &quot;1-$_n&quot;; unset _n _o
+}</template>
 <tr id="n-genpass"><td><code>genpass [N]</code></td><td><button class="fn" data-src="fn1" data-name="genpass">show code</button></td><td>random password, N chars (default 20)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ genpass 16</span>
 q7K#m2Rx_9vT!pLz</pre></details></td><td class="muted"></td></tr>
 <template id="fn2">function newuuid {
