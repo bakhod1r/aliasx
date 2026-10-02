@@ -158,7 +158,12 @@ project.zip</pre></details></td><td class="muted"></td></tr>
 ./docs/config.md</pre></details></td><td class="muted"></td></tr>
 <template id="fn28">function ftext {
   [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: ftext &lt;text&gt;&quot; &gt;&amp;2; return 2; }
-  grep -rnI --exclude-dir=.git --exclude-dir=node_modules -- &quot;$*&quot; .
+  if grep --exclude-dir=x -q x /dev/null 2&gt;/dev/null || [ $? -eq 1 ]; then
+    grep -rnI --exclude-dir=.git --exclude-dir=node_modules -- &quot;$*&quot; .
+  else  # busybox grep: no --exclude-dir
+    # shellcheck disable=SC2033  # the external grep is intended
+    find . \( -name .git -o -name node_modules \) -prune -o -type f -exec grep -nIH -- &quot;$*&quot; {} +
+  fi
 }</template>
 <tr id="n-ftext"><td><code>ftext TEXT</code></td><td><button class="fn" data-src="fn28" data-name="ftext">show code</button></td><td>find TEXT in files below here (skips .git, node_modules)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ftext TODO</span>
 ./api/user.go:42:// TODO: validate email
@@ -177,7 +182,10 @@ project.zip</pre></details></td><td class="muted"></td></tr>
 <tr id="n-dfh"><td><code>dfh</code></td><td><code>df -h</code></td><td>disk free, human sizes</td><td class="muted"></td></tr>
 <tr id="n-dfi"><td><code>dfi</code></td><td><code>df -i</code></td><td>inode usage</td><td class="muted"></td></tr>
 <tr id="n-usage"><td><code>usage</code></td><td><code>du -sh .</code></td><td>size of current folder</td><td class="muted"></td></tr>
-<tr id="n-biggest"><td><code>biggest</code></td><td><code>du -sh ./* 2&gt;/dev/null | sort -h | tail -20</code></td><td>20 biggest items here</td><td class="muted"></td></tr>
+<template id="fn33">function biggest { du -sk ./* 2&gt;/dev/null | _aliasx_topsize 20; }</template>
+<tr id="n-biggest"><td><code>biggest</code></td><td><button class="fn" data-src="fn33" data-name="biggest">show code</button></td><td>20 biggest files and folders here<details class="ex" open><summary>example</summary><pre><span class="cmd">$ biggest</span>
+   2.1G	./node_modules
+ 812.0M	./data</pre></details></td><td class="muted"></td></tr>
 <tr id="n-du1"><td><code>du1</code></td><td><code>du -h -d 1</code></td><td>size of each subfolder</td><td class="muted">macOS</td></tr>
 <tr id="n-du1"><td><code>du1</code></td><td><code>du -h --max-depth=1</code></td><td>size of each subfolder</td><td class="muted">Linux</td></tr>
 </table>

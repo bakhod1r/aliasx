@@ -122,7 +122,7 @@ system    93.184.215.14
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
 <tr id="n-crons"><td><code>crons</code></td><td><code>crontab -l</code></td><td>your cron jobs</td><td class="muted">needs crontab</td></tr>
-<template id="fn9">function logsize { find &quot;${1:-/var/log}&quot; -type f -exec du -h {} + 2&gt;/dev/null | sort -rh | head -15; }</template>
+<template id="fn9">function logsize { find &quot;${1:-/var/log}&quot; -type f -exec du -k {} + 2&gt;/dev/null | _aliasx_topsize 15; }</template>
 <tr id="n-logsize"><td><code>logsize [DIR]</code></td><td><button class="fn" data-src="fn9" data-name="logsize">show code</button></td><td>biggest log files (default /var/log)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ logsize</span>
 812M	/var/log/journal/system.journal
 120M	/var/log/nginx/access.log</pre></details></td><td class="muted"></td></tr>

@@ -98,7 +98,7 @@
 <tr id="n-kgall"><td><code>kgall</code></td><td><code>kubectl get all</code></td><td>everything in namespace</td><td class="muted">needs kubectl</td></tr>
 <template id="fn33">function ksecret {
   [ &quot;$#&quot; -eq 2 ] || { echo &quot;Usage: ksecret &lt;secret&gt; &lt;key&gt;&quot; &gt;&amp;2; return 2; }
-  kubectl get secret &quot;$1&quot; -o jsonpath=&quot;{.data.$2}&quot; | base64 --decode; echo
+  kubectl get secret &quot;$1&quot; -o jsonpath=&quot;{.data.$2}&quot; | base64 -d; echo
 }</template>
 <tr id="n-ksecret"><td><code>ksecret NAME KEY</code></td><td><button class="fn" data-src="fn33" data-name="ksecret">show code</button></td><td>print decoded value of one secret key<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ksecret db-creds password</span>
 s3cret</pre></details></td><td class="muted">needs kubectl</td></tr>

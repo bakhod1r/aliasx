@@ -81,7 +81,7 @@ q7K#m2Rx_9vT!pLz</pre></details></td><td class="muted"></td></tr>
 <tr id="n-b64"><td><code>b64 [TEXT]</code></td><td><button class="fn" data-src="fn5" data-name="b64">show code</button></td><td>base64 encode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64 hello</span>
 aGVsbG8=</pre></details></td><td class="muted"></td></tr>
 <template id="fn6">function b64d {
-  if [ &quot;$#&quot; -gt 0 ]; then printf &#x27;%s&#x27; &quot;$*&quot; | base64 --decode; else base64 --decode; fi
+  if [ &quot;$#&quot; -gt 0 ]; then printf &#x27;%s&#x27; &quot;$*&quot; | base64 -d; else base64 -d; fi
   echo
 }</template>
 <tr id="n-b64d"><td><code>b64d [TEXT]</code></td><td><button class="fn" data-src="fn6" data-name="b64d">show code</button></td><td>base64 decode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64d aGVsbG8=</span>

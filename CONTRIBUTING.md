@@ -23,6 +23,7 @@
 
 ```sh
 ./tests/run.sh                                   # bash and zsh
+tests/integration/run-docker.sh                  # real PostgreSQL, Redis, nginx (needs Docker)
 for f in aliasx.sh install.sh setup/*.sh aliases/*.sh optional/*.sh tests/*.sh; do shellcheck "$f"; done
 python3 tools/gendocs.py                         # commit the regenerated docs/
 ```

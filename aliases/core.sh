@@ -166,6 +166,25 @@ function _aliasx_conflicts {
   unset _found
 }
 
+# _aliasx_topsize N — read "KB<TAB>path" lines, print N largest with human sizes.
+# Portable: busybox sort has no -h.
+_aliasx_topsize() {
+  sort -rn | head -n "$1" | awk -F '\t' '{
+    s = $1; u = "K"
+    if (s >= 1048576) { s = s / 1048576; u = "G" } else if (s >= 1024) { s = s / 1024; u = "M" }
+    printf "%6.1f%s\t%s\n", s, u, $2 }'
+}
+
+# asroot CMD... — run CMD as root: sudo for normal users, directly when already root or sudo is missing
+#   $ asroot apt update
+#   Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+function asroot {
+  if [ "$(id -u)" = 0 ] || ! has sudo; then "$@"; else command sudo "$@"; fi
+}
+
+# _aliasx_systemd — true when systemd is the running init (not just installed, as in containers)
+_aliasx_systemd() { [ -d /run/systemd/system ] && has systemctl; }
+
 # == Terminal
 alias c='clear'  # clear screen
 alias now='date "+%Y-%m-%d %H:%M:%S"'  # current date and time

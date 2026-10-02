@@ -1,0 +1,22 @@
+name: New alias or function
+description: Suggest a command for a module
+labels: [enhancement]
+body:
+  - type: input
+    id: name
+    attributes: { label: Name, placeholder: "kbad" }
+    validations: { required: true }
+  - type: input
+    id: command
+    attributes: { label: What it runs, placeholder: "kubectl get pods -A --field-selector=status.phase!=Running" }
+    validations: { required: true }
+  - type: input
+    id: why
+    attributes: { label: When you would use it }
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Checks
+      options:
+        - label: The name is shorter than the command and `aliasx check <name>` says it is free
+        - label: It does not delete or change anything without asking

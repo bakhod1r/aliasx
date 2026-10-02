@@ -13,7 +13,7 @@ for f in userinfo bigfiles svc svcr svcstop failedlogins; do assert_function "$f
 : > "$log"; echo n | svcr nginx >/dev/null 2>&1
 grep -q restart "$log" && { echo "  svcr ran without y"; _failures=$((_failures + 1)); }
 echo y | svcr nginx >/dev/null 2>&1
-grep -q 'sudo systemctl restart nginx' "$log" || { echo "  svcr after y"; _failures=$((_failures + 1)); }
+grep -q 'systemctl restart nginx' "$log" || { echo "  svcr after y"; _failures=$((_failures + 1)); }
 svcr >/dev/null 2>&1; assert_eq "$?" "2" "svcr usage"
 
 # bigfiles finds files over the limit

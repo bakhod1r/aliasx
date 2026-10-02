@@ -97,4 +97,4 @@ has crontab && alias crons='crontab -l'  # your cron jobs
 #   $ logsize
 #   812M	/var/log/journal/system.journal
 #   120M	/var/log/nginx/access.log
-function logsize { find "${1:-/var/log}" -type f -exec du -h {} + 2>/dev/null | sort -rh | head -15; }
+function logsize { find "${1:-/var/log}" -type f -exec du -k {} + 2>/dev/null | _aliasx_topsize 15; }

@@ -53,36 +53,36 @@ fi
 
 # == Firewall (ufw)
 if has ufw; then
-  alias ufws='sudo ufw status verbose'  # firewall rules
-  alias ufwa='sudo ufw allow'  # allow port or service
-  alias ufwd='sudo ufw deny'  # deny port or service
+  alias ufws='asroot ufw status verbose'  # firewall rules
+  alias ufwa='asroot ufw allow'  # allow port or service
+  alias ufwd='asroot ufw deny'  # deny port or service
 fi
 
 # == Packages
 # No -y: upgrades stay visible and confirmed.
 if has apt; then
-  alias aptup='sudo apt update && sudo apt upgrade'  # update and upgrade packages
-  alias apti='sudo apt install'  # install package
-  alias aptr='sudo apt remove'  # remove package
+  alias aptup='asroot apt update && asroot apt upgrade'  # update and upgrade packages
+  alias apti='asroot apt install'  # install package
+  alias aptr='asroot apt remove'  # remove package
   alias apts='apt search'  # search packages
-  alias aptclean='sudo apt autoremove'  # remove unused packages
+  alias aptclean='asroot apt autoremove'  # remove unused packages
 fi
 if has dnf; then
-  alias dnfup='sudo dnf upgrade --refresh'  # upgrade packages
-  alias dnfi='sudo dnf install'  # install package
-  alias dnfr='sudo dnf remove'  # remove package
+  alias dnfup='asroot dnf upgrade --refresh'  # upgrade packages
+  alias dnfi='asroot dnf install'  # install package
+  alias dnfr='asroot dnf remove'  # remove package
   alias dnfs='dnf search'  # search packages
 fi
 if has pacman; then
-  alias pacup='sudo pacman -Syu'  # sync and upgrade packages
-  alias paci='sudo pacman -S'  # install package
-  alias pacr='sudo pacman -Rns'  # remove package and deps
+  alias pacup='asroot pacman -Syu'  # sync and upgrade packages
+  alias paci='asroot pacman -S'  # install package
+  alias pacr='asroot pacman -Rns'  # remove package and deps
   alias pacs='pacman -Ss'  # search packages
 fi
 if has apk; then
-  alias apkup='sudo apk update && sudo apk upgrade'  # update and upgrade packages
-  alias apki='sudo apk add'  # install package
-  alias apkr='sudo apk del'  # remove package
+  alias apkup='asroot apk update && asroot apk upgrade'  # update and upgrade packages
+  alias apki='asroot apk add'  # install package
+  alias apkr='asroot apk del'  # remove package
 fi
 if has brew; then
   alias brewup='brew update && brew upgrade'  # update and upgrade formulae
@@ -98,23 +98,23 @@ if has systemctl; then
   #   $ sys-reboot
   #   Reboot web1 now? [y/N] n
   #   Cancelled.
-  function sys-reboot { yesno "Reboot $(hostname) now?" && sudo systemctl reboot; }
+  function sys-reboot { yesno "Reboot $(hostname) now?" && asroot systemctl reboot; }
 
   # sys-poweroff — power off machine after y/N
   #   $ sys-poweroff
   #   Power off web1 now? [y/N] n
   #   Cancelled.
-  function sys-poweroff { yesno "Power off $(hostname) now?" && sudo systemctl poweroff; }
+  function sys-poweroff { yesno "Power off $(hostname) now?" && asroot systemctl poweroff; }
 
   # sys-suspend — suspend machine after y/N
   #   $ sys-suspend
   #   Suspend laptop now? [y/N] y
-  function sys-suspend { yesno "Suspend $(hostname) now?" && sudo systemctl suspend; }
+  function sys-suspend { yesno "Suspend $(hostname) now?" && asroot systemctl suspend; }
 fi
 
 # == macOS
 if [ "$ALIASX_OS" = macos ]; then
-  alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'  # flush DNS cache
+  alias flushdns='asroot dscacheutil -flushcache; asroot killall -HUP mDNSResponder'  # flush DNS cache
 
   alias showfiles='defaults write com.apple.finder AppleShowAllFiles -bool true; killall Finder'  # show hidden files in Finder
   alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -bool false; killall Finder'  # hide hidden files in Finder

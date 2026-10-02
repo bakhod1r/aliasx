@@ -54,7 +54,7 @@ if has systemctl; then
   #   Restart nginx? [y/N] y
   function svcr {
     [ "$#" -eq 1 ] || { echo "Usage: svcr <service>" >&2; return 2; }
-    yesno "Restart $1?" && sudo systemctl restart "$1"
+    yesno "Restart $1?" && asroot systemctl restart "$1"
   }
 
   # svcstop NAME — stop a service after y/N
@@ -63,7 +63,7 @@ if has systemctl; then
   #   Cancelled.
   function svcstop {
     [ "$#" -eq 1 ] || { echo "Usage: svcstop <service>" >&2; return 2; }
-    yesno "Stop $1?" && sudo systemctl stop "$1"
+    yesno "Stop $1?" && asroot systemctl stop "$1"
   }
 fi
 
@@ -75,12 +75,20 @@ alias deleted='lsof +L1'  # deleted files still holding disk space
 #   2.1G	/var/lib/docker/overlay2/3f1c.../layer.tar
 #   812M	/var/log/journal/system@0001.journal
 function bigfiles {
-  find "${1:-.}" -xdev -type f -size +"${2:-100M}" -exec du -h {} + 2>/dev/null | sort -rh | head -20
+  # find -size in k works everywhere; busybox has no M/G suffix.
+  _s="${2:-100M}"
+  case "$_s" in
+    *G) _s=$(( ${_s%G} * 1048576 )) ;;
+    *M) _s=$(( ${_s%M} * 1024 )) ;;
+    *k|*K) _s="${_s%[kK]}" ;;
+  esac
+  find "${1:-.}" -xdev -type f -size +"${_s}k" -exec du -k {} + 2>/dev/null | _aliasx_topsize 20
+  unset _s
 }
 
 # == Kernel
 if [ "$ALIASX_OS" = linux ]; then
-  alias kmsg='sudo dmesg -T | tail -40'  # last kernel messages
+  alias kmsg='asroot dmesg -T | tail -40'  # last kernel messages
   alias oom='journalctl -k | grep -i "out of memory"'  # out-of-memory kills
   alias timesync='timedatectl'  # clock and NTP status
 fi

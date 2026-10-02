@@ -13,8 +13,8 @@ dups="$(for f in aliases/*.sh optional/*.sh; do
 done | awk '{print $1}' | sort | uniq -d | grep -v -x -e ls -e ll -e la -e l)"
 assert_eq "$dups" "" "aliases defined in more than one module"
 
-# Default modules never call sudo implicitly except package and power commands.
-bad="$(grep -n 'sudo' aliases/*.sh | grep -v -e 'aliases/system.sh' -e 'aliases/nginx.sh' -e 'aliases/admin.sh' )"
+# sudo appears only inside asroot (core) and please; everything else goes through asroot.
+bad="$(grep -n 'sudo' aliases/*.sh | grep -v -e '^[^:]*:[0-9]*:[[:space:]]*#' -e 'aliases/core.sh' -e 'please=' )"
 assert_eq "$bad" "" "unexpected sudo"
 
 # No destructive one-liners in default modules.

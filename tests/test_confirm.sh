@@ -18,7 +18,7 @@ echo "n" | tk work >/dev/null 2>&1
 
 # "y" runs it.
 echo y | sys-reboot >/dev/null 2>&1
-grep -q 'sudo systemctl reboot' "$log" || { echo "  sys-reboot did not run after y"; _failures=$((_failures + 1)); }
+grep -q 'systemctl reboot' "$log" || { echo "  sys-reboot did not run after y"; _failures=$((_failures + 1)); }
 echo y | tk work >/dev/null 2>&1
 grep -q 'tmux kill-session -t work' "$log" || { echo "  tk did not run after y"; _failures=$((_failures + 1)); }
 

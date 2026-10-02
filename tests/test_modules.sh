@@ -15,7 +15,7 @@ assert_function reload
 for a in c now week path; do assert_alias "$a"; done
 
 # files
-for a in grep cpi mvi rmi countfiles emptydirs dfh usage biggest du1 calc; do assert_alias "$a"; done
+for a in grep cpi mvi rmi countfiles emptydirs dfh usage du1 calc; do assert_alias "$a"; done
 for f in ff fdir sha256file hgrep; do assert_function "$f"; done
 
 # git

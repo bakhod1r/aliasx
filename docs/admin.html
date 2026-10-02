@@ -84,13 +84,13 @@ deploy</pre></details></td><td class="muted">Linux</td></tr>
    Main PID: 812 (nginx)</pre></details></td><td class="muted">needs systemctl</td></tr>
 <template id="fn8">function svcr {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: svcr &lt;service&gt;&quot; &gt;&amp;2; return 2; }
-  yesno &quot;Restart $1?&quot; &amp;&amp; sudo systemctl restart &quot;$1&quot;
+  yesno &quot;Restart $1?&quot; &amp;&amp; asroot systemctl restart &quot;$1&quot;
 }</template>
 <tr id="n-svcr"><td><code>svcr NAME</code></td><td><button class="fn" data-src="fn8" data-name="svcr">show code</button></td><td>restart a service after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svcr nginx</span>
 Restart nginx? [y/N] y</pre></details></td><td class="muted">needs systemctl</td></tr>
 <template id="fn9">function svcstop {
   [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: svcstop &lt;service&gt;&quot; &gt;&amp;2; return 2; }
-  yesno &quot;Stop $1?&quot; &amp;&amp; sudo systemctl stop &quot;$1&quot;
+  yesno &quot;Stop $1?&quot; &amp;&amp; asroot systemctl stop &quot;$1&quot;
 }</template>
 <tr id="n-svcstop"><td><code>svcstop NAME</code></td><td><button class="fn" data-src="fn9" data-name="svcstop">show code</button></td><td>stop a service after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svcstop nginx</span>
 Stop nginx? [y/N] n
@@ -101,7 +101,15 @@ Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
 <tr id="n-deleted"><td><code>deleted</code></td><td><code>lsof +L1</code></td><td>deleted files still holding disk space</td><td class="muted"></td></tr>
 <template id="fn11">function bigfiles {
-  find &quot;${1:-.}&quot; -xdev -type f -size +&quot;${2:-100M}&quot; -exec du -h {} + 2&gt;/dev/null | sort -rh | head -20
+  # find -size in k works everywhere; busybox has no M/G suffix.
+  _s=&quot;${2:-100M}&quot;
+  case &quot;$_s&quot; in
+    *G) _s=$(( ${_s%G} * 1048576 )) ;;
+    *M) _s=$(( ${_s%M} * 1024 )) ;;
+    *k|*K) _s=&quot;${_s%[kK]}&quot; ;;
+  esac
+  find &quot;${1:-.}&quot; -xdev -type f -size +&quot;${_s}k&quot; -exec du -k {} + 2&gt;/dev/null | _aliasx_topsize 20
+  unset _s
 }</template>
 <tr id="n-bigfiles"><td><code>bigfiles [DIR] [SIZE]</code></td><td><button class="fn" data-src="fn11" data-name="bigfiles">show code</button></td><td>files bigger than SIZE (default . 100M)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ bigfiles /var 500M</span>
 2.1G	/var/lib/docker/overlay2/3f1c.../layer.tar
@@ -110,7 +118,7 @@ Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
 <h2>Kernel</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr id="n-kmsg"><td><code>kmsg</code></td><td><code>sudo dmesg -T | tail -40</code></td><td>last kernel messages</td><td class="muted">Linux</td></tr>
+<tr id="n-kmsg"><td><code>kmsg</code></td><td><code>asroot dmesg -T | tail -40</code></td><td>last kernel messages</td><td class="muted">Linux</td></tr>
 <tr id="n-oom"><td><code>oom</code></td><td><code>journalctl -k | grep -i &quot;out of memory&quot;</code></td><td>out-of-memory kills</td><td class="muted">Linux</td></tr>
 <tr id="n-timesync"><td><code>timesync</code></td><td><code>timedatectl</code></td><td>clock and NTP status</td><td class="muted">Linux</td></tr>
 </table>

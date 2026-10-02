@@ -88,29 +88,29 @@ Oct 02 10:31:07 web1 nginx[812]: started</pre></details></td><td class="muted">n
 <h2>Firewall (ufw)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr id="n-ufws"><td><code>ufws</code></td><td><code>sudo ufw status verbose</code></td><td>firewall rules</td><td class="muted">needs ufw</td></tr>
-<tr id="n-ufwa"><td><code>ufwa</code></td><td><code>sudo ufw allow</code></td><td>allow port or service</td><td class="muted">needs ufw</td></tr>
-<tr id="n-ufwd"><td><code>ufwd</code></td><td><code>sudo ufw deny</code></td><td>deny port or service</td><td class="muted">needs ufw</td></tr>
+<tr id="n-ufws"><td><code>ufws</code></td><td><code>asroot ufw status verbose</code></td><td>firewall rules</td><td class="muted">needs ufw</td></tr>
+<tr id="n-ufwa"><td><code>ufwa</code></td><td><code>asroot ufw allow</code></td><td>allow port or service</td><td class="muted">needs ufw</td></tr>
+<tr id="n-ufwd"><td><code>ufwd</code></td><td><code>asroot ufw deny</code></td><td>deny port or service</td><td class="muted">needs ufw</td></tr>
 </table>
 <h2>Packages</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr id="n-aptup"><td><code>aptup</code></td><td><code>sudo apt update &amp;&amp; sudo apt upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apt</td></tr>
-<tr id="n-apti"><td><code>apti</code></td><td><code>sudo apt install</code></td><td>install package</td><td class="muted">needs apt</td></tr>
-<tr id="n-aptr"><td><code>aptr</code></td><td><code>sudo apt remove</code></td><td>remove package</td><td class="muted">needs apt</td></tr>
+<tr id="n-aptup"><td><code>aptup</code></td><td><code>asroot apt update &amp;&amp; asroot apt upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apt</td></tr>
+<tr id="n-apti"><td><code>apti</code></td><td><code>asroot apt install</code></td><td>install package</td><td class="muted">needs apt</td></tr>
+<tr id="n-aptr"><td><code>aptr</code></td><td><code>asroot apt remove</code></td><td>remove package</td><td class="muted">needs apt</td></tr>
 <tr id="n-apts"><td><code>apts</code></td><td><code>apt search</code></td><td>search packages</td><td class="muted">needs apt</td></tr>
-<tr id="n-aptclean"><td><code>aptclean</code></td><td><code>sudo apt autoremove</code></td><td>remove unused packages</td><td class="muted">needs apt</td></tr>
-<tr id="n-dnfup"><td><code>dnfup</code></td><td><code>sudo dnf upgrade --refresh</code></td><td>upgrade packages</td><td class="muted">needs dnf</td></tr>
-<tr id="n-dnfi"><td><code>dnfi</code></td><td><code>sudo dnf install</code></td><td>install package</td><td class="muted">needs dnf</td></tr>
-<tr id="n-dnfr"><td><code>dnfr</code></td><td><code>sudo dnf remove</code></td><td>remove package</td><td class="muted">needs dnf</td></tr>
+<tr id="n-aptclean"><td><code>aptclean</code></td><td><code>asroot apt autoremove</code></td><td>remove unused packages</td><td class="muted">needs apt</td></tr>
+<tr id="n-dnfup"><td><code>dnfup</code></td><td><code>asroot dnf upgrade --refresh</code></td><td>upgrade packages</td><td class="muted">needs dnf</td></tr>
+<tr id="n-dnfi"><td><code>dnfi</code></td><td><code>asroot dnf install</code></td><td>install package</td><td class="muted">needs dnf</td></tr>
+<tr id="n-dnfr"><td><code>dnfr</code></td><td><code>asroot dnf remove</code></td><td>remove package</td><td class="muted">needs dnf</td></tr>
 <tr id="n-dnfs"><td><code>dnfs</code></td><td><code>dnf search</code></td><td>search packages</td><td class="muted">needs dnf</td></tr>
-<tr id="n-pacup"><td><code>pacup</code></td><td><code>sudo pacman -Syu</code></td><td>sync and upgrade packages</td><td class="muted">needs pacman</td></tr>
-<tr id="n-paci"><td><code>paci</code></td><td><code>sudo pacman -S</code></td><td>install package</td><td class="muted">needs pacman</td></tr>
-<tr id="n-pacr"><td><code>pacr</code></td><td><code>sudo pacman -Rns</code></td><td>remove package and deps</td><td class="muted">needs pacman</td></tr>
+<tr id="n-pacup"><td><code>pacup</code></td><td><code>asroot pacman -Syu</code></td><td>sync and upgrade packages</td><td class="muted">needs pacman</td></tr>
+<tr id="n-paci"><td><code>paci</code></td><td><code>asroot pacman -S</code></td><td>install package</td><td class="muted">needs pacman</td></tr>
+<tr id="n-pacr"><td><code>pacr</code></td><td><code>asroot pacman -Rns</code></td><td>remove package and deps</td><td class="muted">needs pacman</td></tr>
 <tr id="n-pacs"><td><code>pacs</code></td><td><code>pacman -Ss</code></td><td>search packages</td><td class="muted">needs pacman</td></tr>
-<tr id="n-apkup"><td><code>apkup</code></td><td><code>sudo apk update &amp;&amp; sudo apk upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apk</td></tr>
-<tr id="n-apki"><td><code>apki</code></td><td><code>sudo apk add</code></td><td>install package</td><td class="muted">needs apk</td></tr>
-<tr id="n-apkr"><td><code>apkr</code></td><td><code>sudo apk del</code></td><td>remove package</td><td class="muted">needs apk</td></tr>
+<tr id="n-apkup"><td><code>apkup</code></td><td><code>asroot apk update &amp;&amp; asroot apk upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apk</td></tr>
+<tr id="n-apki"><td><code>apki</code></td><td><code>asroot apk add</code></td><td>install package</td><td class="muted">needs apk</td></tr>
+<tr id="n-apkr"><td><code>apkr</code></td><td><code>asroot apk del</code></td><td>remove package</td><td class="muted">needs apk</td></tr>
 <tr id="n-brewup"><td><code>brewup</code></td><td><code>brew update &amp;&amp; brew upgrade</code></td><td>update and upgrade formulae</td><td class="muted">needs brew</td></tr>
 <tr id="n-brewi"><td><code>brewi</code></td><td><code>brew install</code></td><td>install formula</td><td class="muted">needs brew</td></tr>
 <tr id="n-brewr"><td><code>brewr</code></td><td><code>brew uninstall</code></td><td>uninstall formula</td><td class="muted">needs brew</td></tr>
@@ -120,22 +120,22 @@ Oct 02 10:31:07 web1 nginx[812]: started</pre></details></td><td class="muted">n
 <h2>Power (Linux)</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn46">function sys-reboot { yesno &quot;Reboot $(hostname) now?&quot; &amp;&amp; sudo systemctl reboot; }</template>
+<template id="fn46">function sys-reboot { yesno &quot;Reboot $(hostname) now?&quot; &amp;&amp; asroot systemctl reboot; }</template>
 <tr id="n-sys-reboot"><td><code>sys-reboot</code></td><td><button class="fn" data-src="fn46" data-name="sys-reboot">show code</button></td><td>reboot machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-reboot</span>
 Reboot web1 now? [y/N] n
 Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
-<template id="fn47">function sys-poweroff { yesno &quot;Power off $(hostname) now?&quot; &amp;&amp; sudo systemctl poweroff; }</template>
+<template id="fn47">function sys-poweroff { yesno &quot;Power off $(hostname) now?&quot; &amp;&amp; asroot systemctl poweroff; }</template>
 <tr id="n-sys-poweroff"><td><code>sys-poweroff</code></td><td><button class="fn" data-src="fn47" data-name="sys-poweroff">show code</button></td><td>power off machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-poweroff</span>
 Power off web1 now? [y/N] n
 Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
-<template id="fn48">function sys-suspend { yesno &quot;Suspend $(hostname) now?&quot; &amp;&amp; sudo systemctl suspend; }</template>
+<template id="fn48">function sys-suspend { yesno &quot;Suspend $(hostname) now?&quot; &amp;&amp; asroot systemctl suspend; }</template>
 <tr id="n-sys-suspend"><td><code>sys-suspend</code></td><td><button class="fn" data-src="fn48" data-name="sys-suspend">show code</button></td><td>suspend machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-suspend</span>
 Suspend laptop now? [y/N] y</pre></details></td><td class="muted">needs systemctl</td></tr>
 </table>
 <h2>macOS</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr id="n-flushdns"><td><code>flushdns</code></td><td><code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></td><td>flush DNS cache</td><td class="muted">macOS</td></tr>
+<tr id="n-flushdns"><td><code>flushdns</code></td><td><code>asroot dscacheutil -flushcache; asroot killall -HUP mDNSResponder</code></td><td>flush DNS cache</td><td class="muted">macOS</td></tr>
 <tr id="n-showfiles"><td><code>showfiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool true; killall Finder</code></td><td>show hidden files in Finder</td><td class="muted">macOS</td></tr>
 <tr id="n-hidefiles"><td><code>hidefiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool false; killall Finder</code></td><td>hide hidden files in Finder</td><td class="muted">macOS</td></tr>
 <template id="fn52">function sleepnow { yesno &quot;Sleep now?&quot; &amp;&amp; pmset sleepnow; }</template>

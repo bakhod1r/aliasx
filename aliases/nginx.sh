@@ -1,14 +1,14 @@
 # nginx: test, reload, logs. Config is always tested before reload/restart.
 has nginx || return 0
 
-if [ "$ALIASX_OS" = macos ]; then _aliasx_ngsudo=''; else _aliasx_ngsudo='sudo '; fi
+if [ "$ALIASX_OS" = macos ]; then _aliasx_ngroot=''; else _aliasx_ngroot='asroot '; fi
 
 # Run as root on Linux, as yourself on macOS (Homebrew nginx).
-function _aliasx_ngrun { if [ "$ALIASX_OS" = macos ]; then "$@"; else sudo "$@"; fi; }
+function _aliasx_ngrun { if [ "$ALIASX_OS" = macos ]; then "$@"; else asroot "$@"; fi; }
 
 # == Config
-alias ngt="${_aliasx_ngsudo}nginx -t"  # test config
-alias ngconf="${_aliasx_ngsudo}nginx -T"  # print full loaded config
+alias ngt="${_aliasx_ngroot}nginx -t"  # test config
+alias ngconf="${_aliasx_ngroot}nginx -T"  # print full loaded config
 alias ngv='nginx -V'  # version and build options
 alias ngsites='ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null'  # enabled sites
 
@@ -18,7 +18,7 @@ alias ngsites='ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null'  # 
 #   nginx: configuration file /etc/nginx/nginx.conf test is successful
 function ngr {
   _aliasx_ng_test || return
-  if has systemctl; then sudo systemctl reload nginx; else _aliasx_ngrun nginx -s reload; fi
+  if _aliasx_systemd; then asroot systemctl reload nginx; else _aliasx_ngrun nginx -s reload; fi
 }
 
 # ngrestart — test config, then restart if OK
@@ -26,7 +26,7 @@ function ngr {
 #   nginx: configuration file /etc/nginx/nginx.conf test is successful
 function ngrestart {
   _aliasx_ng_test || return
-  if has systemctl; then sudo systemctl restart nginx
+  if _aliasx_systemd; then asroot systemctl restart nginx
   elif has brew; then brew services restart nginx
   else _aliasx_ngrun nginx -s stop && _aliasx_ngrun nginx; fi
 }
@@ -36,7 +36,7 @@ function ngrestart {
 #   ● nginx.service - A high performance web server
 #        Active: active (running)
 function ngs {
-  if has systemctl; then systemctl status nginx --no-pager
+  if _aliasx_systemd; then systemctl status nginx --no-pager
   elif has brew; then brew services info nginx
   else pgrep -l nginx; fi
 }

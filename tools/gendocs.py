@@ -98,7 +98,7 @@ def parse(path):
         notes += ["needs " + t for t in HAS.findall(line.split("alias")[0])] if "alias" in line else []
         a = ALIAS.search(line)
         if a and not line.startswith("#"):
-            cmd = a.group(3).replace("$_aliasx_ls", "ls -F --group-directories-first").replace("${_aliasx_ngsudo}", "sudo ")
+            cmd = a.group(3).replace("$_aliasx_ls", "ls -F --group-directories-first").replace("${_aliasx_ngroot}", "asroot ")
             current["rows"].append((a.group(1), cmd, a.group(4) or "", notes, "", ""))
             continue
         f = FUNC_DEF.match(line)

@@ -44,27 +44,27 @@
 <h2>Config</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<tr id="n-ngt"><td><code>ngt</code></td><td><code>sudo nginx -t</code></td><td>test config</td><td class="muted"></td></tr>
-<tr id="n-ngconf"><td><code>ngconf</code></td><td><code>sudo nginx -T</code></td><td>print full loaded config</td><td class="muted"></td></tr>
+<tr id="n-ngt"><td><code>ngt</code></td><td><code>asroot nginx -t</code></td><td>test config</td><td class="muted"></td></tr>
+<tr id="n-ngconf"><td><code>ngconf</code></td><td><code>asroot nginx -T</code></td><td>print full loaded config</td><td class="muted"></td></tr>
 <tr id="n-ngv"><td><code>ngv</code></td><td><code>nginx -V</code></td><td>version and build options</td><td class="muted"></td></tr>
 <tr id="n-ngsites"><td><code>ngsites</code></td><td><code>ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2&gt;/dev/null</code></td><td>enabled sites</td><td class="muted"></td></tr>
 <template id="fn5">function ngr {
   _aliasx_ng_test || return
-  if has systemctl; then sudo systemctl reload nginx; else _aliasx_ngrun nginx -s reload; fi
+  if _aliasx_systemd; then asroot systemctl reload nginx; else _aliasx_ngrun nginx -s reload; fi
 }</template>
 <tr id="n-ngr"><td><code>ngr</code></td><td><button class="fn" data-src="fn5" data-name="ngr">show code</button></td><td>test config, then reload if OK<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngr</span>
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful</pre></details></td><td class="muted"></td></tr>
 <template id="fn6">function ngrestart {
   _aliasx_ng_test || return
-  if has systemctl; then sudo systemctl restart nginx
+  if _aliasx_systemd; then asroot systemctl restart nginx
   elif has brew; then brew services restart nginx
   else _aliasx_ngrun nginx -s stop &amp;&amp; _aliasx_ngrun nginx; fi
 }</template>
 <tr id="n-ngrestart"><td><code>ngrestart</code></td><td><button class="fn" data-src="fn6" data-name="ngrestart">show code</button></td><td>test config, then restart if OK<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ngrestart</span>
 nginx: configuration file /etc/nginx/nginx.conf test is successful</pre></details></td><td class="muted"></td></tr>
 <template id="fn7">function ngs {
-  if has systemctl; then systemctl status nginx --no-pager
+  if _aliasx_systemd; then systemctl status nginx --no-pager
   elif has brew; then brew services info nginx
   else pgrep -l nginx; fi
 }</template>

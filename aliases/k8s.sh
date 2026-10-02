@@ -50,7 +50,7 @@ if has kubectl; then
   #   s3cret
   function ksecret {
     [ "$#" -eq 2 ] || { echo "Usage: ksecret <secret> <key>" >&2; return 2; }
-    kubectl get secret "$1" -o jsonpath="{.data.$2}" | base64 --decode; echo
+    kubectl get secret "$1" -o jsonpath="{.data.$2}" | base64 -d; echo
   }
 
   # kshell POD — shell into pod (sh)

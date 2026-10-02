@@ -115,6 +115,7 @@ function append {
 }
 
 # == Search
+# shellcheck disable=SC2032  # find -exec uses the real grep on purpose
 alias grep='grep --color=auto'  # grep with colors
 alias egrep='grep -E --color=auto'  # extended regex grep
 alias fgrep='grep -F --color=auto'  # fixed-string grep
@@ -138,7 +139,12 @@ function ff {
 #   ./web/app.js:7:// TODO: remove debug
 function ftext {
   [ "$#" -ge 1 ] || { echo "Usage: ftext <text>" >&2; return 2; }
-  grep -rnI --exclude-dir=.git --exclude-dir=node_modules -- "$*" .
+  if grep --exclude-dir=x -q x /dev/null 2>/dev/null || [ $? -eq 1 ]; then
+    grep -rnI --exclude-dir=.git --exclude-dir=node_modules -- "$*" .
+  else  # busybox grep: no --exclude-dir
+    # shellcheck disable=SC2033  # the external grep is intended
+    find . \( -name .git -o -name node_modules \) -prune -o -type f -exec grep -nIH -- "$*" {} +
+  fi
 }
 
 # fdir PATTERN — find directories whose name contains PATTERN
@@ -154,7 +160,11 @@ function fdir {
 alias dfh='df -h'  # disk free, human sizes
 alias dfi='df -i'  # inode usage
 alias usage='du -sh .'  # size of current folder
-alias biggest='du -sh ./* 2>/dev/null | sort -h | tail -20'  # 20 biggest items here
+# biggest — 20 biggest files and folders here
+#   $ biggest
+#      2.1G	./node_modules
+#    812.0M	./data
+function biggest { du -sk ./* 2>/dev/null | _aliasx_topsize 20; }
 if [ "$ALIASX_OS" = macos ]; then
   alias du1='du -h -d 1'  # size of each subfolder
 else

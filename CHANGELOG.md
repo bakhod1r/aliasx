@@ -2,6 +2,20 @@
 
 All notable changes. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- Containers: `asroot` replaces hardcoded `sudo`, so package, service and nginx commands
+  work as root or where sudo is not installed.
+- nginx `ngr`/`ngrestart`/`ngs` use systemctl only when systemd is actually running.
+- Alpine/busybox: `bigfiles`, `logsize`, `biggest` no longer need `sort -h`;
+  `b64d`/`ksecret` use `base64 -d`; `ftext` works without `grep --exclude-dir`;
+  `bigfiles` sizes work with busybox `find`.
+
+### Added
+- CI on Alpine and Fedora, and integration tests against real PostgreSQL, Redis and nginx.
+- Issue and PR templates, Dependabot for GitHub Actions.
+
 ## [1.0.0] - 2026-10-02
 
 First stable release.

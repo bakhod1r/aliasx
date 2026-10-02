@@ -45,7 +45,7 @@ function b64 { if [ "$#" -gt 0 ]; then printf '%s' "$*" | base64; else base64; f
 #   $ b64d aGVsbG8=
 #   hello
 function b64d {
-  if [ "$#" -gt 0 ]; then printf '%s' "$*" | base64 --decode; else base64 --decode; fi
+  if [ "$#" -gt 0 ]; then printf '%s' "$*" | base64 -d; else base64 -d; fi
   echo
 }
 
