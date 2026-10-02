@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>System — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html" class="on">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>System</h1>
+<p>System: processes, services, packages, macOS.</p>
+<p>File <code>aliases/system.sh</code>. Disable: <code>export ALIASX_DISABLE="system"</code></p>
+<h2>Processes</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>kernel</code></td><td><code>uname -a</code></td><td>kernel and OS info</td><td class="muted"></td></tr>
+<tr><td><code>load</code></td><td><code>uptime</code></td><td>uptime and load</td><td class="muted"></td></tr>
+<tr><td><code>mem</code></td><td><code>vm_stat</code></td><td>memory usage</td><td class="muted">macOS</td></tr>
+<tr><td><code>psmem</code></td><td><code>ps aux | sort -nrk 4 | head -11</code></td><td>top 10 by memory</td><td class="muted">macOS</td></tr>
+<tr><td><code>pscpu</code></td><td><code>ps aux | sort -nrk 3 | head -11</code></td><td>top 10 by CPU</td><td class="muted">macOS</td></tr>
+<tr><td><code>mem</code></td><td><code>free -h</code></td><td>memory usage</td><td class="muted">Linux</td></tr>
+<tr><td><code>psmem</code></td><td><code>ps aux --sort=-%mem | head -11</code></td><td>top 10 by memory</td><td class="muted">Linux</td></tr>
+<tr><td><code>pscpu</code></td><td><code>ps aux --sort=-%cpu | head -11</code></td><td>top 10 by CPU</td><td class="muted">Linux</td></tr>
+<tr><td><code>please</code></td><td><code>eval &quot;sudo $(fc -ln -1)&quot;</code></td><td>rerun last command with sudo</td><td class="muted"></td></tr>
+<template id="fn10">psgrep() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: psgrep &lt;pattern&gt;&quot; &gt;&amp;2; return 2; }
+  ps aux | grep -i -- &quot;$*&quot; | grep -v grep
+}</template>
+<tr><td><code>psgrep PATTERN</code></td><td><button class="fn" data-src="fn10" data-name="psgrep">show code</button></td><td>find processes by name<details class="ex" open><summary>example</summary><pre><span class="cmd">$ psgrep nginx</span>
+root   812  0.0  0.1  nginx: master process
+www    813  0.0  0.2  nginx: worker process</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Linux hardware</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>disks</code></td><td><code>lsblk -f</code></td><td>block devices and filesystems</td><td class="muted">Linux</td></tr>
+<tr><td><code>mounts</code></td><td><code>findmnt</code></td><td>mounted filesystems</td><td class="muted">Linux</td></tr>
+<tr><td><code>gpuinfo</code></td><td><code>nvidia-smi</code></td><td>NVIDIA GPU status</td><td class="muted">needs nvidia-smi</td></tr>
+</table>
+<h2>systemd and logs</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>sc</code></td><td><code>systemctl</code></td><td>systemctl</td><td class="muted">needs systemctl</td></tr>
+<tr><td><code>scu</code></td><td><code>systemctl --user</code></td><td>systemctl for user</td><td class="muted">needs systemctl</td></tr>
+<tr><td><code>scfailed</code></td><td><code>systemctl --failed</code></td><td>failed units</td><td class="muted">needs systemctl</td></tr>
+<tr><td><code>jc</code></td><td><code>journalctl</code></td><td>journalctl</td><td class="muted">needs systemctl</td></tr>
+<tr><td><code>jcf</code></td><td><code>journalctl --follow</code></td><td>follow journal</td><td class="muted">needs systemctl</td></tr>
+<tr><td><code>jcxe</code></td><td><code>journalctl -xe</code></td><td>recent journal with explanations</td><td class="muted">needs systemctl</td></tr>
+<tr><td><code>jcerr</code></td><td><code>journalctl -p err..alert -b</code></td><td>errors since boot</td><td class="muted">needs systemctl</td></tr>
+<template id="fn21">svclogs() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: svclogs &lt;service&gt; [journalctl options]&quot; &gt;&amp;2; return 2; }
+  _s=&quot;$1&quot;; shift; journalctl -u &quot;$_s&quot; &quot;$@&quot;; unset _s
+}</template>
+<tr><td><code>svclogs SERVICE [OPTS]</code></td><td><button class="fn" data-src="fn21" data-name="svclogs">show code</button></td><td>journal for one service<details class="ex" open><summary>example</summary><pre><span class="cmd">$ svclogs nginx -n 5</span>
+Oct 02 10:31:07 web1 nginx[812]: started</pre></details></td><td class="muted">needs systemctl</td></tr>
+</table>
+<h2>Firewall (ufw)</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>ufws</code></td><td><code>sudo ufw status verbose</code></td><td>firewall rules</td><td class="muted">needs ufw</td></tr>
+<tr><td><code>ufwa</code></td><td><code>sudo ufw allow</code></td><td>allow port or service</td><td class="muted">needs ufw</td></tr>
+<tr><td><code>ufwd</code></td><td><code>sudo ufw deny</code></td><td>deny port or service</td><td class="muted">needs ufw</td></tr>
+</table>
+<h2>Packages</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>aptup</code></td><td><code>sudo apt update &amp;&amp; sudo apt upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apt</td></tr>
+<tr><td><code>apti</code></td><td><code>sudo apt install</code></td><td>install package</td><td class="muted">needs apt</td></tr>
+<tr><td><code>aptr</code></td><td><code>sudo apt remove</code></td><td>remove package</td><td class="muted">needs apt</td></tr>
+<tr><td><code>apts</code></td><td><code>apt search</code></td><td>search packages</td><td class="muted">needs apt</td></tr>
+<tr><td><code>aptclean</code></td><td><code>sudo apt autoremove</code></td><td>remove unused packages</td><td class="muted">needs apt</td></tr>
+<tr><td><code>dnfup</code></td><td><code>sudo dnf upgrade --refresh</code></td><td>upgrade packages</td><td class="muted">needs dnf</td></tr>
+<tr><td><code>dnfi</code></td><td><code>sudo dnf install</code></td><td>install package</td><td class="muted">needs dnf</td></tr>
+<tr><td><code>dnfr</code></td><td><code>sudo dnf remove</code></td><td>remove package</td><td class="muted">needs dnf</td></tr>
+<tr><td><code>dnfs</code></td><td><code>dnf search</code></td><td>search packages</td><td class="muted">needs dnf</td></tr>
+<tr><td><code>pacup</code></td><td><code>sudo pacman -Syu</code></td><td>sync and upgrade packages</td><td class="muted">needs pacman</td></tr>
+<tr><td><code>paci</code></td><td><code>sudo pacman -S</code></td><td>install package</td><td class="muted">needs pacman</td></tr>
+<tr><td><code>pacr</code></td><td><code>sudo pacman -Rns</code></td><td>remove package and deps</td><td class="muted">needs pacman</td></tr>
+<tr><td><code>pacs</code></td><td><code>pacman -Ss</code></td><td>search packages</td><td class="muted">needs pacman</td></tr>
+<tr><td><code>apkup</code></td><td><code>sudo apk update &amp;&amp; sudo apk upgrade</code></td><td>update and upgrade packages</td><td class="muted">needs apk</td></tr>
+<tr><td><code>apki</code></td><td><code>sudo apk add</code></td><td>install package</td><td class="muted">needs apk</td></tr>
+<tr><td><code>apkr</code></td><td><code>sudo apk del</code></td><td>remove package</td><td class="muted">needs apk</td></tr>
+<tr><td><code>brewup</code></td><td><code>brew update &amp;&amp; brew upgrade</code></td><td>update and upgrade formulae</td><td class="muted">needs brew</td></tr>
+<tr><td><code>brewi</code></td><td><code>brew install</code></td><td>install formula</td><td class="muted">needs brew</td></tr>
+<tr><td><code>brewr</code></td><td><code>brew uninstall</code></td><td>uninstall formula</td><td class="muted">needs brew</td></tr>
+<tr><td><code>brews</code></td><td><code>brew search</code></td><td>search formulae</td><td class="muted">needs brew</td></tr>
+<tr><td><code>brewclean</code></td><td><code>brew cleanup</code></td><td>remove old versions</td><td class="muted">needs brew</td></tr>
+</table>
+<h2>Power (Linux)</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn46">sys-reboot() { yesno &quot;Reboot $(hostname) now?&quot; &amp;&amp; sudo systemctl reboot; }</template>
+<tr><td><code>sys-reboot</code></td><td><button class="fn" data-src="fn46" data-name="sys-reboot">show code</button></td><td>reboot machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-reboot</span>
+Reboot web1 now? [y/N] n
+Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
+<template id="fn47">sys-poweroff() { yesno &quot;Power off $(hostname) now?&quot; &amp;&amp; sudo systemctl poweroff; }</template>
+<tr><td><code>sys-poweroff</code></td><td><button class="fn" data-src="fn47" data-name="sys-poweroff">show code</button></td><td>power off machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-poweroff</span>
+Power off web1 now? [y/N] n
+Cancelled.</pre></details></td><td class="muted">needs systemctl</td></tr>
+<template id="fn48">sys-suspend() { yesno &quot;Suspend $(hostname) now?&quot; &amp;&amp; sudo systemctl suspend; }</template>
+<tr><td><code>sys-suspend</code></td><td><button class="fn" data-src="fn48" data-name="sys-suspend">show code</button></td><td>suspend machine after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sys-suspend</span>
+Suspend laptop now? [y/N] y</pre></details></td><td class="muted">needs systemctl</td></tr>
+</table>
+<h2>macOS</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>flushdns</code></td><td><code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></td><td>flush DNS cache</td><td class="muted">macOS</td></tr>
+<tr><td><code>showfiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool true; killall Finder</code></td><td>show hidden files in Finder</td><td class="muted">macOS</td></tr>
+<tr><td><code>hidefiles</code></td><td><code>defaults write com.apple.finder AppleShowAllFiles -bool false; killall Finder</code></td><td>hide hidden files in Finder</td><td class="muted">macOS</td></tr>
+<template id="fn52">sleepnow() { yesno &quot;Sleep now?&quot; &amp;&amp; pmset sleepnow; }</template>
+<tr><td><code>sleepnow</code></td><td><button class="fn" data-src="fn52" data-name="sleepnow">show code</button></td><td>put the Mac to sleep after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sleepnow</span>
+Sleep now? [y/N] y</pre></details></td><td class="muted">macOS</td></tr>
+<template id="fn53">clipcopy() {
+  if has pbcopy; then pbcopy
+  elif has wl-copy; then wl-copy
+  elif has xclip; then xclip -selection clipboard
+  else echo &quot;clipcopy: install xclip or wl-clipboard&quot; &gt;&amp;2; return 1; fi
+}</template>
+<tr><td><code>clipcopy</code></td><td><button class="fn" data-src="fn53" data-name="clipcopy">show code</button></td><td>stdin to clipboard (pbcopy, wl-copy or xclip)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ cat id_ed25519.pub | clipcopy</span>
+(public key copied to clipboard)</pre></details></td><td class="muted"></td></tr>
+<template id="fn54">clippaste() {
+  if has pbpaste; then pbpaste
+  elif has wl-paste; then wl-paste
+  elif has xclip; then xclip -selection clipboard -o
+  else echo &quot;clippaste: install xclip or wl-clipboard&quot; &gt;&amp;2; return 1; fi
+}</template>
+<tr><td><code>clippaste</code></td><td><button class="fn" data-src="fn54" data-name="clippaste">show code</button></td><td>clipboard to stdout<details class="ex" open><summary>example</summary><pre><span class="cmd">$ clippaste &gt; note.txt</span>
+(clipboard saved to note.txt)</pre></details></td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

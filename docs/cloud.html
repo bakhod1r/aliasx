@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cloud — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html" class="on">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Cloud</h1>
+<p>Cloud CLIs: read-only identity and listing only.</p>
+<p>File <code>aliases/cloud.sh</code>. Disable: <code>export ALIASX_DISABLE="cloud"</code></p>
+<h2>AWS</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>awswho</code></td><td><code>aws sts get-caller-identity</code></td><td>current AWS identity</td><td class="muted">needs aws</td></tr>
+<tr><td><code>awsprofiles</code></td><td><code>aws configure list-profiles</code></td><td>AWS profiles</td><td class="muted">needs aws</td></tr>
+</table>
+<h2>Azure</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>azwho</code></td><td><code>az account show</code></td><td>current Azure account</td><td class="muted">needs az</td></tr>
+<tr><td><code>azaccounts</code></td><td><code>az account list --output table</code></td><td>Azure subscriptions</td><td class="muted">needs az</td></tr>
+</table>
+<h2>Google Cloud</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>gcwho</code></td><td><code>gcloud auth list</code></td><td>gcloud accounts</td><td class="muted">needs gcloud</td></tr>
+<tr><td><code>gcproject</code></td><td><code>gcloud config get-value project</code></td><td>current GCP project</td><td class="muted">needs gcloud</td></tr>
+<tr><td><code>gcprojects</code></td><td><code>gcloud projects list</code></td><td>GCP projects</td><td class="muted">needs gcloud</td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

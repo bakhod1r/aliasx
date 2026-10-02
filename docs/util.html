@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Utilities — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html" class="on">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Utilities</h1>
+<p>Utilities: passwords, ids, time, encoding, quick checks.</p>
+<p>File <code>aliases/util.sh</code>. Disable: <code>export ALIASX_DISABLE="util"</code></p>
+<h2>Generate</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn1">genpass() { LC_ALL=C tr -dc &#x27;A-Za-z0-9!@#%^_+=-&#x27; &lt;/dev/urandom | head -c &quot;${1:-20}&quot;; echo; }</template>
+<tr><td><code>genpass [N]</code></td><td><button class="fn" data-src="fn1" data-name="genpass">show code</button></td><td>random password, N chars (default 20)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ genpass 16</span>
+q7K#m2Rx_9vT!pLz</pre></details></td><td class="muted"></td></tr>
+<template id="fn2">newuuid() {
+  if has uuidgen; then uuidgen | tr &#x27;A-Z&#x27; &#x27;a-z&#x27;
+  else cat /proc/sys/kernel/random/uuid; fi
+}</template>
+<tr><td><code>newuuid</code></td><td><button class="fn" data-src="fn2" data-name="newuuid">show code</button></td><td>random UUID (lowercase)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ newuuid</span>
+3f1c9b2e-7a4d-4e8f-9c21-5b6a7d8e9f01</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Time</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn3">epoch() { date +%s; }</template>
+<tr><td><code>epoch</code></td><td><button class="fn" data-src="fn3" data-name="epoch">show code</button></td><td>current Unix timestamp<details class="ex" open><summary>example</summary><pre><span class="cmd">$ epoch</span>
+1790932262</pre></details></td><td class="muted"></td></tr>
+<template id="fn4">fromepoch() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: fromepoch &lt;timestamp&gt;&quot; &gt;&amp;2; return 2; }
+  date -u -d &quot;@$1&quot; &#x27;+%Y-%m-%d %H:%M:%S UTC&#x27; 2&gt;/dev/null || date -u -r &quot;$1&quot; &#x27;+%Y-%m-%d %H:%M:%S UTC&#x27;
+}</template>
+<tr><td><code>fromepoch TS</code></td><td><button class="fn" data-src="fn4" data-name="fromepoch">show code</button></td><td>Unix timestamp to UTC date<details class="ex" open><summary>example</summary><pre><span class="cmd">$ fromepoch 0</span>
+1970-01-01 00:00:00 UTC</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Encode</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn5">b64() { if [ &quot;$#&quot; -gt 0 ]; then printf &#x27;%s&#x27; &quot;$*&quot; | base64; else base64; fi; }</template>
+<tr><td><code>b64 [TEXT]</code></td><td><button class="fn" data-src="fn5" data-name="b64">show code</button></td><td>base64 encode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64 hello</span>
+aGVsbG8=</pre></details></td><td class="muted"></td></tr>
+<template id="fn6">b64d() {
+  if [ &quot;$#&quot; -gt 0 ]; then printf &#x27;%s&#x27; &quot;$*&quot; | base64 --decode; else base64 --decode; fi
+  echo
+}</template>
+<tr><td><code>b64d [TEXT]</code></td><td><button class="fn" data-src="fn6" data-name="b64d">show code</button></td><td>base64 decode TEXT or stdin<details class="ex" open><summary>example</summary><pre><span class="cmd">$ b64d aGVsbG8=</span>
+hello</pre></details></td><td class="muted"></td></tr>
+<template id="fn7">urlenc() { python3 -c &#x27;import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1],safe=&quot;&quot;))&#x27; &quot;$*&quot;; }</template>
+<tr><td><code>urlenc TEXT</code></td><td><button class="fn" data-src="fn7" data-name="urlenc">show code</button></td><td>percent-encode for URLs<details class="ex" open><summary>example</summary><pre><span class="cmd">$ urlenc &#x27;a b&amp;c&#x27;</span>
+a%20b%26c</pre></details></td><td class="muted"></td></tr>
+<template id="fn8">urldec() { python3 -c &#x27;import sys,urllib.parse;print(urllib.parse.unquote(sys.argv[1]))&#x27; &quot;$*&quot;; }</template>
+<tr><td><code>urldec TEXT</code></td><td><button class="fn" data-src="fn8" data-name="urldec">show code</button></td><td>decode percent-encoding<details class="ex" open><summary>example</summary><pre><span class="cmd">$ urldec a%20b%26c</span>
+a b&amp;c</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Quick checks</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn9">httpcode() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: httpcode &lt;url&gt;&quot; &gt;&amp;2; return 2; }
+  curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; -- &quot;$1&quot;
+}</template>
+<tr><td><code>httpcode URL</code></td><td><button class="fn" data-src="fn9" data-name="httpcode">show code</button></td><td>HTTP status code only<details class="ex" open><summary>example</summary><pre><span class="cmd">$ httpcode https://example.com</span>
+200</pre></details></td><td class="muted"></td></tr>
+<template id="fn10">digs() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: digs &lt;name&gt; [type]&quot; &gt;&amp;2; return 2; }
+  dig +short &quot;$@&quot;
+}</template>
+<tr><td><code>digs NAME</code></td><td><button class="fn" data-src="fn10" data-name="digs">show code</button></td><td>DNS answer only<details class="ex" open><summary>example</summary><pre><span class="cmd">$ digs example.com</span>
+93.184.215.14</pre></details></td><td class="muted"></td></tr>
+<template id="fn11">topcmds() { fc -l 1 | awk &#x27;{print $2}&#x27; | sort | uniq -c | sort -rn | head -n &quot;${1:-15}&quot;; }</template>
+<tr><td><code>topcmds [N]</code></td><td><button class="fn" data-src="fn11" data-name="topcmds">show code</button></td><td>your most used commands (default 15)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ topcmds 3</span>
+  412 git
+  210 docker
+  155 cd</pre></details></td><td class="muted"></td></tr>
+<template id="fn12">sysinfo() {
+  echo &quot;OS:     $(uname -sr) $(uname -m)&quot;
+  echo &quot;Host:   $(hostname)&quot;
+  if [ &quot;$ALIASX_OS&quot; = macos ]; then
+    echo &quot;CPU:    $(sysctl -n machdep.cpu.brand_string) ($(sysctl -n hw.ncpu) cores)&quot;
+    echo &quot;Memory: $(( $(sysctl -n hw.memsize) / 1073741824 )) GB&quot;
+  else
+    echo &quot;CPU:    $(grep -m1 &#x27;model name&#x27; /proc/cpuinfo | cut -d: -f2 | sed &#x27;s/^ //&#x27;) ($(nproc) cores)&quot;
+    echo &quot;Memory: $(free -h | awk &#x27;/^Mem/ {print $3 &quot; used / &quot; $2}&#x27;)&quot;
+  fi
+  echo &quot;Disk /: $(df -h / | awk &#x27;NR==2 {print $3 &quot; used / &quot; $2 &quot; (&quot; $5 &quot;)&quot;}&#x27;)&quot;
+  echo &quot;Uptime:$(uptime | sed &#x27;s/.*up/ up/; s/,  *[0-9]* user.*//&#x27;)&quot;
+}</template>
+<tr><td><code>sysinfo</code></td><td><button class="fn" data-src="fn12" data-name="sysinfo">show code</button></td><td>OS, CPU, memory, disk, uptime in one screen<details class="ex" open><summary>example</summary><pre><span class="cmd">$ sysinfo</span>
+OS:     Linux 6.8.0 x86_64
+Host:   web1
+CPU:    AMD EPYC 7763 (4 cores)
+Memory: 3.1Gi used / 7.7Gi
+Disk /: 21G used / 79G (27%)
+Uptime: up 12 days</pre></details></td><td class="muted"></td></tr>
+<template id="fn13">pk() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: pk &lt;name&gt;&quot; &gt;&amp;2; return 2; }
+  pgrep -fl -- &quot;$1&quot; || { echo &quot;No process matches &#x27;$1&#x27;.&quot;; return 0; }
+  printf &#x27;Kill these processes? [y/N] &#x27;; read -r _a
+  case &quot;$_a&quot; in y|Y|yes) pkill -f -- &quot;$1&quot; ;; *) echo &quot;Cancelled.&quot; ;; esac
+  unset _a
+}</template>
+<tr><td><code>pk NAME</code></td><td><button class="fn" data-src="fn13" data-name="pk">show code</button></td><td>kill processes by name after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pk node</span>
+4123 node server.js
+Kill these processes? [y/N] n
+Cancelled.</pre></details></td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

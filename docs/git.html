@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Git — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html" class="on">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Git</h1>
+<p>Git and GitHub CLI.</p>
+<p>File <code>aliases/git.sh</code>. Disable: <code>export ALIASX_DISABLE="git"</code></p>
+<h2>Status and staging</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>g</code></td><td><code>git</code></td><td>git</td><td class="muted"></td></tr>
+<tr><td><code>gs</code></td><td><code>git status --short --branch</code></td><td>short status with branch</td><td class="muted"></td></tr>
+<tr><td><code>gst</code></td><td><code>git status</code></td><td>full status</td><td class="muted"></td></tr>
+<tr><td><code>ga</code></td><td><code>git add</code></td><td>stage files</td><td class="muted"></td></tr>
+<tr><td><code>gaa</code></td><td><code>git add --all</code></td><td>stage everything</td><td class="muted"></td></tr>
+<tr><td><code>gap</code></td><td><code>git add --patch</code></td><td>stage hunks interactively</td><td class="muted"></td></tr>
+</table>
+<h2>Diff</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>gd</code></td><td><code>git diff</code></td><td>unstaged diff</td><td class="muted"></td></tr>
+<tr><td><code>gds</code></td><td><code>git diff --staged</code></td><td>staged diff</td><td class="muted"></td></tr>
+<tr><td><code>gdw</code></td><td><code>git diff --word-diff</code></td><td>word-level diff</td><td class="muted"></td></tr>
+</table>
+<h2>Branches</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>gb</code></td><td><code>git branch</code></td><td>list branches</td><td class="muted"></td></tr>
+<tr><td><code>gba</code></td><td><code>git branch --all</code></td><td>list local and remote branches</td><td class="muted"></td></tr>
+<tr><td><code>gbd</code></td><td><code>git branch --delete</code></td><td>delete merged branch</td><td class="muted"></td></tr>
+<tr><td><code>gsw</code></td><td><code>git switch</code></td><td>switch branch</td><td class="muted"></td></tr>
+<tr><td><code>gswc</code></td><td><code>git switch --create</code></td><td>create and switch branch</td><td class="muted"></td></tr>
+<tr><td><code>gco</code></td><td><code>git checkout</code></td><td>checkout</td><td class="muted"></td></tr>
+<tr><td><code>gcb</code></td><td><code>git checkout -b</code></td><td>create branch via checkout</td><td class="muted"></td></tr>
+</table>
+<h2>Commit</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>gc</code></td><td><code>git commit</code></td><td>commit</td><td class="muted"></td></tr>
+<tr><td><code>gcm</code></td><td><code>git commit -m</code></td><td>commit with message</td><td class="muted"></td></tr>
+<tr><td><code>gca</code></td><td><code>git commit --amend</code></td><td>amend last commit</td><td class="muted"></td></tr>
+<tr><td><code>gcan</code></td><td><code>git commit --amend --no-edit</code></td><td>amend last commit, keep message</td><td class="muted"></td></tr>
+<tr><td><code>grs</code></td><td><code>git restore</code></td><td>discard file changes</td><td class="muted"></td></tr>
+<tr><td><code>grss</code></td><td><code>git restore --staged</code></td><td>unstage files</td><td class="muted"></td></tr>
+</table>
+<h2>Remote</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>gf</code></td><td><code>git fetch</code></td><td>fetch</td><td class="muted"></td></tr>
+<tr><td><code>gfa</code></td><td><code>git fetch --all --prune</code></td><td>fetch all remotes, prune</td><td class="muted"></td></tr>
+<tr><td><code>gp</code></td><td><code>git push</code></td><td>push</td><td class="muted"></td></tr>
+<tr><td><code>gpu</code></td><td><code>git push --set-upstream origin HEAD</code></td><td>push and set upstream</td><td class="muted"></td></tr>
+<tr><td><code>gpf</code></td><td><code>git push --force-with-lease</code></td><td>force push, safe (with lease)</td><td class="muted"></td></tr>
+<tr><td><code>gl</code></td><td><code>git pull</code></td><td>pull</td><td class="muted"></td></tr>
+<tr><td><code>glr</code></td><td><code>git pull --rebase</code></td><td>pull with rebase</td><td class="muted"></td></tr>
+<tr><td><code>gremotes</code></td><td><code>git remote --verbose</code></td><td>list remotes with URLs</td><td class="muted"></td></tr>
+</table>
+<h2>Merge and rebase</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>gm</code></td><td><code>git merge</code></td><td>merge</td><td class="muted"></td></tr>
+<tr><td><code>gma</code></td><td><code>git merge --abort</code></td><td>abort merge</td><td class="muted"></td></tr>
+<tr><td><code>grb</code></td><td><code>git rebase</code></td><td>rebase</td><td class="muted"></td></tr>
+<tr><td><code>grba</code></td><td><code>git rebase --abort</code></td><td>abort rebase</td><td class="muted"></td></tr>
+<tr><td><code>grbc</code></td><td><code>git rebase --continue</code></td><td>continue rebase</td><td class="muted"></td></tr>
+</table>
+<h2>Stash and tags</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>gsta</code></td><td><code>git stash push</code></td><td>stash changes</td><td class="muted"></td></tr>
+<tr><td><code>gstp</code></td><td><code>git stash pop</code></td><td>apply and drop last stash</td><td class="muted"></td></tr>
+<tr><td><code>gstl</code></td><td><code>git stash list</code></td><td>list stashes</td><td class="muted"></td></tr>
+<tr><td><code>gtags</code></td><td><code>git tag --sort=-creatordate</code></td><td>tags, newest first</td><td class="muted"></td></tr>
+</table>
+<h2>Log</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>glog</code></td><td><code>git log --oneline --decorate --graph</code></td><td>one-line graph log</td><td class="muted"></td></tr>
+<tr><td><code>gloga</code></td><td><code>git log --oneline --decorate --graph --all</code></td><td>graph log, all branches</td><td class="muted"></td></tr>
+<tr><td><code>glast</code></td><td><code>git log -1 HEAD --stat</code></td><td>last commit with stats</td><td class="muted"></td></tr>
+<tr><td><code>gwho</code></td><td><code>git shortlog --summary --numbered</code></td><td>commits per author</td><td class="muted"></td></tr>
+<template id="fn44">groot() { git rev-parse --show-toplevel; }</template>
+<tr><td><code>groot</code></td><td><button class="fn" data-src="fn44" data-name="groot">show code</button></td><td>print repository root<details class="ex" open><summary>example</summary><pre><span class="cmd">$ groot</span>
+/home/ali/projects/shop</pre></details></td><td class="muted"></td></tr>
+<template id="fn45">gundo() { git reset --soft HEAD~1; }</template>
+<tr><td><code>gundo</code></td><td><button class="fn" data-src="fn45" data-name="gundo">show code</button></td><td>undo last commit, keep changes staged<details class="ex" open><summary>example</summary><pre><span class="cmd">$ gundo</span>
+(last commit undone, changes stay staged)</pre></details></td><td class="muted"></td></tr>
+<template id="fn46">gclean-preview() { git clean -nd; }</template>
+<tr><td><code>gclean-preview</code></td><td><button class="fn" data-src="fn46" data-name="gclean-preview">show code</button></td><td>show untracked files git clean would remove<details class="ex" open><summary>example</summary><pre><span class="cmd">$ gclean-preview</span>
+Would remove build/
+Would remove tmp.log</pre></details></td><td class="muted"></td></tr>
+<template id="fn47">gpristine() {
+  git status --short
+  printf &#x27;Discard tracked changes and remove untracked files. Type PRISTINE to continue: &#x27;
+  read -r _a
+  [ &quot;$_a&quot; = PRISTINE ] || { echo &quot;Cancelled.&quot;; unset _a; return 1; }
+  unset _a
+  git reset --hard HEAD &amp;&amp; git clean -fd # allow-destructive
+}</template>
+<tr><td><code>gpristine</code></td><td><button class="fn" data-src="fn47" data-name="gpristine">show code</button></td><td>discard all changes after typing PRISTINE<details class="ex" open><summary>example</summary><pre><span class="cmd">$ gpristine</span>
+ M api/user.go
+?? tmp.log
+Discard tracked changes and remove untracked files. Type PRISTINE to continue: no
+Cancelled.</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>GitHub CLI</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>ghpr</code></td><td><code>gh pr view --web</code></td><td>open PR in browser</td><td class="muted">needs gh</td></tr>
+<tr><td><code>ghprs</code></td><td><code>gh pr list</code></td><td>list PRs</td><td class="muted">needs gh</td></tr>
+<tr><td><code>ghissues</code></td><td><code>gh issue list</code></td><td>list issues</td><td class="muted">needs gh</td></tr>
+<tr><td><code>ghrepo</code></td><td><code>gh repo view --web</code></td><td>open repo in browser</td><td class="muted">needs gh</td></tr>
+<tr><td><code>ghruns</code></td><td><code>gh run list</code></td><td>list workflow runs</td><td class="muted">needs gh</td></tr>
+<tr><td><code>ghwatch</code></td><td><code>gh run watch</code></td><td>watch workflow run</td><td class="muted">needs gh</td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

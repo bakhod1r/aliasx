@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hints — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html" class="on">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Hints</h1>
+<p>Hints: typing an aliasx name then Space shows what it does.</p>
+<p class="muted">Any other word (e.g. port) lists related aliasx commands. ALIASX_FIND=0 turns lists off.</p>
+<p class="muted">zsh: shown under the prompt while typing.</p>
+<p class="muted">bash 4+: printed above the prompt. bash 3 (macOS default): use aliasx why NAME.</p>
+<p class="muted">Turn off: ALIASX_DISABLE=&quot;hints&quot;</p>
+<p>File <code>aliases/hints.sh</code>. Disable: <code>export ALIASX_DISABLE="hints"</code></p>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

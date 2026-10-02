@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docker — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html" class="on">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Docker</h1>
+<p>Docker and Docker Compose.</p>
+<p>File <code>aliases/docker.sh</code>. Disable: <code>export ALIASX_DISABLE="docker"</code></p>
+<h2>Containers and images</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>d</code></td><td><code>docker</code></td><td>docker</td><td class="muted"></td></tr>
+<tr><td><code>dps</code></td><td><code>docker ps</code></td><td>running containers</td><td class="muted"></td></tr>
+<tr><td><code>dpsa</code></td><td><code>docker ps --all</code></td><td>all containers</td><td class="muted"></td></tr>
+<tr><td><code>di</code></td><td><code>docker images</code></td><td>images</td><td class="muted"></td></tr>
+<tr><td><code>dvol</code></td><td><code>docker volume ls</code></td><td>volumes</td><td class="muted"></td></tr>
+<tr><td><code>dnet</code></td><td><code>docker network ls</code></td><td>networks</td><td class="muted"></td></tr>
+<tr><td><code>dlog</code></td><td><code>docker logs</code></td><td>container logs</td><td class="muted"></td></tr>
+<tr><td><code>dlogf</code></td><td><code>docker logs --follow --tail 200</code></td><td>follow last 200 log lines</td><td class="muted"></td></tr>
+<tr><td><code>dstats</code></td><td><code>docker stats</code></td><td>live resource usage</td><td class="muted"></td></tr>
+<tr><td><code>dinspect</code></td><td><code>docker inspect</code></td><td>inspect object</td><td class="muted"></td></tr>
+<tr><td><code>dbuild</code></td><td><code>docker build</code></td><td>build image</td><td class="muted"></td></tr>
+<tr><td><code>dpull</code></td><td><code>docker pull</code></td><td>pull image</td><td class="muted"></td></tr>
+<tr><td><code>ddf</code></td><td><code>docker system df</code></td><td>docker disk usage</td><td class="muted"></td></tr>
+<template id="fn14">dsh() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: dsh &lt;container&gt; [command]&quot; &gt;&amp;2; return 2; }
+  _c=&quot;$1&quot;; shift
+  if [ &quot;$#&quot; -gt 0 ]; then docker exec -it &quot;$_c&quot; &quot;$@&quot;
+  elif docker exec &quot;$_c&quot; test -x /bin/bash 2&gt;/dev/null; then docker exec -it &quot;$_c&quot; /bin/bash
+  else docker exec -it &quot;$_c&quot; /bin/sh; fi
+  unset _c
+}</template>
+<tr><td><code>dsh CONTAINER [CMD]</code></td><td><button class="fn" data-src="fn14" data-name="dsh">show code</button></td><td>shell into container (bash, else sh)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dsh api</span>
+root@4f2a9c1b:/app#</pre></details></td><td class="muted"></td></tr>
+<template id="fn15">drun() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: drun &lt;image&gt; [command]&quot; &gt;&amp;2; return 2; }
+  docker run --rm -it &quot;$@&quot;
+}</template>
+<tr><td><code>drun IMAGE [CMD]</code></td><td><button class="fn" data-src="fn15" data-name="drun">show code</button></td><td>run throwaway interactive container<details class="ex" open><summary>example</summary><pre><span class="cmd">$ drun alpine</span>
+/ #</pre></details></td><td class="muted"></td></tr>
+<template id="fn16">dip() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: dip &lt;container&gt;&quot; &gt;&amp;2; return 2; }
+  docker inspect --format &#x27;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#x27; &quot;$1&quot;
+}</template>
+<tr><td><code>dip CONTAINER</code></td><td><button class="fn" data-src="fn16" data-name="dip">show code</button></td><td>print container IP<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dip api</span>
+172.18.0.3</pre></details></td><td class="muted"></td></tr>
+<template id="fn17">dstop-all() {
+  _ids=&quot;$(docker ps -q)&quot;
+  [ -n &quot;$_ids&quot; ] || { echo &quot;No running containers.&quot;; return 0; }
+  docker ps
+  printf &#x27;Stop all running containers? [y/N] &#x27;; read -r _a
+  case &quot;$_a&quot; in y|Y|yes) docker stop $(docker ps -q) ;; *) echo &quot;Cancelled.&quot; ;; esac
+  unset _ids _a
+}</template>
+<tr><td><code>dstop-all</code></td><td><button class="fn" data-src="fn17" data-name="dstop-all">show code</button></td><td>stop all running containers after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dstop-all</span>
+CONTAINER ID   IMAGE      NAMES
+4f2a9c1b       api:dev    api
+Stop all running containers? [y/N] n
+Cancelled.</pre></details></td><td class="muted"></td></tr>
+<template id="fn18">dprune() {
+  docker system df
+  printf &#x27;Prune unused Docker data? [y/N] &#x27;; read -r _a
+  case &quot;$_a&quot; in y|Y|yes) docker system prune ;; *) echo &quot;Cancelled.&quot; ;; esac # allow-destructive
+  unset _a
+}</template>
+<tr><td><code>dprune</code></td><td><button class="fn" data-src="fn18" data-name="dprune">show code</button></td><td>show usage, then docker system prune after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dprune</span>
+TYPE            TOTAL     RECLAIMABLE
+Images          14        3.2GB (61%)
+Prune unused Docker data? [y/N] n
+Cancelled.</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Compose</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>dc</code></td><td><code>docker compose</code></td><td>docker compose</td><td class="muted"></td></tr>
+<tr><td><code>dcu</code></td><td><code>docker compose up</code></td><td>compose up</td><td class="muted"></td></tr>
+<tr><td><code>dcud</code></td><td><code>docker compose up --detach</code></td><td>compose up in background</td><td class="muted"></td></tr>
+<tr><td><code>dcub</code></td><td><code>docker compose up --detach --build</code></td><td>rebuild and up in background</td><td class="muted"></td></tr>
+<tr><td><code>dcd</code></td><td><code>docker compose down</code></td><td>compose down</td><td class="muted"></td></tr>
+<tr><td><code>dcps</code></td><td><code>docker compose ps</code></td><td>compose services</td><td class="muted"></td></tr>
+<tr><td><code>dcl</code></td><td><code>docker compose logs</code></td><td>compose logs</td><td class="muted"></td></tr>
+<tr><td><code>dclf</code></td><td><code>docker compose logs --follow --tail 200</code></td><td>follow last 200 compose log lines</td><td class="muted"></td></tr>
+<tr><td><code>dcb</code></td><td><code>docker compose build</code></td><td>compose build</td><td class="muted"></td></tr>
+<tr><td><code>dcpull</code></td><td><code>docker compose pull</code></td><td>pull compose images</td><td class="muted"></td></tr>
+<tr><td><code>dcr</code></td><td><code>docker compose restart</code></td><td>restart compose services</td><td class="muted"></td></tr>
+<tr><td><code>dcconfig</code></td><td><code>docker compose config</code></td><td>show resolved compose file</td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

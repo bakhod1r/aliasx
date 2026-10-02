@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Core — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html" class="on">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Core</h1>
+<p>Core: helpers, terminal and the aliasx command. Always loaded.</p>
+<h2>General</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn1">has() { command -v &quot;$1&quot; &gt;/dev/null 2&gt;&amp;1; }</template>
+<tr><td><code>has CMD</code></td><td><button class="fn" data-src="fn1" data-name="has">show code</button></td><td>true when CMD is installed<details class="ex" open><summary>example</summary><pre><span class="cmd">$ has docker &amp;&amp; echo yes</span>
+yes</pre></details></td><td class="muted"></td></tr>
+<template id="fn2">aliasx_hint() {
+  _h=&quot;$(awk -v n=&quot;$1&quot; &#x27;
+    /^[[:space:]]*# / {
+      l = $0; sub(/^[[:space:]]*# /, &quot;&quot;, l); d = &quot; — &quot;; i = index(l, d)
+      if (i) { head = substr(l, 1, i - 1); split(head, w, &quot; &quot;)
+               if (w[1] == n) { print &quot;F\t&quot; head &quot;\t&quot; substr(l, i + length(d)); exit } }
+      next }
+    /alias / {
+      s = substr($0, index($0, &quot;alias &quot;) + 6); if (substr(s, 1, 3) == &quot;-- &quot;) s = substr(s, 4)
+      if (substr(s, 1, index(s, &quot;=&quot;) - 1) == n) { c = index($0, &quot;  # &quot;); print &quot;A\t&quot; substr($0, c + 4); exit } }
+  &#x27; &quot;$ALIASX_ROOT&quot;/aliases/*.sh &quot;$ALIASX_ROOT&quot;/optional/*.sh 2&gt;/dev/null)&quot;
+  case &quot;$_h&quot; in
+    A*)
+      _e=&quot;$(alias &quot;$1&quot; 2&gt;/dev/null)&quot; || { unset _h; return 1; }
+      _e=&quot;${_e#*=}&quot;; _e=&quot;${_e#\&#x27;}&quot;; _e=&quot;${_e%\&#x27;}&quot;
+      printf &#x27;%s → %s · %s\n&#x27; &quot;$1&quot; &quot;$_e&quot; &quot;${_h#*	}&quot; ;;
+    F*)
+      typeset -f &quot;$1&quot; &gt;/dev/null 2&gt;&amp;1 || { unset _h; return 1; }
+      _h=&quot;${_h#*	}&quot;; printf &#x27;%s · %s\n&#x27; &quot;${_h%%	*}&quot; &quot;${_h#*	}&quot; ;;
+    *) unset _h; return 1 ;;
+  esac
+  unset _h _e
+}</template>
+<tr><td><code>aliasx_hint NAME</code></td><td><button class="fn" data-src="fn2" data-name="aliasx_hint">show code</button></td><td>one-line explanation of an aliasx alias or function<details class="ex" open><summary>example</summary><pre><span class="cmd">$ aliasx_hint gs</span>
+gs → git status --short --branch · short status with branch</pre></details></td><td class="muted"></td></tr>
+<template id="fn3">aliasx_find() {
+  [ -n &quot;${1:-}&quot; ] || { echo &quot;Usage: aliasx find &lt;word&gt;&quot; &gt;&amp;2; return 2; }
+  _found=1
+  for _n in $(awk -v w=&quot;$1&quot; &#x27;
+      function has(t) { t = &quot; &quot; tolower(t); gsub(/[^a-z0-9]/, &quot; &quot;, t); return index(t, &quot; &quot; w) }
+      BEGIN { w = tolower(w) }
+      /^[[:space:]]*# [A-Za-z][A-Za-z0-9_-]*( [^—]*)? — / {
+        l = $0; sub(/^[[:space:]]*# /, &quot;&quot;, l); split(l, p, &quot; &quot;)
+        if (index(tolower(p[1]), w)) print 0, p[1]; else if (has(l)) print 1, p[1]; next }
+      /alias (-- )?[^ =]+=[\x27&quot;]/ &amp;&amp; !/^[[:space:]]*#/ {
+        s = substr($0, index($0, &quot;alias &quot;) + 6); if (substr(s, 1, 3) == &quot;-- &quot;) s = substr(s, 4)
+        n = substr(s, 1, index(s, &quot;=&quot;) - 1); c = index($0, &quot;  # &quot;)
+        if (index(tolower(n), w)) print 0, n; else if (c &amp;&amp; has(substr($0, c))) print 1, n }
+    &#x27; &quot;$ALIASX_ROOT&quot;/aliases/*.sh &quot;$ALIASX_ROOT&quot;/optional/*.sh | sort -s -n -k1,1 | awk &#x27;!seen[$2]++ {print $2}&#x27;); do
+    case &quot;$_n&quot; in _*|aliasx*|has|yesno) continue ;; esac
+    aliasx_hint &quot;$_n&quot; 2&gt;/dev/null &amp;&amp; _found=0
+  done
+  unset _n; return $_found
+}</template>
+<tr><td><code>aliasx_find WORD</code></td><td><button class="fn" data-src="fn3" data-name="aliasx_find">show code</button></td><td>loaded aliasx commands whose name or description mentions WORD<details class="ex" open><summary>example</summary><pre><span class="cmd">$ aliasx_find port</span>
+ports [PORT] · listening TCP ports, or who listens on PORT
+freeport PORT · kill what listens on PORT after y/N</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Terminal</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>c</code></td><td><code>clear</code></td><td>clear screen</td><td class="muted"></td></tr>
+<tr><td><code>now</code></td><td><code>date &quot;+%Y-%m-%d %H:%M:%S&quot;</code></td><td>current date and time</td><td class="muted"></td></tr>
+<tr><td><code>week</code></td><td><code>date &quot;+%V&quot;</code></td><td>ISO week number</td><td class="muted"></td></tr>
+<tr><td><code>path</code></td><td><code>echo &quot;$PATH&quot; | tr &quot;:&quot; &quot;\n&quot;</code></td><td>PATH, one entry per line</td><td class="muted"></td></tr>
+<tr><td><code>e</code></td><td><code>${EDITOR:-vi}</code></td><td>open in your editor</td><td class="muted"></td></tr>
+<tr><td><code>envg</code></td><td><code>env | sort | grep -i</code></td><td>search environment variables</td><td class="muted"></td></tr>
+<template id="fn10">reload() {
+  if [ -n &quot;${ZSH_VERSION:-}&quot; ]; then . &quot;$HOME/.zshrc&quot;; else . &quot;$HOME/.bashrc&quot;; fi
+}</template>
+<tr><td><code>reload</code></td><td><button class="fn" data-src="fn10" data-name="reload">show code</button></td><td>re-read ~/.bashrc or ~/.zshrc<details class="ex" open><summary>example</summary><pre><span class="cmd">$ reload</span>
+(rc file re-read, new aliases active)</pre></details></td><td class="muted"></td></tr>
+<template id="fn11">yesno() {
+  printf &#x27;%s [y/N] &#x27; &quot;$1&quot; &gt;&amp;2
+  read -r _a
+  case &quot;$_a&quot; in y|Y|yes|YES) unset _a; return 0 ;; esac
+  echo &quot;Cancelled.&quot; &gt;&amp;2; unset _a; return 1
+}</template>
+<tr><td><code>yesno PROMPT</code></td><td><button class="fn" data-src="fn11" data-name="yesno">show code</button></td><td>ask [y/N]; true only on y/yes<details class="ex" open><summary>example</summary><pre><span class="cmd">$ yesno &quot;Deploy?&quot; &amp;&amp; ./deploy.sh</span>
+Deploy? [y/N] y</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Modes</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn12">aliasx() {
+  case &quot;${1:-}&quot; in
+    modules)
+      for _f in &quot;$ALIASX_ROOT&quot;/aliases/*.sh; do basename &quot;$_f&quot; .sh; done
+      for _f in &quot;$ALIASX_ROOT&quot;/optional/*.sh; do echo &quot;$(basename &quot;$_f&quot; .sh) (optional)&quot;; done
+      unset _f ;;
+    list)
+      _f=&quot;$ALIASX_ROOT/aliases/${2:-}.sh&quot;
+      [ -f &quot;$_f&quot; ] || _f=&quot;$ALIASX_ROOT/optional/${2:-}.sh&quot;
+      [ -n &quot;${2:-}&quot; ] &amp;&amp; [ -f &quot;$_f&quot; ] || { echo &quot;Usage: aliasx list &lt;module&gt;&quot; &gt;&amp;2; return 2; }
+      grep -E &#x27;^[[:space:]]*(alias |# [a-z][a-z0-9_-]* ?.*— )&#x27; &quot;$_f&quot; | sed &#x27;s/^[[:space:]]*//&#x27;
+      unset _f ;;
+    check)
+      shift
+      [ &quot;$#&quot; -gt 0 ] || { echo &quot;Usage: aliasx check &lt;name&gt;...&quot; &gt;&amp;2; return 2; }
+      for _n in &quot;$@&quot;; do
+        if alias &quot;$_n&quot; &gt;/dev/null 2&gt;&amp;1; then alias &quot;$_n&quot;
+        elif typeset -f &quot;$_n&quot; &gt;/dev/null 2&gt;&amp;1; then echo &quot;$_n: function&quot;
+        elif command -v &quot;$_n&quot; &gt;/dev/null 2&gt;&amp;1; then echo &quot;$_n: command $(command -v &quot;$_n&quot;)&quot;
+        else echo &quot;$_n: available&quot;; fi
+      done
+      unset _n ;;
+    find)
+      aliasx_find &quot;${2:-}&quot; ;;
+    why)
+      [ -n &quot;${2:-}&quot; ] || { echo &quot;Usage: aliasx why &lt;name&gt;&quot; &gt;&amp;2; return 2; }
+      aliasx_hint &quot;$2&quot; ;;
+    mode)
+      if [ -z &quot;${2:-}&quot; ]; then echo &quot;$ALIASX_MODE&quot;
+      else _aliasx_mode_set &quot;$2&quot; &amp;&amp; echo &quot;aliasx mode: $ALIASX_MODE&quot;; fi ;;
+    *)
+      echo &quot;Usage: aliasx modules | list &lt;module&gt; | check &lt;name&gt;... | find &lt;word&gt; | why &lt;name&gt; | mode [safe|normal]&quot; &gt;&amp;2
+      return 2 ;;
+  esac
+}</template>
+<tr><td><code>aliasx [modules|list MODULE|check NAME...|why NAME|mode [safe|normal]]</code></td><td><button class="fn" data-src="fn12" data-name="aliasx">show code</button></td><td>inspect aliasx<details class="ex" open><summary>example</summary><pre><span class="cmd">$ aliasx why lni</span>
+lni → ln -i · link, ask before overwriting</pre></details></td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

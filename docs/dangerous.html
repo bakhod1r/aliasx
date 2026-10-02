@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dangerous helpers — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html" class="on">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Dangerous helpers</h1>
+<p>Opt-in: destructive helpers. Each one shows targets and asks for a phrase.</p>
+<p class="muted">Enable only for maintenance: ALIASX_ENABLE=&quot;dangerous&quot;</p>
+<p>Not loaded by default. Enable: <code>export ALIASX_ENABLE="dangerous"</code></p>
+<h2>General</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn1">confirm() {
+  printf &#x27;%s Type %s to continue: &#x27; &quot;$1&quot; &quot;$2&quot;
+  read -r _a
+  [ &quot;$_a&quot; = &quot;$2&quot; ]; _rc=$?; unset _a; return $_rc
+}</template>
+<tr><td><code>confirm PROMPT PHRASE</code></td><td><button class="fn" data-src="fn1" data-name="confirm">show code</button></td><td>true only if user types PHRASE<details class="ex" open><summary>example</summary><pre><span class="cmd">$ confirm &#x27;Wipe cache?&#x27; WIPE &amp;&amp; rm -r cache</span>
+Wipe cache? Type WIPE to continue: WIPE</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Docker</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn2">docker-rm-stopped() {
+  docker ps --all --filter status=exited
+  confirm &quot;Remove every stopped container?&quot; REMOVE-STOPPED || return 1
+  docker ps --quiet --all --filter status=exited | xargs docker rm # allow-destructive
+}</template>
+<tr><td><code>docker-rm-stopped</code></td><td><button class="fn" data-src="fn2" data-name="docker-rm-stopped">show code</button></td><td>remove all exited containers<details class="ex" open><summary>example</summary><pre><span class="cmd">$ docker-rm-stopped</span>
+CONTAINER ID  STATUS
+9a1b...       Exited (0)
+Remove every stopped container? Type REMOVE-STOPPED to continue:</pre></details></td><td class="muted"></td></tr>
+<template id="fn3">docker-prune-all() {
+  docker system df
+  confirm &quot;Remove all unused Docker data, including images?&quot; PRUNE-DOCKER || return 1
+  docker system prune --all # allow-destructive
+}</template>
+<tr><td><code>docker-prune-all</code></td><td><button class="fn" data-src="fn3" data-name="docker-prune-all">show code</button></td><td>remove all unused data including images<details class="ex" open><summary>example</summary><pre><span class="cmd">$ docker-prune-all</span>
+Remove all unused Docker data, including images? Type PRUNE-DOCKER to continue:</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Databases</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn4">redis-flush() {
+  redis-cli dbsize
+  confirm &quot;Delete every key in this Redis database?&quot; FLUSH-REDIS || return 1
+  redis-cli flushdb # allow-destructive
+}</template>
+<tr><td><code>redis-flush</code></td><td><button class="fn" data-src="fn4" data-name="redis-flush">show code</button></td><td>delete every key in the current Redis database<details class="ex" open><summary>example</summary><pre><span class="cmd">$ redis-flush</span>
+(integer) 1520
+Delete every key in this Redis database? Type FLUSH-REDIS to continue:</pre></details></td><td class="muted"></td></tr>
+<template id="fn5">pg-dropdb() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: pg-dropdb &lt;database&gt;&quot; &gt;&amp;2; return 2; }
+  confirm &quot;Drop database $1 permanently?&quot; &quot;$1&quot; || return 1
+  dropdb &quot;$1&quot; # allow-destructive
+}</template>
+<tr><td><code>pg-dropdb DB</code></td><td><button class="fn" data-src="fn5" data-name="pg-dropdb">show code</button></td><td>drop a PostgreSQL database (type its name to confirm)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ pg-dropdb shop_copy</span>
+Drop database shop_copy permanently? Type shop_copy to continue:</pre></details></td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

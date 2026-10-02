@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html" class="on">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>aliasx</h1>
+<p>Safe, modular shell aliases for bash and zsh on Linux and macOS. 468 aliases and functions in 24 modules.</p>
+
+<h2>Install</h2>
+<pre>git clone https://github.com/bakhod1r/aliasx ~/.aliasx
+~/.aliasx/install.sh</pre>
+<p><code>install.sh</code> adds one line to <code>~/.bashrc</code> and <code>~/.zshrc</code>. Running it again changes nothing. Open a new shell.</p>
+<p>oh-my-zsh: clone into <code>$ZSH_CUSTOM/plugins/aliasx</code> and add <code>aliasx</code> to <code>plugins=(...)</code>.</p>
+
+<h2>Configure</h2>
+<pre>export ALIASX_DISABLE="docker k8s"      # skip default modules
+export ALIASX_ENABLE="modern dangerous"  # load opt-in modules</pre>
+<p>Set these before the aliasx line in your rc file.</p>
+
+<h2>Inspect</h2>
+<pre>aliasx modules          # list modules
+aliasx list git         # aliases in one module
+aliasx check gs k tf    # is a name taken?
+aliasx why lni          # lni → ln -i · link, ask before overwriting</pre>
+
+<h2>Hints</h2>
+<p>Type an aliasx name and press Space: zsh shows what it does under the prompt.</p>
+<pre>$ lni █
+lni → ln -i · link, ask before overwriting</pre>
+<p>Don't know the name? Type a word like <code>port</code> and press Space: related commands are listed.</p>
+<pre>$ port █
+related commands:
+ports [PORT] · listening TCP ports, or who listens on PORT
+freeport PORT · kill what listens on PORT after y/N
+waitport HOST PORT [SEC] · wait until PORT accepts connections</pre>
+<p>Same in any shell: <code>aliasx find port</code>. Turn lists off with <code>ALIASX_FIND=0</code>.</p>
+<p>bash 4+ prints the hint above the prompt. bash 3 (macOS default) has no live hook; use <code>aliasx why</code>.</p>
+
+<h2>Safe mode</h2>
+<pre>aliasx mode safe     # rm lists targets and asks [Y/n]
+aliasx mode normal   # plain rm
+aliasx mode          # show current mode
+export ALIASX_MODE=safe   # keep it on (put in rc before aliasx)</pre>
+
+<h2>Rules</h2>
+<ul>
+<li>Tool modules load only when the tool is installed (<code>has docker</code>, <code>has kubectl</code>…).</li>
+<li>Standard commands (<code>cp</code>, <code>mv</code>, <code>rm</code>, <code>cat</code>, <code>top</code>, <code>ping</code>) are never replaced by default. Safe variants get new names: <code>cpi</code>, <code>mvi</code>, <code>rmi</code>.</li>
+<li>Destructive actions show what they will touch and ask first. Bulk deletes live in the opt-in <a href="dangerous.html">dangerous</a> module and need a typed phrase.</li>
+<li>No implicit <code>sudo</code> outside package and power commands. No <code>-y</code> on upgrades.</li>
+<li>One meaning per name: <code>h</code> is history, Helm uses <code>hm</code>; Rust uses <code>cargo-*</code>; pnpm uses <code>pn*</code>.</li>
+</ul>
+
+<h2>Modules</h2>
+<table>
+<tr><th>Module</th><th>Covers</th><th>Count</th></tr>
+<tr><td><a href="core.html">Core</a></td><td>Core: helpers, terminal and the aliasx command. Always loaded.</td><td>12</td></tr>
+<tr><td><a href="hints.html">Hints</a></td><td>Hints: typing an aliasx name then Space shows what it does.</td><td>0</td></tr>
+<tr><td><a href="nav.html">Navigation</a></td><td>Navigation and listing.</td><td>17</td></tr>
+<tr><td><a href="files.html">Files</a></td><td>Files: safe operations, search, disk, archives, history.</td><td>39</td></tr>
+<tr><td><a href="git.html">Git</a></td><td>Git and GitHub CLI.</td><td>53</td></tr>
+<tr><td><a href="docker.html">Docker</a></td><td>Docker and Docker Compose.</td><td>30</td></tr>
+<tr><td><a href="podman.html">Podman</a></td><td>Podman (pd*): same shape as the docker module.</td><td>21</td></tr>
+<tr><td><a href="k8s.html">Kubernetes</a></td><td>Kubernetes and Helm.</td><td>49</td></tr>
+<tr><td><a href="infra.html">Infrastructure</a></td><td>Infrastructure as code: Terraform, OpenTofu, Ansible.</td><td>21</td></tr>
+<tr><td><a href="ops.html">DevOps</a></td><td>DevOps: retries, tunnels, certificates, DNS, cron, logs.</td><td>9</td></tr>
+<tr><td><a href="admin.html">Sysadmin</a></td><td>Sysadmin: users, logins, services, disk hogs, kernel messages.</td><td>14</td></tr>
+<tr><td><a href="net.html">Network</a></td><td>Networking and HTTP.</td><td>11</td></tr>
+<tr><td><a href="system.html">System</a></td><td>System: processes, services, packages, macOS.</td><td>54</td></tr>
+<tr><td><a href="dev.html">Development</a></td><td>Development: Node, Python, Go, Rust, Java, JSON, TLS.</td><td>39</td></tr>
+<tr><td><a href="api.html">Backend &amp; API</a></td><td>Backend and API work: HTTP calls, timing, JWT, ports, keys, certs.</td><td>12</td></tr>
+<tr><td><a href="db.html">Databases</a></td><td>Databases: PostgreSQL (pg*), MySQL (my*), Redis (r*), MongoDB.</td><td>25</td></tr>
+<tr><td><a href="nginx.html">nginx</a></td><td>nginx: test, reload, logs. Config is always tested before reload/restart.</td><td>9</td></tr>
+<tr><td><a href="remote.html">SSH &amp; tmux</a></td><td>Remote work: ssh and tmux.</td><td>9</td></tr>
+<tr><td><a href="util.html">Utilities</a></td><td>Utilities: passwords, ids, time, encoding, quick checks.</td><td>13</td></tr>
+<tr><td><a href="dotenv.html">.env files</a></td><td>.env files: insert or update KEY=VALUE without opening an editor.</td><td>4</td></tr>
+<tr><td><a href="cloud.html">Cloud</a></td><td>Cloud CLIs: read-only identity and listing only.</td><td>7</td></tr>
+<tr><td><a href="tools.html">Modern tools</a></td><td>Modern CLI tools that add new names only (never replace standard commands).</td><td>6</td></tr>
+<tr><td><a href="modern.html">Modern replacements</a> <span class="muted">opt-in</span></td><td>Opt-in: replace standard commands with modern tools.</td><td>9</td></tr>
+<tr><td><a href="dangerous.html">Dangerous helpers</a> <span class="muted">opt-in</span></td><td>Opt-in: destructive helpers. Each one shows targets and asks for a phrase.</td><td>5</td></tr>
+</table>
+
+<h2>Uninstall</h2>
+<pre>~/.aliasx/install.sh --uninstall</pre>
+
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

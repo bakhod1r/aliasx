@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Infrastructure — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html" class="on">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Infrastructure</h1>
+<p>Infrastructure as code: Terraform, OpenTofu, Ansible.</p>
+<p class="muted">No short alias for destroy.</p>
+<p>File <code>aliases/infra.sh</code>. Disable: <code>export ALIASX_DISABLE="infra"</code></p>
+<h2>Terraform</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>tf</code></td><td><code>terraform</code></td><td>terraform</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfi</code></td><td><code>terraform init</code></td><td>init</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tff</code></td><td><code>terraform fmt -recursive</code></td><td>format all files</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfv</code></td><td><code>terraform validate</code></td><td>validate</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfp</code></td><td><code>terraform plan</code></td><td>plan</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfa</code></td><td><code>terraform apply</code></td><td>apply (asks to confirm)</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfpo</code></td><td><code>terraform plan -out=tfplan</code></td><td>plan and save to tfplan</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfao</code></td><td><code>terraform apply tfplan</code></td><td>apply exactly the saved plan</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfo</code></td><td><code>terraform output</code></td><td>outputs</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfs</code></td><td><code>terraform show</code></td><td>show state or plan</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfwl</code></td><td><code>terraform workspace list</code></td><td>list workspaces</td><td class="muted">needs terraform</td></tr>
+<tr><td><code>tfstate</code></td><td><code>terraform state list</code></td><td>list state resources</td><td class="muted">needs terraform</td></tr>
+</table>
+<h2>OpenTofu</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>tofui</code></td><td><code>tofu init</code></td><td>tofu init</td><td class="muted">needs tofu</td></tr>
+<tr><td><code>tofuf</code></td><td><code>tofu fmt -recursive</code></td><td>tofu format all files</td><td class="muted">needs tofu</td></tr>
+<tr><td><code>tofuv</code></td><td><code>tofu validate</code></td><td>tofu validate</td><td class="muted">needs tofu</td></tr>
+<tr><td><code>tofup</code></td><td><code>tofu plan</code></td><td>tofu plan</td><td class="muted">needs tofu</td></tr>
+<tr><td><code>tofua</code></td><td><code>tofu apply</code></td><td>tofu apply (asks to confirm)</td><td class="muted">needs tofu</td></tr>
+</table>
+<h2>Ansible</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>ap</code></td><td><code>ansible-playbook</code></td><td>run playbook</td><td class="muted">needs ansible</td></tr>
+<tr><td><code>apcheck</code></td><td><code>ansible-playbook --check --diff</code></td><td>dry-run playbook with diff</td><td class="muted">needs ansible</td></tr>
+<tr><td><code>ainv</code></td><td><code>ansible-inventory --graph</code></td><td>inventory graph</td><td class="muted">needs ansible</td></tr>
+<tr><td><code>alint</code></td><td><code>ansible-lint</code></td><td>lint playbooks</td><td class="muted">needs ansible</td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

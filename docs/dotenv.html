@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>.env files — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html" class="on">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>.env files</h1>
+<p>.env files: insert or update KEY=VALUE without opening an editor.</p>
+<p class="muted">Default file is ./.env; pass another path as the last argument.</p>
+<p>File <code>aliases/dotenv.sh</code>. Disable: <code>export ALIASX_DISABLE="dotenv"</code></p>
+<h2>General</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn1">envset() {
+  case &quot;${1:-}&quot; in
+    [A-Za-z_]*=*) ;;
+    *) echo &quot;Usage: envset KEY=VALUE [file]&quot; &gt;&amp;2; return 2 ;;
+  esac
+  _k=&quot;${1%%=*}&quot;
+  case &quot;$_k&quot; in *[!A-Za-z0-9_]*) echo &quot;envset: invalid key &#x27;$_k&#x27;&quot; &gt;&amp;2; unset _k; return 2 ;; esac
+  _f=&quot;${2:-.env}&quot;
+  if [ -f &quot;$_f&quot; ] &amp;&amp; grep -Eq &quot;^(export[[:space:]]+)?$_k=&quot; &quot;$_f&quot;; then
+    _t=&quot;$(mktemp)&quot; || return 1
+    ALIASX_K=&quot;$_k&quot; ALIASX_V=&quot;${1#*=}&quot; awk &#x27;
+      { m = $0; sub(/^export[ \t]+/, &quot;&quot;, m) }
+      index(m, ENVIRON[&quot;ALIASX_K&quot;] &quot;=&quot;) == 1 &amp;&amp; !done {
+        p = (m == $0) ? &quot;&quot; : substr($0, 1, length($0) - length(m))
+        print p ENVIRON[&quot;ALIASX_K&quot;] &quot;=&quot; ENVIRON[&quot;ALIASX_V&quot;]; done = 1; next }
+      { print }&#x27; &quot;$_f&quot; &gt; &quot;$_t&quot; &amp;&amp; cat &quot;$_t&quot; &gt; &quot;$_f&quot;
+    command rm -f &quot;$_t&quot;; unset _t
+    echo &quot;updated $_k in $_f&quot;
+  else
+    [ -s &quot;$_f&quot; ] &amp;&amp; [ &quot;$(tail -c 1 -- &quot;$_f&quot;)&quot; != &quot;&quot; ] &amp;&amp; printf &#x27;\n&#x27; &gt;&gt; &quot;$_f&quot;
+    printf &#x27;%s\n&#x27; &quot;$1&quot; &gt;&gt; &quot;$_f&quot;
+    echo &quot;added $_k to $_f&quot;
+  fi
+  unset _k _f
+}</template>
+<tr><td><code>envset KEY=VALUE [FILE]</code></td><td><button class="fn" data-src="fn1" data-name="envset">show code</button></td><td>insert or update KEY in .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envset DB_HOST=localhost</span>
+updated DB_HOST in .env</pre></details></td><td class="muted"></td></tr>
+<template id="fn2">envget() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: envget KEY [file]&quot; &gt;&amp;2; return 2; }
+  ALIASX_K=&quot;$1&quot; awk &#x27;
+    { m = $0; sub(/^export[ \t]+/, &quot;&quot;, m) }
+    index(m, ENVIRON[&quot;ALIASX_K&quot;] &quot;=&quot;) == 1 { print substr(m, length(ENVIRON[&quot;ALIASX_K&quot;]) + 2); f = 1; exit }
+    END { exit !f }&#x27; &quot;${2:-.env}&quot;
+}</template>
+<tr><td><code>envget KEY [FILE]</code></td><td><button class="fn" data-src="fn2" data-name="envget">show code</button></td><td>print value of KEY from .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envget DB_HOST</span>
+localhost</pre></details></td><td class="muted"></td></tr>
+<template id="fn3">envdel() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: envdel KEY [file]&quot; &gt;&amp;2; return 2; }
+  _f=&quot;${2:-.env}&quot;; _t=&quot;$(mktemp)&quot; || return 1
+  ALIASX_K=&quot;$1&quot; awk &#x27;{ m = $0; sub(/^export[ \t]+/, &quot;&quot;, m) } index(m, ENVIRON[&quot;ALIASX_K&quot;] &quot;=&quot;) != 1&#x27; &quot;$_f&quot; &gt; &quot;$_t&quot; &amp;&amp;
+    cat &quot;$_t&quot; &gt; &quot;$_f&quot; &amp;&amp; echo &quot;removed $1 from $_f&quot;
+  command rm -f &quot;$_t&quot;; unset _t _f
+}</template>
+<tr><td><code>envdel KEY [FILE]</code></td><td><button class="fn" data-src="fn3" data-name="envdel">show code</button></td><td>remove KEY from .env<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envdel DB_HOST</span>
+removed DB_HOST from .env</pre></details></td><td class="muted"></td></tr>
+<template id="fn4">envls() { sed -n -E &#x27;s/^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=.*/\2/p&#x27; &quot;${1:-.env}&quot;; }</template>
+<tr><td><code>envls [FILE]</code></td><td><button class="fn" data-src="fn4" data-name="envls">show code</button></td><td>list keys in .env (values hidden)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ envls</span>
+DB_HOST
+DB_PORT
+JWT_SECRET</pre></details></td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

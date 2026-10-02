@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DevOps — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html" class="on">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>DevOps</h1>
+<p>DevOps: retries, tunnels, certificates, DNS, cron, logs.</p>
+<p>File <code>aliases/ops.sh</code>. Disable: <code>export ALIASX_DISABLE="ops"</code></p>
+<h2>Run control</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn1">retry() {
+  [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: retry &lt;times&gt; &lt;command&gt; [args]&quot; &gt;&amp;2; return 2; }
+  _n=&quot;$1&quot;; _i=1; _w=1; shift
+  while :; do
+    &quot;$@&quot; &amp;&amp; { unset _n _i _w; return 0; }
+    _rc=$?
+    [ &quot;$_i&quot; -ge &quot;$_n&quot; ] &amp;&amp; { echo &quot;retry: failed after $_n tries&quot; &gt;&amp;2; unset _n _i _w; return &quot;$_rc&quot;; }
+    echo &quot;retry: try $_i failed, waiting ${_w}s&quot; &gt;&amp;2
+    sleep &quot;$_w&quot;; _i=$((_i + 1)); _w=$((_w * 2))
+  done
+}</template>
+<tr><td><code>retry N CMD...</code></td><td><button class="fn" data-src="fn1" data-name="retry">show code</button></td><td>run CMD up to N times, waiting 1s, 2s, 4s... between tries<details class="ex" open><summary>example</summary><pre><span class="cmd">$ retry 3 curl -f localhost:8080/health</span>
+retry: try 1 failed, waiting 1s
+ok</pre></details></td><td class="muted"></td></tr>
+<template id="fn2">every() {
+  [ &quot;$#&quot; -ge 2 ] || { echo &quot;Usage: every &lt;seconds&gt; &lt;command&gt; [args]&quot; &gt;&amp;2; return 2; }
+  _s=&quot;$1&quot;; shift
+  while :; do echo &quot;── $(date +%H:%M:%S)&quot;; &quot;$@&quot;; sleep &quot;$_s&quot;; done
+}</template>
+<tr><td><code>every SEC CMD...</code></td><td><button class="fn" data-src="fn2" data-name="every">show code</button></td><td>run CMD every SEC seconds (watch without clearing)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ every 5 kubectl get pods</span>
+── 10:31:02
+NAME                  READY   STATUS
+api-7d9f8b-x2k4       1/1     Running</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Remote</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn3">tunnel() {
+  [ &quot;$#&quot; -eq 3 ] || { echo &quot;Usage: tunnel &lt;local-port&gt; &lt;target:port&gt; &lt;user@jump-host&gt;&quot; &gt;&amp;2; return 2; }
+  echo &quot;localhost:$1 → $2 via $3 (Ctrl-C to stop)&quot;
+  ssh -N -L &quot;$1:$2&quot; &quot;$3&quot;
+}</template>
+<tr><td><code>tunnel LOCALPORT TARGET:PORT USER@JUMP</code></td><td><button class="fn" data-src="fn3" data-name="tunnel">show code</button></td><td>forward localhost:LOCALPORT through ssh<details class="ex" open><summary>example</summary><pre><span class="cmd">$ tunnel 5433 db.internal:5432 ali@bastion</span>
+localhost:5433 → db.internal:5432 via ali@bastion (Ctrl-C to stop)</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Certificates</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn4">certexp() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: certexp &lt;host[:port]&gt;&quot; &gt;&amp;2; return 2; }
+  _h=&quot;${1%%:*}&quot;; _p=&quot;${1##*:}&quot;; [ &quot;$_h&quot; = &quot;$_p&quot; ] &amp;&amp; _p=443
+  openssl s_client -connect &quot;$_h:$_p&quot; -servername &quot;$_h&quot; &lt;/dev/null 2&gt;/dev/null | _aliasx_cert_report
+  unset _h _p
+}</template>
+<tr><td><code>certexp HOST[:PORT]</code></td><td><button class="fn" data-src="fn4" data-name="certexp">show code</button></td><td>certificate subject, issuer and days until expiry<details class="ex" open><summary>example</summary><pre><span class="cmd">$ certexp example.com</span>
+subject=CN=example.com
+issuer=C=US, O=Let&#x27;s Encrypt, CN=R11
+notAfter=Dec 30 23:59:59 2026 GMT
+days left: 89</pre></details></td><td class="muted"></td></tr>
+<template id="fn5">certfile() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: certfile &lt;file&gt;&quot; &gt;&amp;2; return 2; }
+  _aliasx_cert_report &lt; &quot;$1&quot;
+}</template>
+<tr><td><code>certfile FILE</code></td><td><button class="fn" data-src="fn5" data-name="certfile">show code</button></td><td>same report for a local .crt/.pem file<details class="ex" open><summary>example</summary><pre><span class="cmd">$ certfile /etc/ssl/certs/site.crt</span>
+subject=CN=site.local
+notAfter=Oct 20 10:00:00 2026 GMT
+days left: 18  ← renew soon</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>DNS and sockets</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn6">dnscheck() {
+  [ &quot;$#&quot; -ge 1 ] || { echo &quot;Usage: dnscheck &lt;name&gt; [type]&quot; &gt;&amp;2; return 2; }
+  for _r in &quot;&quot; 1.1.1.1 8.8.8.8; do
+    printf &#x27;%-9s %s\n&#x27; &quot;${_r:-system}&quot; &quot;$(dig +short ${_r:+@$_r} &quot;$1&quot; &quot;${2:-A}&quot; | tr &#x27;\n&#x27; &#x27; &#x27;)&quot;
+  done
+  unset _r
+}</template>
+<tr><td><code>dnscheck NAME [TYPE]</code></td><td><button class="fn" data-src="fn6" data-name="dnscheck">show code</button></td><td>compare answers from system, Cloudflare and Google DNS<details class="ex" open><summary>example</summary><pre><span class="cmd">$ dnscheck api.example.com</span>
+system    93.184.215.14
+1.1.1.1   93.184.215.14
+8.8.8.8   93.184.215.14</pre></details></td><td class="muted"></td></tr>
+<tr><td><code>sockets</code></td><td><code>ss -tulpn</code></td><td>listening sockets with processes</td><td class="muted">Linux</td></tr>
+</table>
+<h2>Cron and logs</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>crons</code></td><td><code>crontab -l</code></td><td>your cron jobs</td><td class="muted">needs crontab</td></tr>
+<template id="fn9">logsize() { find &quot;${1:-/var/log}&quot; -type f -exec du -h {} + 2&gt;/dev/null | sort -rh | head -15; }</template>
+<tr><td><code>logsize [DIR]</code></td><td><button class="fn" data-src="fn9" data-name="logsize">show code</button></td><td>biggest log files (default /var/log)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ logsize</span>
+812M	/var/log/journal/system.journal
+120M	/var/log/nginx/access.log</pre></details></td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

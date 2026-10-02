@@ -1,0 +1,32 @@
+:root{--bg:#fff;--fg:#1c1c1e;--muted:#6b6b70;--line:#e4e4e8;--code:#f4f4f6;--accent:#2f6fde}
+@media (prefers-color-scheme:dark){:root{--bg:#121214;--fg:#ececf0;--muted:#9a9aa2;--line:#2a2a30;--code:#1c1c20;--accent:#6ea0ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,sans-serif;display:flex;min-height:100vh}
+nav{width:220px;flex-shrink:0;border-right:1px solid var(--line);padding:24px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;overscroll-behavior:contain}
+nav b{display:block;font-size:20px;margin-bottom:16px}
+nav a{display:block;padding:6px 10px;border-radius:6px;color:var(--fg);text-decoration:none}
+nav a:hover{background:var(--code)}
+nav a.on{background:var(--accent);color:#fff}
+nav span{display:block;padding:6px 10px;color:var(--muted)}
+main{flex:1;max-width:860px;padding:32px 24px}
+h1{margin-top:0}
+code,pre{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--code);border-radius:4px}
+code{padding:1px 5px}
+pre{padding:12px 14px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin:12px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:14px}
+td:first-child{white-space:nowrap}
+@media (max-width:700px){body{display:block}nav{width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px}nav b{width:100%;margin:0 0 8px}}
+.muted{color:var(--muted)}
+ul{padding-left:20px}
+button.fn,dialog button{font:inherit;font-size:13px;padding:2px 10px;border:1px solid var(--line);border-radius:6px;background:var(--code);color:var(--fg);cursor:pointer}
+button.fn:hover{border-color:var(--accent);color:var(--accent)}
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);padding:0;width:min(720px,calc(100vw - 32px));max-height:80vh}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+dialog pre{margin:0;border-radius:0;max-height:calc(80vh - 50px);overflow:auto}
+details.ex{margin-top:6px}
+details.ex summary{cursor:pointer;color:var(--accent);font-size:13px}
+details.ex pre{margin:6px 0 0;font-size:12.5px;white-space:pre}
+details.ex .cmd{color:var(--accent)}

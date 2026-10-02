@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modern replacements — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html" class="on">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Modern replacements</h1>
+<p>Opt-in: replace standard commands with modern tools.</p>
+<p class="muted">Enable: ALIASX_ENABLE=&quot;modern&quot;</p>
+<p>Not loaded by default. Enable: <code>export ALIASX_ENABLE="modern"</code></p>
+<h2>Replacements</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>ls</code></td><td><code>eza --group-directories-first</code></td><td>list with colors, folders marked</td><td class="muted">needs eza</td></tr>
+<tr><td><code>ll</code></td><td><code>eza --long --group-directories-first --git</code></td><td>long list, folders first</td><td class="muted">needs eza</td></tr>
+<tr><td><code>la</code></td><td><code>eza --long --all --group-directories-first --git</code></td><td>long list incl. hidden</td><td class="muted">needs eza</td></tr>
+<tr><td><code>l</code></td><td><code>eza --group-directories-first</code></td><td>compact list, folders first</td><td class="muted">needs eza</td></tr>
+<tr><td><code>etree</code></td><td><code>eza --tree --level=2</code></td><td>tree, 2 levels</td><td class="muted">needs eza</td></tr>
+<tr><td><code>cat</code></td><td><code>bat --paging=never</code></td><td>bat without pager</td><td class="muted">needs bat</td></tr>
+<tr><td><code>cat</code></td><td><code>batcat --paging=never</code></td><td>bat without pager</td><td class="muted">needs bat</td></tr>
+<tr><td><code>top</code></td><td><code>btop</code></td><td>modern top</td><td class="muted">needs btop</td></tr>
+<tr><td><code>top</code></td><td><code>htop</code></td><td>modern top</td><td class="muted">needs btop</td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>

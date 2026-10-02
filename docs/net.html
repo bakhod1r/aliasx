@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Network — aliasx</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <b>aliasx</b>
+  <a href="index.html">Getting started</a>
+  <a href="core.html">Core</a>
+  <a href="hints.html">Hints</a>
+  <a href="nav.html">Navigation</a>
+  <a href="files.html">Files</a>
+  <a href="git.html">Git</a>
+  <a href="docker.html">Docker</a>
+  <a href="podman.html">Podman</a>
+  <a href="k8s.html">Kubernetes</a>
+  <a href="infra.html">Infrastructure</a>
+  <a href="ops.html">DevOps</a>
+  <a href="admin.html">Sysadmin</a>
+  <a href="net.html" class="on">Network</a>
+  <a href="system.html">System</a>
+  <a href="dev.html">Development</a>
+  <a href="api.html">Backend &amp; API</a>
+  <a href="db.html">Databases</a>
+  <a href="nginx.html">nginx</a>
+  <a href="remote.html">SSH &amp; tmux</a>
+  <a href="util.html">Utilities</a>
+  <a href="dotenv.html">.env files</a>
+  <a href="cloud.html">Cloud</a>
+  <a href="tools.html">Modern tools</a>
+  <a href="modern.html">Modern replacements ·opt-in</a>
+  <a href="dangerous.html">Dangerous helpers ·opt-in</a>
+</nav>
+<main>
+<h1>Network</h1>
+<p>Networking and HTTP.</p>
+<p>File <code>aliases/net.sh</code>. Disable: <code>export ALIASX_DISABLE="net"</code></p>
+<h2>General</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>ping5</code></td><td><code>ping -c 5</code></td><td>ping 5 times</td><td class="muted"></td></tr>
+<tr><td><code>conns</code></td><td><code>lsof -nP -i</code></td><td>open network connections</td><td class="muted"></td></tr>
+<tr><td><code>hosts</code></td><td><code>cat /etc/hosts</code></td><td>show /etc/hosts</td><td class="muted"></td></tr>
+<tr><td><code>dns</code></td><td><code>cat /etc/resolv.conf</code></td><td>show DNS resolvers</td><td class="muted"></td></tr>
+<template id="fn5">myip() {
+  if has curl; then curl -fsS https://api.ipify.org; echo
+  else wget -qO- https://api.ipify.org; echo; fi
+}</template>
+<tr><td><code>myip</code></td><td><button class="fn" data-src="fn5" data-name="myip">show code</button></td><td>public IP (api.ipify.org)<details class="ex" open><summary>example</summary><pre><span class="cmd">$ myip</span>
+203.0.113.42</pre></details></td><td class="muted"></td></tr>
+<template id="fn6">lanip() {
+  if [ &quot;$ALIASX_OS&quot; = macos ]; then
+    ipconfig getifaddr en0 2&gt;/dev/null || ipconfig getifaddr en1
+  else
+    hostname -I 2&gt;/dev/null | awk &#x27;{print $1}&#x27;
+  fi
+}</template>
+<tr><td><code>lanip</code></td><td><button class="fn" data-src="fn6" data-name="lanip">show code</button></td><td>local network IP<details class="ex" open><summary>example</summary><pre><span class="cmd">$ lanip</span>
+192.168.1.23</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>Ports</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn7">ports() {
+  if [ &quot;$#&quot; -eq 0 ]; then lsof -nP -iTCP -sTCP:LISTEN
+  else lsof -nP -iTCP:&quot;$1&quot; -sTCP:LISTEN; fi
+}</template>
+<tr><td><code>ports [PORT]</code></td><td><button class="fn" data-src="fn7" data-name="ports">show code</button></td><td>listening TCP ports, or who listens on PORT<details class="ex" open><summary>example</summary><pre><span class="cmd">$ ports 3000</span>
+COMMAND  PID  USER  FD  TYPE  DEVICE  NODE NAME
+node    4123  ali   23u IPv4  0x...   TCP *:3000 (LISTEN)</pre></details></td><td class="muted"></td></tr>
+<template id="fn8">freeport() {
+  [ &quot;$#&quot; -eq 1 ] || { echo &quot;Usage: freeport &lt;port&gt;&quot; &gt;&amp;2; return 2; }
+  _pids=&quot;$(lsof -tiTCP:&quot;$1&quot; -sTCP:LISTEN)&quot;
+  [ -n &quot;$_pids&quot; ] || { echo &quot;Nothing listens on port $1.&quot;; unset _pids; return 0; }
+  lsof -nP -iTCP:&quot;$1&quot; -sTCP:LISTEN
+  printf &#x27;Kill these processes? [y/N] &#x27;; read -r _a
+  case &quot;$_a&quot; in y|Y|yes) echo &quot;$_pids&quot; | xargs kill ;; *) echo &quot;Cancelled.&quot; ;; esac
+  unset _pids _a
+}</template>
+<tr><td><code>freeport PORT</code></td><td><button class="fn" data-src="fn8" data-name="freeport">show code</button></td><td>kill what listens on PORT after y/N<details class="ex" open><summary>example</summary><pre><span class="cmd">$ freeport 3000</span>
+node    4123  ali   23u IPv4  TCP *:3000 (LISTEN)
+Kill these processes? [y/N] y</pre></details></td><td class="muted"></td></tr>
+</table>
+<h2>HTTP</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<tr><td><code>curlh</code></td><td><code>curl --head</code></td><td>response headers only</td><td class="muted"></td></tr>
+<tr><td><code>curlv</code></td><td><code>curl --verbose</code></td><td>verbose curl</td><td class="muted"></td></tr>
+<tr><td><code>curlj</code></td><td><code>curl -H &quot;Accept: application/json&quot;</code></td><td>curl asking for JSON</td><td class="muted"></td></tr>
+</table>
+</main>
+<dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
+<script>
+(function () {
+  var on = document.querySelector("nav a.on");
+  if (on) on.parentNode.scrollTop = on.offsetTop - on.parentNode.clientHeight / 2;
+  var d = document.getElementById("code"), body = document.getElementById("code-body");
+  if (!d) return;
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button.fn");
+    if (b) {
+      body.textContent = document.getElementById(b.dataset.src).content.textContent;
+      document.getElementById("code-title").textContent = b.dataset.name + "()";
+      d.showModal();
+    } else if (e.target.id === "code-close" || e.target === d) d.close();
+    else if (e.target.id === "code-copy") {
+      navigator.clipboard && navigator.clipboard.writeText(body.textContent);
+      e.target.textContent = "copied"; setTimeout(function () { e.target.textContent = "copy"; }, 1200);
+    }
+  });
+})();
+</script>
+</body>
+</html>
