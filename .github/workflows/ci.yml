@@ -25,6 +25,27 @@ jobs:
       - name: Run tests under bash and zsh
         run: bash tests/run.sh
 
+  e2e:
+    name: Install end to end (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install zsh (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh
+      - name: Install into a fresh HOME and use it from new shells
+        run: |
+          export HOME="$RUNNER_TEMP/home"; mkdir -p "$HOME"; touch "$HOME/.bashrc" "$HOME/.zshrc"
+          ./install.sh
+          bash -ic 'aliasx version && type mkcd >/dev/null && alias gs' </dev/null
+          zsh -ic 'aliasx version && whence -w mkcd && alias gs' </dev/null
+          ./install.sh --uninstall
+          ! grep -q aliasx "$HOME/.bashrc" "$HOME/.zshrc"
+
   lint:
     name: ShellCheck
     runs-on: ubuntu-latest

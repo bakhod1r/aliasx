@@ -262,6 +262,8 @@ export ALIASX_ENABLE="modern dangerous"  # load opt-in modules</pre>
 aliasx list git         # aliases in one module
 aliasx check gs k tf    # is a name taken?
 aliasx conflicts        # names that hide programs or clash with your rc files
+aliasx doctor           # version, shell, profile, install state
+aliasx update           # pull the latest version
 aliasx why lni          # lni → ln -i · link, ask before overwriting</pre>
 
 <h2>Hints</h2>

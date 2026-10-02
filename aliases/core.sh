@@ -70,6 +70,34 @@ function aliasx_find {
   unset _n; return $_found
 }
 
+# == Maintenance
+_aliasx_update() {
+  [ -d "$ALIASX_ROOT/.git" ] || { echo "aliasx: not a git checkout ($ALIASX_ROOT); reinstall to update" >&2; return 1; }
+  _old="$(cat "$ALIASX_ROOT/VERSION" 2>/dev/null)"
+  git -C "$ALIASX_ROOT" pull --ff-only --quiet || { echo "aliasx: update failed (local changes?)" >&2; return 1; }
+  _new="$(cat "$ALIASX_ROOT/VERSION" 2>/dev/null)"
+  if [ "$_old" = "$_new" ]; then echo "aliasx $_new is up to date"
+  else echo "aliasx $_old → $_new. Run: reload"; fi
+  unset _old _new
+}
+
+_aliasx_doctor() {
+  echo "aliasx   $(cat "$ALIASX_ROOT/VERSION" 2>/dev/null) at $ALIASX_ROOT"
+  if [ -n "${ZSH_VERSION:-}" ]; then echo "shell    zsh $ZSH_VERSION"; else echo "shell    bash ${BASH_VERSION:-?}"; fi
+  echo "os       $ALIASX_OS"
+  echo "profile  ${ALIASX_PROFILE:-full}   mode ${ALIASX_MODE:-normal}"
+  [ -n "${ALIASX_DISABLE:-}" ] && echo "disabled $ALIASX_DISABLE"
+  [ -n "${ALIASX_ENABLE:-}" ] && echo "enabled  $ALIASX_ENABLE"
+  echo "local    $ALIASX_LOCAL $([ -f "$ALIASX_LOCAL" ] && echo "($(grep -c '^alias' "$ALIASX_LOCAL") aliases)" || echo "(none)")"
+  _rc=0
+  for _f in "$HOME/.bashrc" "$HOME/.zshrc"; do
+    [ -f "$_f" ] && grep -q '# aliasx$' "$_f" && { echo "rc       $_f"; _rc=1; }
+  done
+  [ "$_rc" = 1 ] || echo "rc       not installed in ~/.bashrc or ~/.zshrc (run install.sh)"
+  echo "conflicts:"; _aliasx_conflicts | sed 's/^/  /'
+  unset _f _rc
+}
+
 # == Your own aliases (aliasx add / rm / mine)
 ALIASX_LOCAL="${ALIASX_LOCAL:-$HOME/.aliasx.local.sh}"
 
@@ -215,6 +243,12 @@ function aliasx {
         else echo "$_n: available"; fi
       done
       unset _n ;;
+    version)
+      cat "$ALIASX_ROOT/VERSION" 2>/dev/null || echo unknown ;;
+    update)
+      _aliasx_update ;;
+    doctor)
+      _aliasx_doctor ;;
     profile)
       echo "${ALIASX_PROFILE:-full}" ;;
     profiles)
@@ -237,7 +271,7 @@ function aliasx {
       if [ -z "${2:-}" ]; then echo "$ALIASX_MODE"
       else _aliasx_mode_set "$2" && echo "aliasx mode: $ALIASX_MODE"; fi ;;
     *)
-      echo "Usage: aliasx modules | list <module> | check <name>... | add <name> <cmd> [desc] | rm <name> | mine | conflicts | profile | profiles | find <word> | why <name> | mode [safe|normal]" >&2
+      echo "Usage: aliasx modules | list <module> | check <name>... | version | update | doctor | add <name> <cmd> [desc] | rm <name> | mine | conflicts | profile | profiles | find <word> | why <name> | mode [safe|normal]" >&2
       return 2 ;;
   esac
 }

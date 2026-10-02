@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag must match VERSION
+        run: |
+          [ "${GITHUB_REF_NAME#v}" = "$(cat VERSION)" ] || { echo "::error::tag $GITHUB_REF_NAME != VERSION $(cat VERSION)"; exit 1; }
+      - name: Install test tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh zip netcat-openbsd
+      - name: Tests
+        run: |
+          git config --global user.email ci@example.com
+          git config --global user.name CI
+          bash tests/run.sh
+      - name: Release notes from CHANGELOG
+        run: |
+          v="$(cat VERSION)"
+          awk -v v="$v" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[/ {on=0} on' CHANGELOG.md > notes.md
+          [ -s notes.md ] || { echo "::error::no CHANGELOG entry for $v"; exit 1; }
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "aliasx $GITHUB_REF_NAME" --notes-file notes.md

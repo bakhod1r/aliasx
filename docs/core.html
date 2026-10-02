@@ -163,6 +163,12 @@ Deploy? [y/N] y</pre></details></td><td class="muted"></td></tr>
         else echo &quot;$_n: available&quot;; fi
       done
       unset _n ;;
+    version)
+      cat &quot;$ALIASX_ROOT/VERSION&quot; 2&gt;/dev/null || echo unknown ;;
+    update)
+      _aliasx_update ;;
+    doctor)
+      _aliasx_doctor ;;
     profile)
       echo &quot;${ALIASX_PROFILE:-full}&quot; ;;
     profiles)
@@ -185,7 +191,7 @@ Deploy? [y/N] y</pre></details></td><td class="muted"></td></tr>
       if [ -z &quot;${2:-}&quot; ]; then echo &quot;$ALIASX_MODE&quot;
       else _aliasx_mode_set &quot;$2&quot; &amp;&amp; echo &quot;aliasx mode: $ALIASX_MODE&quot;; fi ;;
     *)
-      echo &quot;Usage: aliasx modules | list &lt;module&gt; | check &lt;name&gt;... | add &lt;name&gt; &lt;cmd&gt; [desc] | rm &lt;name&gt; | mine | conflicts | profile | profiles | find &lt;word&gt; | why &lt;name&gt; | mode [safe|normal]&quot; &gt;&amp;2
+      echo &quot;Usage: aliasx modules | list &lt;module&gt; | check &lt;name&gt;... | version | update | doctor | add &lt;name&gt; &lt;cmd&gt; [desc] | rm &lt;name&gt; | mine | conflicts | profile | profiles | find &lt;word&gt; | why &lt;name&gt; | mode [safe|normal]&quot; &gt;&amp;2
       return 2 ;;
   esac
 }</template>

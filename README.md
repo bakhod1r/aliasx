@@ -57,6 +57,9 @@ aliasx modules        # list modules
 aliasx list git       # show a module's aliases
 aliasx check gs k tf  # is a name taken?
 aliasx conflicts      # aliasx names that hide programs or clash with your rc files
+aliasx doctor         # version, shell, profile, install state, conflicts
+aliasx update         # git pull the latest version
+aliasx version
 aliasx find port      # commands related to a word (also shown live in zsh)
 aliasx why lni        # lni → ln -i · link, ask before overwriting
 aliasx mode safe      # rm lists targets and asks [Y/n]; ALIASX_MODE=safe to keep
@@ -99,6 +102,12 @@ aliasx mode safe      # rm lists targets and asks [Y/n]; ALIASX_MODE=safe to kee
 - Destructive actions show targets and ask first; bulk deletes are opt-in and need a typed phrase.
 - No implicit `sudo` outside package and power commands; no `-y` on upgrades.
 - One meaning per name (`h` = history, Helm = `hm`).
+
+## Project
+
+[CHANGELOG](CHANGELOG.md) · [CONTRIBUTING](CONTRIBUTING.md) · [SECURITY](SECURITY.md) · MIT [LICENSE](LICENSE)
+
+Startup cost is about 35 ms; loading works under `set -eu` and next to oh-my-zsh.
 
 ## Development
 

@@ -20,7 +20,8 @@ devops: nav files git docker podman k8s infra ops cloud net util remote dotenv n
 sysadmin: nav files git admin system net remote ops util nginx tools
 "
 
-. "$ALIASX_ROOT/aliases/core.sh"
+# "|| true": a module ending in a false test must not stop shells running with set -e.
+. "$ALIASX_ROOT/aliases/core.sh" || true
 
 _aliasx_want=""
 # $(echo ...) splits words in both bash and zsh (zsh does not split $VAR).
@@ -33,7 +34,7 @@ for _aliasx_p in $(echo "${ALIASX_PROFILE:-}"); do
 done
 
 for _aliasx_mod in "$ALIASX_ROOT"/aliases/*.sh; do
-  _aliasx_name="$(basename "$_aliasx_mod" .sh)"
+  _aliasx_name="${_aliasx_mod##*/}"; _aliasx_name="${_aliasx_name%.sh}"
   case "$_aliasx_name" in core) continue ;; hints) ;; *)
     if [ -n "$_aliasx_want" ]; then
       case " $_aliasx_want " in *" $_aliasx_name "*) ;; *) continue ;; esac
@@ -42,14 +43,14 @@ for _aliasx_mod in "$ALIASX_ROOT"/aliases/*.sh; do
   case " ${ALIASX_DISABLE:-} " in
     *" $_aliasx_name "*) continue ;;
   esac
-  . "$_aliasx_mod"
+  . "$_aliasx_mod" || true
 done
 
 # shellcheck disable=SC2116
 for _aliasx_name in $(echo "${ALIASX_ENABLE:-}"); do
   _aliasx_mod="$ALIASX_ROOT/optional/$_aliasx_name.sh"
   if [ -f "$_aliasx_mod" ]; then
-    . "$_aliasx_mod"
+    . "$_aliasx_mod" || true
   else
     echo "aliasx: unknown optional module '$_aliasx_name'" >&2
   fi
@@ -58,9 +59,10 @@ done
 # would shadow it; drop the alias so the aliasx version runs.
 # shellcheck disable=SC2013
 for _aliasx_name in $(sed -n 's/^[[:space:]]*function \([A-Za-z_][A-Za-z0-9_-]*\) {.*/\1/p' "$ALIASX_ROOT"/aliases/*.sh); do
-  unalias "$_aliasx_name" 2>/dev/null
+  unalias "$_aliasx_name" 2>/dev/null || true
 done
 
 # Your own aliases load last so they win (aliasx add).
-[ -f "$ALIASX_LOCAL" ] && . "$ALIASX_LOCAL"
+if [ -f "$ALIASX_LOCAL" ]; then . "$ALIASX_LOCAL" || true; fi
 unset _aliasx_mod _aliasx_name _aliasx_want _aliasx_p _aliasx_m
+true
