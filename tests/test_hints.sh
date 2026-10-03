@@ -20,5 +20,10 @@ assert_eq "$(aliasx_hint myown)" "" "foreign alias: no hint"
 # aliasx why prints the same hint.
 assert_eq "$(aliasx why lni)" "lni → ln -i · link, ask before overwriting" "aliasx why"
 
+# Hint styling: command name bold, rest dim, one styled line per hint line.
+b=$'\033[1m' d=$'\033[22;2m' r=$'\033[0m'
+assert_eq "$(_aliasx_hint_style "dfh → df -h · disk free")" "${b}dfh${d} → df -h · disk free${r}" "hint name bold"
+assert_eq "$(_aliasx_hint_style $'a · x\nb · y' | wc -l | tr -d ' ')" "2" "one line per hint"
+
 rm -rf "$stubs"
 finish
