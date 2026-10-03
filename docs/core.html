@@ -244,10 +244,10 @@ Deploy? [y/N] y</pre></details></td><td class="muted"></td></tr>
     mode)
       if [ -z &quot;${2:-}&quot; ]; then echo &quot;$ALIASX_MODE&quot;
       else _aliasx_mode_set &quot;$2&quot; &amp;&amp; echo &quot;aliasx mode: $ALIASX_MODE&quot;; fi ;;
-    configure)
+    configure|set)
       bash &quot;$ALIASX_ROOT/bin/aliasx-configure&quot; &amp;&amp; echo &quot;Open a new shell (or: exec \$SHELL) to apply.&quot; ;;
     *)
-      echo &quot;Usage: aliasx configure | modules | list &lt;module&gt; | check &lt;name&gt;... | version | update | doctor | add &lt;name&gt; &lt;cmd&gt; [desc] | rm &lt;name&gt; | mine | conflicts | profile | profiles | find &lt;word&gt; | why &lt;name&gt; | mode [safe|normal]&quot; &gt;&amp;2
+      echo &quot;Usage: aliasx configure (set) | modules | list &lt;module&gt; | check &lt;name&gt;... | version | update | doctor | add &lt;name&gt; &lt;cmd&gt; [desc] | rm &lt;name&gt; | mine | conflicts | profile | profiles | find &lt;word&gt; | why &lt;name&gt; | mode [safe|normal]&quot; &gt;&amp;2
       return 2 ;;
   esac
 }</template>

@@ -351,10 +351,10 @@ function aliasx {
     mode)
       if [ -z "${2:-}" ]; then echo "$ALIASX_MODE"
       else _aliasx_mode_set "$2" && echo "aliasx mode: $ALIASX_MODE"; fi ;;
-    configure)
+    configure|set)
       bash "$ALIASX_ROOT/bin/aliasx-configure" && echo "Open a new shell (or: exec \$SHELL) to apply." ;;
     *)
-      echo "Usage: aliasx configure | modules | list <module> | check <name>... | version | update | doctor | add <name> <cmd> [desc] | rm <name> | mine | conflicts | profile | profiles | find <word> | why <name> | mode [safe|normal]" >&2
+      echo "Usage: aliasx configure (set) | modules | list <module> | check <name>... | version | update | doctor | add <name> <cmd> [desc] | rm <name> | mine | conflicts | profile | profiles | find <word> | why <name> | mode [safe|normal]" >&2
       return 2 ;;
   esac
 }

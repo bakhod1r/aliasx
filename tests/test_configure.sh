@@ -76,6 +76,9 @@ case "$draw" in *Profile*full*minimal*) ;; *) echo "  draw missing items"; _fail
 # not a terminal: refuses instead of hanging
 out="$(bash "$ALIASX_ROOT/bin/aliasx-configure" </dev/null 2>&1)"; rc=$?
 assert_eq "$rc" "1" "needs a tty"
+# aliasx set is the same as configure: needs a tty here
+out="$(aliasx set </dev/null 2>&1)"
+case "$out" in *"needs an interactive terminal"*) ;; *) echo "  aliasx set: $out"; _failures=$((_failures + 1)) ;; esac
 case "$(aliasx 2>&1)" in *configure*) ;; *) echo "  usage lacks configure"; _failures=$((_failures + 1)) ;; esac
 
 command rm -rf "$tmp" "$stubs"

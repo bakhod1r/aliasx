@@ -48,7 +48,7 @@ Saved in `~/.aliasx.local.sh`, loaded last, with hints and search like built-in 
 ## Configure
 
 ```sh
-aliasx configure      # interactive wizard, saves ~/.aliasx.conf
+aliasx configure      # interactive wizard, saves ~/.aliasx.conf (short: aliasx set)
 ```
 
 Missing program behind an alias (`tree2` needs `tree`)? aliasx asks to install it.
