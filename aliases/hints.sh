@@ -6,8 +6,15 @@
 
 if [ -n "${ZSH_VERSION:-}" ]; then
   [[ -o interactive ]] || return 0
-  _aliasx_space_orig="$(bindkey ' ' 2>/dev/null)"; _aliasx_space_orig="${_aliasx_space_orig##* }"
-  case "$_aliasx_space_orig" in ''|_aliasx_hint_space|undefined-key) _aliasx_space_orig=self-insert ;; esac
+  # Remember what Space did before us. On a second load Space is already ours,
+  # so keep the value saved the first time.
+  _aliasx_space_now="$(bindkey ' ' 2>/dev/null)"; _aliasx_space_now="${_aliasx_space_now##* }"
+  if [ "$_aliasx_space_now" != _aliasx_hint_space ]; then
+    case "$_aliasx_space_now" in ''|undefined-key) _aliasx_space_now=self-insert ;; esac
+    _aliasx_space_orig="$_aliasx_space_now"
+  fi
+  : "${_aliasx_space_orig:=self-insert}"
+  unset _aliasx_space_now
 
   function _aliasx_hint_space {
     local _hint

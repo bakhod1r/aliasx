@@ -5,6 +5,8 @@ All notable changes. Format: [Keep a Changelog](https://keepachangelog.com/en/1.
 ## [Unreleased]
 
 ### Fixed
+- Loading aliasx twice (install line + oh-my-zsh plugin, or `reload`) no longer drops
+  the Space key widget of other plugins such as zsh-autocomplete.
 - Containers: `asroot` replaces hardcoded `sudo`, so package, service and nginx commands
   work as root or where sudo is not installed.
 - nginx `ngr`/`ngrestart`/`ngs` use systemctl only when systemd is actually running.
