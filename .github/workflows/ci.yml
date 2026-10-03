@@ -14,7 +14,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install zsh and test tools (Ubuntu)
         if: runner.os == 'Linux'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh zip netcat-openbsd
@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Install shells and tools
         run: ${{ matrix.install }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run tests under bash and zsh
         shell: bash
         run: |
@@ -53,7 +53,7 @@ jobs:
     name: Real services (PostgreSQL, Redis, nginx)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run integration tests in a container
         run: tests/integration/run-docker.sh
 
@@ -65,7 +65,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install zsh (Ubuntu)
         if: runner.os == 'Linux'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh
@@ -82,7 +82,7 @@ jobs:
     name: ShellCheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: ShellCheck every file
         # One file at a time: shellcheck 0.11 can crash on the combined set.
         run: |
@@ -96,7 +96,7 @@ jobs:
     name: Docs are up to date
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Regenerate docs and fail on diff
         run: |
           python3 tools/gendocs.py
