@@ -87,7 +87,7 @@ jobs:
         # One file at a time: shellcheck 0.11 can crash on the combined set.
         run: |
           status=0
-          for f in aliasx.sh install.sh setup/*.sh aliases/*.sh optional/*.sh tests/*.sh tests/integration/*.sh; do
+          for f in aliasx.sh install.sh setup/*.sh aliases/*.sh optional/*.sh bin/* tests/*.sh tests/integration/*.sh; do
             shellcheck "$f" || status=1
           done
           exit $status

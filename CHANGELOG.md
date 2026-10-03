@@ -4,6 +4,14 @@ All notable changes. Format: [Keep a Changelog](https://keepachangelog.com/en/1.
 
 ## [Unreleased]
 
+### Added
+- `aliasx configure`: dark full-screen wizard (Profile, Modules, Optional, Mode, Save)
+  that writes `~/.aliasx.conf`. The loader reads it safely (known keys, plain values);
+  variables set before loading still win.
+- Typing a program that is not installed (e.g. `tree2` without `tree`) offers to
+  install it with brew/apt/dnf/pacman/apk, then runs the command. Asks first;
+  `ALIASX_AUTOINSTALL=0` turns it off. An existing not-found handler is kept.
+
 ### Fixed
 - Loading aliasx twice (install line + oh-my-zsh plugin, or `reload`) no longer drops
   the Space key widget of other plugins such as zsh-autocomplete.

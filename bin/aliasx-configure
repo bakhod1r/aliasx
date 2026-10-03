@@ -1,0 +1,198 @@
+#!/usr/bin/env bash
+# aliasx-configure — interactive setup for ~/.aliasx.conf (run: aliasx configure).
+# Steps: Profile → Modules → Optional → Mode → Save. Keys: ↑↓/jk move, space toggle,
+# →/Enter next, ← back, q quit. Sourcing this file defines the functions only (tests).
+# Works with bash 3.2 (macOS). Space separated word lists are split on purpose.
+# shellcheck disable=SC2086
+
+ALIASX_ROOT="${ALIASX_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+ALIASX_CONF="${ALIASX_CONF:-$HOME/.aliasx.conf}"
+STEPS="Profile Modules Optional Mode Save"
+PROFILES="full minimal backend devops sysadmin"
+PROF=full OFF="" ON="" MODE=normal STEP=0 CUR=0 DONE="" MSG=""
+
+# Dark theme (256 colours).
+E=$'\033'
+BG="${E}[48;5;234m" FG="${E}[38;5;252m" ACC="${E}[38;5;75m" OK="${E}[38;5;71m"
+DIM="${E}[38;5;242m" WARN="${E}[38;5;179m" SEL="${E}[48;5;237m" RST="${E}[0m" EOL="${E}[K"
+
+# has WORD LIST — true when WORD is in the space separated LIST
+has() { case " $2 " in *" $1 "*) return 0 ;; esac; return 1; }
+# without WORD LIST — LIST minus WORD
+without() { _r=""; for _w in $2; do [ "$_w" = "$1" ] || _r="$_r $_w"; done; echo "${_r# }"; }
+# flip WORD LIST — add WORD when missing, remove it when present
+flip() { if has "$1" "$2"; then without "$1" "$2"; else _r="$2 $1"; echo "${_r# }"; fi; }
+
+cfg_load() {
+  [ -f "$ALIASX_CONF" ] || return 0
+  while IFS= read -r _l || [ -n "$_l" ]; do
+    _v="${_l#*=}"; _v="${_v#\"}"; _v="${_v%\"}"
+    case "$_v" in *[!a-z0-9\ _-]*) continue ;; esac
+    case "$_l" in
+      ALIASX_PROFILE=*) PROF="${_v:-full}" ;;
+      ALIASX_DISABLE=*) OFF="$_v" ;;
+      ALIASX_ENABLE=*)  ON="$_v" ;;
+      ALIASX_MODE=*)    MODE="${_v:-normal}" ;;
+    esac
+  done < "$ALIASX_CONF"
+}
+
+# Module lists come from the loader so they never drift.
+profile_mods() { sed -n "s/^$1: //p" "$ALIASX_ROOT/aliasx.sh"; }
+all_mods() { for _f in "$ALIASX_ROOT"/aliases/*.sh; do _f="${_f##*/}"; _f="${_f%.sh}"; [ "$_f" = core ] || echo "$_f"; done; }
+optional_mods() { for _f in "$ALIASX_ROOT"/optional/*.sh; do _f="${_f##*/}"; echo "${_f%.sh}"; done; }
+
+# active_mods — modules the chosen profiles load (hints always loads)
+active_mods() {
+  if has full "$PROF"; then all_mods; return; fi
+  _seen=""
+  for _p in $PROF; do for _m in $(profile_mods "$_p"); do
+    has "$_m" "$_seen" || { _seen="$_seen $_m"; echo "$_m"; }
+  done; done
+  echo hints
+}
+
+prof_toggle() {
+  if [ "$1" = full ]; then PROF=full; return; fi
+  PROF="$(flip "$1" "$(without full "$PROF")")"
+  [ -n "$PROF" ] || PROF=full
+}
+
+# shellcheck disable=SC2086  # word lists split on purpose
+step_name() { set -- $STEPS; shift "$STEP"; echo "$1"; }
+
+items() {
+  case "$(step_name)" in
+    Profile)  printf "%s\n" $PROFILES ;;
+    Modules)  active_mods ;;
+    Optional) optional_mods ;;
+    Mode)     printf '%s\n' normal safe ;;
+  esac
+}
+
+item_at() { items | sed -n "$((CUR + 1))p"; }
+
+checked() {
+  case "$(step_name)" in
+    Profile)  has "$1" "$PROF" ;;
+    Modules)  ! has "$1" "$OFF" ;;
+    Optional) has "$1" "$ON" ;;
+    Mode)     [ "$1" = "$MODE" ] ;;
+  esac
+}
+
+toggle() {
+  _i="$(item_at)"; [ -n "$_i" ] || return 0
+  case "$(step_name)" in
+    Profile)  prof_toggle "$_i" ;;
+    Modules)  OFF="$(flip "$_i" "$OFF")" ;;
+    Optional) ON="$(flip "$_i" "$ON")" ;;
+    Mode)     MODE="$_i" ;;
+  esac
+}
+
+render_conf() {
+  _off=""; _act=" $(active_mods | tr '\n' ' ')"
+  for _m in $OFF; do has "$_m" "$_act" && _off="$_off $_m"; done
+  echo "# aliasx config — written by \`aliasx configure\`. Variables set before loading aliasx win."
+  echo "ALIASX_PROFILE=\"$PROF\""
+  echo "ALIASX_DISABLE=\"${_off# }\""
+  echo "ALIASX_ENABLE=\"$ON\""
+  echo "ALIASX_MODE=\"$MODE\""
+}
+
+save() {
+  [ -f "$ALIASX_CONF" ] && cp "$ALIASX_CONF" "$ALIASX_CONF.bak"
+  _t="$(mktemp "$ALIASX_CONF.XXXXXX")" || return 1
+  render_conf > "$_t" && mv "$_t" "$ALIASX_CONF"
+}
+
+# handle_key KEY — update state. Returns 1 to quit; sets DONE after saving.
+handle_key() {
+  _n="$(items | wc -l | tr -d ' ')"; _last=$(( $(set -- $STEPS; echo $#) - 1 ))
+  case "$1" in
+    up|k)     [ "$CUR" -gt 0 ] && CUR=$((CUR - 1)) ;;
+    down|j)   [ "$CUR" -lt $((_n - 1)) ] && CUR=$((CUR + 1)) ;;
+    " ")      toggle ;;
+    left|h)   [ "$STEP" -gt 0 ] && { STEP=$((STEP - 1)); CUR=0; } ;;
+    right|l)  [ "$STEP" -lt "$_last" ] && { STEP=$((STEP + 1)); CUR=0; } ;;
+    enter)
+      if [ "$STEP" -lt "$_last" ]; then STEP=$((STEP + 1)); CUR=0
+      elif save; then DONE=1; MSG="saved $ALIASX_CONF"
+      else MSG="could not write $ALIASX_CONF"; fi ;;
+    q|esc)    return 1 ;;
+  esac
+  return 0
+}
+
+hint() {
+  case "$(step_name)" in
+    Profile)  echo "Which roles? Pick several, or full for everything." ;;
+    Modules)  echo "Modules your profile loads. Uncheck to disable." ;;
+    Optional) echo "Opt-in modules." ;;
+    Mode)     echo "safe: rm lists files and asks first." ;;
+    Save)     echo "Will write $ALIASX_CONF (old one kept as .bak):" ;;
+  esac
+}
+
+draw() {
+  _rows="${LINES:-24}"; _h=$((_rows - 9)); [ "$_h" -lt 3 ] && _h=3
+  _bar=""; _i=0
+  for _s in $STEPS; do
+    if [ "$_i" = "$STEP" ]; then _bar="$_bar ${ACC}● $_s${FG}"; else _bar="$_bar ${DIM}○ $_s${FG}"; fi
+    _i=$((_i + 1))
+  done
+  printf '%s%s %saliasx configure%s %s%s\n%s\n' "$BG" "$FG" "$ACC" "$FG" "$_bar" "$EOL" "$EOL"
+  printf ' %s%s\n%s\n' "$(hint)" "$EOL" "$EOL"
+  if [ "$(step_name)" = Save ]; then
+    render_conf | sed 1d | while IFS= read -r _l; do printf '   %s%s%s%s\n' "$DIM" "${_l%%=*}=" "$FG${_l#*=}" "$EOL"; done
+    printf '%s\n' "$EOL"
+    if [ -n "$DONE" ]; then printf ' %s✓ %s%s%s\n' "$OK" "$MSG" "$FG" "$EOL"
+    elif [ -n "$MSG" ]; then printf ' %s✗ %s%s%s\n' "$WARN" "$MSG" "$FG" "$EOL"
+    else printf ' %sEnter: save   ←: back   q: cancel%s%s\n' "$WARN" "$FG" "$EOL"; fi
+  else
+    _top=0; [ "$CUR" -ge "$_h" ] && _top=$((CUR - _h + 1)); _i=0
+    items | while IFS= read -r _it; do
+      if [ "$_i" -ge "$_top" ] && [ "$_i" -lt $((_top + _h)) ]; then
+        if [ "$(step_name)" = Mode ]; then _on="($OK•$FG)" _off="${DIM}( )$FG"; else _on="[${OK}x$FG]" _off="${DIM}[ ]$FG"; fi
+        if checked "$_it"; then _b="$_on"; else _b="$_off"; fi
+        if [ "$_i" = "$CUR" ]; then printf '%s %s❯%s %s %s%s%s\n' "$SEL" "$ACC" "$FG" "$_b" "$_it" "$EOL" "$BG"
+        else printf '   %s %s%s\n' "$_b" "$_it" "$EOL"; fi
+      fi
+      _i=$((_i + 1))
+    done
+  fi
+  printf '%s\n %s↑↓ move  space toggle  → next  ← back  q quit%s%s' "$EOL" "$DIM" "$FG" "$EOL"
+}
+
+read_key() {
+  IFS= read -rsn1 _k || return 1
+  case "$_k" in
+    $'\033')
+      IFS= read -rsn2 -t 1 _s || { echo esc; return; }
+      case "$_s" in '[A'|OA) echo up ;; '[B'|OB) echo down ;; '[C'|OC) echo right ;; '[D'|OD) echo left ;; *) echo none ;; esac ;;
+    '') echo enter ;;
+    *) echo "$_k" ;;
+  esac
+}
+
+main() {
+  if [ ! -t 0 ] || [ ! -t 1 ]; then echo "aliasx configure: needs an interactive terminal" >&2; return 1; fi
+  cfg_load
+  _stty="$(stty -g)"
+  restore() { stty "$_stty"; printf '%s%s[?25h%s[?1049l' "$RST" "$E" "$E"; }
+  trap 'restore; exit 130' INT TERM
+  printf '%s[?1049h%s[?25l%s%s[2J' "$E" "$E" "$BG" "$E"
+  while :; do
+    LINES="$(tput lines 2>/dev/null || echo 24)"
+    printf '%s[H%s%s[J' "$E" "$(draw)" "$E"
+    [ -n "$DONE" ] && { sleep 1; break; }
+    _key="$(read_key)" || break
+    handle_key "$_key" || { restore; echo "aliasx configure: cancelled, nothing written"; return 1; }
+  done
+  restore
+  [ -n "$DONE" ] && echo "aliasx: $MSG"
+}
+
+[ "${BASH_SOURCE[0]}" = "$0" ] && { main "$@"; exit $?; }
+true

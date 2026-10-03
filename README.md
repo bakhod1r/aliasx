@@ -48,6 +48,13 @@ Saved in `~/.aliasx.local.sh`, loaded last, with hints and search like built-in 
 ## Configure
 
 ```sh
+aliasx configure      # interactive wizard, saves ~/.aliasx.conf
+```
+
+Missing program behind an alias (`tree2` needs `tree`)? aliasx asks to install it.
+Turn off with `export ALIASX_AUTOINSTALL=0`.
+
+```sh
 export ALIASX_DISABLE="docker k8s"      # skip default modules
 export ALIASX_ENABLE="modern dangerous"  # load opt-in modules
 ```

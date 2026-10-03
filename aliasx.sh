@@ -12,6 +12,24 @@ if [ -z "${ALIASX_ROOT:-}" ]; then
 fi
 export ALIASX_ROOT
 
+# ~/.aliasx.conf (written by `aliasx configure`). Only known keys with plain
+# word values are read, never sourced. Variables you set before loading win;
+# ones that came from the conf last time are refreshed so `reload` sees edits.
+ALIASX_CONF="${ALIASX_CONF:-$HOME/.aliasx.conf}"
+if [ -f "$ALIASX_CONF" ]; then
+  _aliasx_keys=""
+  while IFS= read -r _aliasx_l || [ -n "$_aliasx_l" ]; do
+    case "$_aliasx_l" in ALIASX_PROFILE=*|ALIASX_DISABLE=*|ALIASX_ENABLE=*|ALIASX_MODE=*) ;; *) continue ;; esac
+    _aliasx_k="${_aliasx_l%%=*}"; _aliasx_v="${_aliasx_l#*=}"; _aliasx_v="${_aliasx_v#\"}"; _aliasx_v="${_aliasx_v%\"}"
+    case "$_aliasx_v" in *[!a-z0-9\ _-]*) continue ;; esac
+    if eval "[ -z \"\${$_aliasx_k+x}\" ]" || case " ${ALIASX_CONF_KEYS:-} " in *" $_aliasx_k "*) true ;; *) false ;; esac; then
+      eval "$_aliasx_k=\$_aliasx_v"; _aliasx_keys="$_aliasx_keys $_aliasx_k"
+    fi
+  done < "$ALIASX_CONF"
+  ALIASX_CONF_KEYS="${_aliasx_keys# }"
+  unset _aliasx_l _aliasx_k _aliasx_v _aliasx_keys
+fi
+
 # Modules per profile. core and hints always load.
 ALIASX_PROFILES="
 minimal: nav files git

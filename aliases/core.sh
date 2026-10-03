@@ -185,6 +185,68 @@ function asroot {
 # _aliasx_systemd — true when systemd is the running init (not just installed, as in containers)
 _aliasx_systemd() { [ -d /run/systemd/system ] && has systemctl; }
 
+# == Missing programs
+# Typing a command that is not installed (e.g. tree2 → tree) offers to install it.
+# Asks first, default No. Off with ALIASX_AUTOINSTALL=0.
+_aliasx_pkg_manager() {
+  for _pm in brew apt-get dnf pacman apk; do has "$_pm" && { echo "${_pm%-get}"; unset _pm; return 0; }; done
+  unset _pm; return 1
+}
+
+# _aliasx_pkg_name CMD MANAGER — package that provides CMD
+_aliasx_pkg_name() {
+  case "$1:$2" in
+    fd:apt|fd:dnf) echo fd-find ;;
+    bat:apt) echo bat ;;
+    rg:*) echo ripgrep ;;
+    http:*|https:*) echo httpie ;;
+    delta:*) echo git-delta ;;
+    btm:*) echo bottom ;;
+    *) echo "$1" ;;
+  esac
+}
+
+# _aliasx_install_cmd MANAGER PKG — the install command for PKG
+_aliasx_install_cmd() {
+  case "$1" in
+    brew)   echo "brew install $2" ;;
+    apt)    echo "asroot apt-get install -y $2" ;;
+    dnf)    echo "asroot dnf install -y $2" ;;
+    pacman) echo "asroot pacman -S --noconfirm $2" ;;
+    apk)    echo "asroot apk add $2" ;;
+  esac
+}
+
+# _aliasx_offer_install CMD [ARGS] — offer to install CMD, then run it
+function _aliasx_offer_install {
+  case "$1" in ""|*[!A-Za-z0-9._+-]*) echo "$1: command not found" >&2; return 127 ;; esac
+  if [ "${ALIASX_AUTOINSTALL:-1}" != 0 ] && _pm="$(_aliasx_pkg_manager)"; then
+    _ic="$(_aliasx_install_cmd "$_pm" "$(_aliasx_pkg_name "$1" "$_pm")")"
+    unset _pm
+    # Package names come from the table above or the typed command word.
+    if yesno "$1: not installed. Install with: ${_ic#asroot }?" && eval "$_ic"; then
+      unset _ic; hash -r 2>/dev/null; "$@"; return
+    fi
+    unset _ic; return 127
+  fi
+  echo "$1: command not found" >&2; return 127
+}
+
+# Hook into the shell's not-found handler, keeping one that already exists
+# (Ubuntu's command-not-found, Homebrew's). Interactive shells only.
+case "$-" in *i*)
+  if [ -n "${ZSH_VERSION:-}" ]; then _aliasx_cnf=command_not_found_handler; else _aliasx_cnf=command_not_found_handle; fi
+  if typeset -f "$_aliasx_cnf" >/dev/null 2>&1 && ! typeset -f "$_aliasx_cnf" | grep -q _aliasx_offer_install; then
+    eval "_aliasx_cnf_prev() $(typeset -f "$_aliasx_cnf" | sed 1d)"
+  fi
+  eval "$_aliasx_cnf() {
+    if [ -t 0 ] && [ \"\${ALIASX_AUTOINSTALL:-1}\" != 0 ] && _aliasx_pkg_manager >/dev/null; then _aliasx_offer_install \"\$@\"
+    elif typeset -f _aliasx_cnf_prev >/dev/null 2>&1; then _aliasx_cnf_prev \"\$@\"
+    else echo \"\$1: command not found\" >&2; return 127; fi
+  }"
+  unset _aliasx_cnf ;;
+esac
+
 # == Terminal
 alias c='clear'  # clear screen
 alias now='date "+%Y-%m-%d %H:%M:%S"'  # current date and time
@@ -289,8 +351,10 @@ function aliasx {
     mode)
       if [ -z "${2:-}" ]; then echo "$ALIASX_MODE"
       else _aliasx_mode_set "$2" && echo "aliasx mode: $ALIASX_MODE"; fi ;;
+    configure)
+      bash "$ALIASX_ROOT/bin/aliasx-configure" && echo "Open a new shell (or: exec \$SHELL) to apply." ;;
     *)
-      echo "Usage: aliasx modules | list <module> | check <name>... | version | update | doctor | add <name> <cmd> [desc] | rm <name> | mine | conflicts | profile | profiles | find <word> | why <name> | mode [safe|normal]" >&2
+      echo "Usage: aliasx configure | modules | list <module> | check <name>... | version | update | doctor | add <name> <cmd> [desc] | rm <name> | mine | conflicts | profile | profiles | find <word> | why <name> | mode [safe|normal]" >&2
       return 2 ;;
   esac
 }
