@@ -4,6 +4,8 @@ All notable changes. Format: [Keep a Changelog](https://keepachangelog.com/en/1.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-03
+
 ### Added
 - `aliasx set`: short name for `aliasx configure`.
 
