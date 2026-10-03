@@ -29,7 +29,8 @@ if [ -n "${ZSH_VERSION:-}" ]; then
   # _aliasx_hint_show TEXT — under the prompt, or above it when zsh-autocomplete
   # is loaded: its live list redraws below the prompt and would wipe the hint.
   function _aliasx_hint_show {
-    if (( ${#${(k)functions[(I).autocomplete*]}} )); then
+    # zsh-only syntax inside eval so shellcheck (sh parser) skips it.
+    if eval '(( ${#${(k)functions[(I).autocomplete*]}} ))'; then
       zle -I
       { echo; _aliasx_hint_style "$1"; echo; } >/dev/tty
     else

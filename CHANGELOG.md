@@ -4,6 +4,8 @@ All notable changes. Format: [Keep a Changelog](https://keepachangelog.com/en/1.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-03
+
 ### Added
 - `aliasx configure`: dark full-screen wizard (Profile, Modules, Optional, Mode, Save)
   that writes `~/.aliasx.conf`. The loader reads it safely (known keys, plain values);
@@ -11,6 +13,8 @@ All notable changes. Format: [Keep a Changelog](https://keepachangelog.com/en/1.
 - Typing a program that is not installed (e.g. `tree2` without `tree`) offers to
   install it with brew/apt/dnf/pacman/apk, then runs the command. Asks first;
   `ALIASX_AUTOINSTALL=0` turns it off. An existing not-found handler is kept.
+- CI on Alpine and Fedora, and integration tests against real PostgreSQL, Redis and nginx.
+- Issue and PR templates, Dependabot for GitHub Actions.
 
 ### Fixed
 - Loading aliasx twice (install line + oh-my-zsh plugin, or `reload`) no longer drops
@@ -21,10 +25,6 @@ All notable changes. Format: [Keep a Changelog](https://keepachangelog.com/en/1.
 - Alpine/busybox: `bigfiles`, `logsize`, `biggest` no longer need `sort -h`;
   `b64d`/`ksecret` use `base64 -d`; `ftext` works without `grep --exclude-dir`;
   `bigfiles` sizes work with busybox `find`.
-
-### Added
-- CI on Alpine and Fedora, and integration tests against real PostgreSQL, Redis and nginx.
-- Issue and PR templates, Dependabot for GitHub Actions.
 
 ## [1.0.0] - 2026-10-02
 

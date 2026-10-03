@@ -45,6 +45,29 @@
 <p class="muted">bash 4+: printed above the prompt. bash 3 (macOS default): use aliasx why NAME.</p>
 <p class="muted">Turn off: ALIASX_DISABLE=&quot;hints&quot;</p>
 <p>File <code>aliases/hints.sh</code>. Disable: <code>export ALIASX_DISABLE="hints"</code></p>
+<h2>General</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn1">function _aliasx_hint_style {
+  local _line _name
+  while IFS= read -r _line; do
+    _name=&quot;${_line%% *}&quot;
+    if [ &quot;$_name&quot; = &quot;$_line&quot; ]; then printf &#x27;\033[2m%s\033[0m\n&#x27; &quot;$_line&quot;
+    else printf &#x27;\033[1m%s\033[22;2m%s\033[0m\n&#x27; &quot;$_name&quot; &quot;${_line#&quot;$_name&quot;}&quot;; fi
+  done &lt;&lt;&lt; &quot;$1&quot;
+}</template>
+<tr id="n-_aliasx_hint_style"><td><code>_aliasx_hint_style TEXT</code></td><td><button class="fn" data-src="fn1" data-name="_aliasx_hint_style">show code</button></td><td>each hint line dim, the command name in bold</td><td class="muted"></td></tr>
+<template id="fn2">function _aliasx_hint_show {
+  # zsh-only syntax inside eval so shellcheck (sh parser) skips it.
+  if eval &#x27;(( ${#${(k)functions[(I).autocomplete*]}} ))&#x27;; then
+    zle -I
+    { echo; _aliasx_hint_style &quot;$1&quot;; echo; } &gt;/dev/tty
+  else
+    zle -M $&#x27;\n&#x27;&quot;$1&quot;$&#x27;\n&#x27;
+  fi
+}</template>
+<tr id="n-_aliasx_hint_show"><td><code>_aliasx_hint_show TEXT</code></td><td><button class="fn" data-src="fn2" data-name="_aliasx_hint_show">show code</button></td><td>under the prompt, or above it when zsh-autocomplete</td><td class="muted"></td></tr>
+</table>
 </main>
 <dialog id="code"><div class="dlg-head"><b id="code-title"></b><span><button id="code-copy">copy</button> <button id="code-close" aria-label="Close">✕</button></span></div><pre id="code-body"></pre></dialog>
 <script>

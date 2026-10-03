@@ -129,6 +129,46 @@ Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease</pre></details></td><td c
 <template id="fn8">_aliasx_systemd() { [ -d /run/systemd/system ] &amp;&amp; has systemctl; }</template>
 <tr id="n-_aliasx_systemd"><td><code>_aliasx_systemd</code></td><td><button class="fn" data-src="fn8" data-name="_aliasx_systemd">show code</button></td><td>true when systemd is the running init (not just installed, as in containers)</td><td class="muted"></td></tr>
 </table>
+<h2>Missing programs</h2>
+<table>
+<tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
+<template id="fn9">_aliasx_pkg_name() {
+  case &quot;$1:$2&quot; in
+    fd:apt|fd:dnf) echo fd-find ;;
+    bat:apt) echo bat ;;
+    rg:*) echo ripgrep ;;
+    http:*|https:*) echo httpie ;;
+    delta:*) echo git-delta ;;
+    btm:*) echo bottom ;;
+    *) echo &quot;$1&quot; ;;
+  esac
+}</template>
+<tr id="n-_aliasx_pkg_name"><td><code>_aliasx_pkg_name CMD MANAGER</code></td><td><button class="fn" data-src="fn9" data-name="_aliasx_pkg_name">show code</button></td><td>package that provides CMD</td><td class="muted"></td></tr>
+<template id="fn10">_aliasx_install_cmd() {
+  case &quot;$1&quot; in
+    brew)   echo &quot;brew install $2&quot; ;;
+    apt)    echo &quot;asroot apt-get install -y $2&quot; ;;
+    dnf)    echo &quot;asroot dnf install -y $2&quot; ;;
+    pacman) echo &quot;asroot pacman -S --noconfirm $2&quot; ;;
+    apk)    echo &quot;asroot apk add $2&quot; ;;
+  esac
+}</template>
+<tr id="n-_aliasx_install_cmd"><td><code>_aliasx_install_cmd MANAGER PKG</code></td><td><button class="fn" data-src="fn10" data-name="_aliasx_install_cmd">show code</button></td><td>the install command for PKG</td><td class="muted"></td></tr>
+<template id="fn11">function _aliasx_offer_install {
+  case &quot;$1&quot; in &quot;&quot;|*[!A-Za-z0-9._+-]*) echo &quot;$1: command not found&quot; &gt;&amp;2; return 127 ;; esac
+  if [ &quot;${ALIASX_AUTOINSTALL:-1}&quot; != 0 ] &amp;&amp; _pm=&quot;$(_aliasx_pkg_manager)&quot;; then
+    _ic=&quot;$(_aliasx_install_cmd &quot;$_pm&quot; &quot;$(_aliasx_pkg_name &quot;$1&quot; &quot;$_pm&quot;)&quot;)&quot;
+    unset _pm
+    # Package names come from the table above or the typed command word.
+    if yesno &quot;$1: not installed. Install with: ${_ic#asroot }?&quot; &amp;&amp; eval &quot;$_ic&quot;; then
+      unset _ic; hash -r 2&gt;/dev/null; &quot;$@&quot;; return
+    fi
+    unset _ic; return 127
+  fi
+  echo &quot;$1: command not found&quot; &gt;&amp;2; return 127
+}</template>
+<tr id="n-_aliasx_offer_install"><td><code>_aliasx_offer_install CMD [ARGS]</code></td><td><button class="fn" data-src="fn11" data-name="_aliasx_offer_install">show code</button></td><td>offer to install CMD, then run it</td><td class="muted"></td></tr>
+</table>
 <h2>Terminal</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
@@ -138,24 +178,24 @@ Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease</pre></details></td><td c
 <tr id="n-path"><td><code>path</code></td><td><code>echo &quot;$PATH&quot; | tr &quot;:&quot; &quot;\n&quot;</code></td><td>PATH, one entry per line</td><td class="muted"></td></tr>
 <tr id="n-e"><td><code>e</code></td><td><code>${EDITOR:-vi}</code></td><td>open in your editor</td><td class="muted"></td></tr>
 <tr id="n-envg"><td><code>envg</code></td><td><code>env | sort | grep -i</code></td><td>search environment variables</td><td class="muted"></td></tr>
-<template id="fn15">function reload {
+<template id="fn18">function reload {
   if [ -n &quot;${ZSH_VERSION:-}&quot; ]; then . &quot;$HOME/.zshrc&quot;; else . &quot;$HOME/.bashrc&quot;; fi
 }</template>
-<tr id="n-reload"><td><code>reload</code></td><td><button class="fn" data-src="fn15" data-name="reload">show code</button></td><td>re-read ~/.bashrc or ~/.zshrc<details class="ex" open><summary>example</summary><pre><span class="cmd">$ reload</span>
+<tr id="n-reload"><td><code>reload</code></td><td><button class="fn" data-src="fn18" data-name="reload">show code</button></td><td>re-read ~/.bashrc or ~/.zshrc<details class="ex" open><summary>example</summary><pre><span class="cmd">$ reload</span>
 (rc file re-read, new aliases active)</pre></details></td><td class="muted"></td></tr>
-<template id="fn16">function yesno {
+<template id="fn19">function yesno {
   printf &#x27;%s [y/N] &#x27; &quot;$1&quot; &gt;&amp;2
   read -r _a
   case &quot;$_a&quot; in y|Y|yes|YES) unset _a; return 0 ;; esac
   echo &quot;Cancelled.&quot; &gt;&amp;2; unset _a; return 1
 }</template>
-<tr id="n-yesno"><td><code>yesno PROMPT</code></td><td><button class="fn" data-src="fn16" data-name="yesno">show code</button></td><td>ask [y/N]; true only on y/yes<details class="ex" open><summary>example</summary><pre><span class="cmd">$ yesno &quot;Deploy?&quot; &amp;&amp; ./deploy.sh</span>
+<tr id="n-yesno"><td><code>yesno PROMPT</code></td><td><button class="fn" data-src="fn19" data-name="yesno">show code</button></td><td>ask [y/N]; true only on y/yes<details class="ex" open><summary>example</summary><pre><span class="cmd">$ yesno &quot;Deploy?&quot; &amp;&amp; ./deploy.sh</span>
 Deploy? [y/N] y</pre></details></td><td class="muted"></td></tr>
 </table>
 <h2>Modes</h2>
 <table>
 <tr><th>Name</th><th>Runs</th><th>What it does</th><th></th></tr>
-<template id="fn17">function aliasx {
+<template id="fn20">function aliasx {
   case &quot;${1:-}&quot; in
     modules)
       for _f in &quot;$ALIASX_ROOT&quot;/aliases/*.sh; do basename &quot;$_f&quot; .sh; done
@@ -204,12 +244,14 @@ Deploy? [y/N] y</pre></details></td><td class="muted"></td></tr>
     mode)
       if [ -z &quot;${2:-}&quot; ]; then echo &quot;$ALIASX_MODE&quot;
       else _aliasx_mode_set &quot;$2&quot; &amp;&amp; echo &quot;aliasx mode: $ALIASX_MODE&quot;; fi ;;
+    configure)
+      bash &quot;$ALIASX_ROOT/bin/aliasx-configure&quot; &amp;&amp; echo &quot;Open a new shell (or: exec \$SHELL) to apply.&quot; ;;
     *)
-      echo &quot;Usage: aliasx modules | list &lt;module&gt; | check &lt;name&gt;... | version | update | doctor | add &lt;name&gt; &lt;cmd&gt; [desc] | rm &lt;name&gt; | mine | conflicts | profile | profiles | find &lt;word&gt; | why &lt;name&gt; | mode [safe|normal]&quot; &gt;&amp;2
+      echo &quot;Usage: aliasx configure | modules | list &lt;module&gt; | check &lt;name&gt;... | version | update | doctor | add &lt;name&gt; &lt;cmd&gt; [desc] | rm &lt;name&gt; | mine | conflicts | profile | profiles | find &lt;word&gt; | why &lt;name&gt; | mode [safe|normal]&quot; &gt;&amp;2
       return 2 ;;
   esac
 }</template>
-<tr id="n-aliasx"><td><code>aliasx COMMAND</code></td><td><button class="fn" data-src="fn17" data-name="aliasx">show code</button></td><td>find, why, add, rm, mine, mode, profile, conflicts, list, modules<details class="ex" open><summary>example</summary><pre><span class="cmd">$ aliasx why lni</span>
+<tr id="n-aliasx"><td><code>aliasx COMMAND</code></td><td><button class="fn" data-src="fn20" data-name="aliasx">show code</button></td><td>find, why, add, rm, mine, mode, profile, conflicts, list, modules<details class="ex" open><summary>example</summary><pre><span class="cmd">$ aliasx why lni</span>
 lni → ln -i · link, ask before overwriting</pre></details></td><td class="muted"></td></tr>
 </table>
 </main>
